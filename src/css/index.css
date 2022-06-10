@@ -1,0 +1,21 @@
+@import 'outer.css';
+@import 'board.css';
+@import 'pieces.css';
+@import 'fonts.css';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body{
+  font-size: 21px;
+  font-family: 'fira_sansmedium';
+  color: rgb(170, 163, 91);
+  letter-spacing: 0.4px;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: rgb(5,47,40);
+}

@@ -1,0 +1,242 @@
+/*here i'm taking styles from previous project*/
+/* DON'T USE */
+
+/* General setup */
+
+html {
+  font-size: 21px;
+  height: 100%;
+  margin: 0;
+  font-family: 'fira_sansmedium';
+  color: rgb(170, 163, 91);
+  letter-spacing: 0.4px;
+}
+  
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  background-color: rgb(5,47,40);
+  text-align: center;
+  overflow: auto;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background-color:rgb(35, 83, 70);
+  border-left: 1px solid rgb(3, 26, 19);
+}
+::-webkit-scrollbar-thumb {
+  background-color:rgb(9, 41, 32);
+  border-left: 1px solid rgb(3, 26, 19);
+}
+
+/* Typography */
+  
+h1 {
+  font-size: 2.2rem;
+  font-family: 'kaushan_scriptregular';
+  margin: 0;
+  width: 100%;
+}
+  
+h2 {
+  font-size: 2.4rem;
+}
+  
+p {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  word-spacing: 0.3rem;
+}
+
+ul {
+  padding: 0;
+}
+
+ol {
+  list-style-position: inside;
+  padding: 0;
+  margin: 2px 0px 10px;
+  counter-reset: item;
+}
+
+li { 
+  display: block;
+}
+
+.steps li:before { 
+  content: counters(item, ".") " ";
+  counter-increment: item; 
+}
+
+/* Link style */
+
+a:link {
+  color:rgb(78, 194, 178);
+  text-decoration: none;
+}
+a:visited {
+  color: rgb(76, 150, 129);
+}
+a:focus {
+  border-bottom: 1px solid rgb(76, 150, 129);
+}
+a:hover {
+  border-bottom: 1px solid rgb(76, 150, 129);
+}
+a:active {
+  color:rgb(15, 110, 95);;
+}
+
+/* Sections */
+
+header {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  align-items: center;
+  border-bottom: 3px solid rgb(2, 17, 15);
+  background-color: rgba(2, 20, 9, 0.8);
+  border-collapse: collapse;
+  height: 12%;
+}
+
+nav {
+  width: 100%;
+}
+
+nav ul {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  font-family: 'fira_sansitalic';
+  margin: 5px 0px;
+  list-style: none;
+  line-height: 1.4em;
+}
+
+main {
+  padding-top: 15px;
+  background: rgb(5,47,40);
+  background: linear-gradient(0deg, rgba(5,47,40,1) 0%, rgba(13, 59, 48, 0.315) 50%, rgba(5,47,40,1) 100%); 
+  line-height: 1.4em;
+}
+
+main p:first-child {
+  margin-top: 0;
+}
+
+footer {
+  text-align: right;
+  margin-right: 2vw;
+}
+
+footer p {
+  font-size: 1em;
+}
+
+article {
+  margin: 0 auto;
+  width: 75%;
+}
+
+/* Chessboard */
+
+.chessboard {
+  display: flex;
+  flex-flow: row wrap;
+  flex: 1;
+  background-color: rgb(77, 54, 13);
+  border: 5px solid rgb(77, 54, 13);
+  width: 750px;
+  height: 750px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.whiteField {
+  background-color: rgb(201, 194, 120);
+}
+
+.blackField {
+  background-color: rgb(105, 79, 30);
+}
+
+.pieceField {
+  box-sizing: border-box;
+  border: 1px solid rgb(250, 249, 236);
+  width: 12.5%;
+  height: 12.5%;
+}
+
+.positionText {
+  display: block;
+  padding-top: 70%;
+  padding-left: 70%;
+  text-shadow: 1px 1px 1px black,
+               2px 2px 2px black;
+  font-size: 0.7em;
+}
+
+/* Chess Pieces */
+
+piece {
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hide {
+  display: none;
+}
+
+.dragOver {
+  background-color: brown;
+}
+
+/* Temp layout for phones */
+
+@media screen and (max-width: 760px) {
+  h1 {
+    font-size: 1.4em;
+    margin: 0px 10px;
+  }
+
+  nav ul {
+    flex-flow: column wrap;
+  }
+}
+
+@media screen and (max-width: 760px) and (min-width: 600px) {
+
+  .chessboard {
+    width: 590px;
+    height: 590px;
+  }
+}
+
+@media screen and (max-width: 599px) and (min-width: 500px) {
+
+  .chessboard {
+    width: 490px;
+    height: 490px;
+  }
+}
+
+@media screen and (max-width: 499px) {
+
+  .chessboard {
+    width: 315px;
+    height: 315px;
+  }
+
+  nav ul {
+    font-size: 0.8em;
+  }
+}
