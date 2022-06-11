@@ -8,12 +8,6 @@
     border: 5px solid rgb(56, 38, 7);
 }
 
-@media screen and (max-width: 500px) {
-    .board {
-        margin-bottom: 150px;
-    }
-}
-
 .whiteField, .blackField {
     width: 100%;
     height: 100%;

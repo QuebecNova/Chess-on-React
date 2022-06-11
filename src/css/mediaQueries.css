@@ -1,0 +1,44 @@
+/* Layout for phones */
+
+@media screen and (max-width: 760px) {
+    
+    nav ul {
+      flex-flow: column wrap;
+      text-align: right;
+      margin-right: 10px;
+    }
+}
+  
+@media screen and (max-width: 760px) and (min-width: 600px) {
+  
+    .board {
+      width: 590px;
+      height: 590px;
+    }
+}
+  
+@media screen and (max-width: 599px) and (min-width: 500px) {
+      
+    .board {
+        width: 490px;
+        height: 490px;
+        margin-bottom: 100px;
+    }
+}
+    
+@media screen and (max-width: 499px) {
+    h1 {
+        font-size: 1.4em;
+        margin: 0px 10px;
+    }
+        
+    .board {
+      width: 315px;
+      height: 315px;
+      margin-bottom: 200px;
+    }
+  
+    nav ul {
+      font-size: 0.8em;
+    }
+}
