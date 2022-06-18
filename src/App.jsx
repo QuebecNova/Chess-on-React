@@ -6,7 +6,8 @@ import Header from './Header'
 export const PieceFieldsContext = React.createContext(); 
 
 function App() {
-  
+
+  console.log('Render');
   
   //creating an array of board fields
   const rows = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
@@ -14,10 +15,13 @@ function App() {
   
   const pieceFields = [];
   
+  let reveresed = 7;
+  
   for (let i = 0; i < 8; i++) {
-    pieceFields[i] = columns.map(index => {
-      return rows[i] + index;
+    pieceFields[i] = rows.map(letter => {
+      return letter + columns[reveresed];
     })
+    reveresed--;
   }
 
   console.log(pieceFields); //see that in action!

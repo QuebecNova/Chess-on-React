@@ -8,7 +8,8 @@ export default function Board() {
   return (
     <div className='board'>
       {pieceFields.map((row, index) => 
-        { if(index % 2) {
+        { 
+          if(index % 2) {
             return row.map((field, index) => 
             {
               if  (index % 2) {
