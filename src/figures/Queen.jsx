@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function Queen() {
+export default function Queen({pieceImg}) {
   return (
-    <div>Queen</div>
+    <img src={pieceImg} alt='Queen'/>
   )
 }

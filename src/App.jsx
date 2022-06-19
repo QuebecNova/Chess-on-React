@@ -1,7 +1,7 @@
 import React from "react";
 
 import Board from "./Board";
-import Header from './Header'
+import Header from './Header';
 
 export const PieceFieldsContext = React.createContext(); 
 

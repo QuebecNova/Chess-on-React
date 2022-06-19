@@ -1,7 +1,10 @@
 import React from 'react'
+export default function Rook({ pieceImg, field }) {
 
-export default function Rook() {
   return (
-    <div>Rook</div>
+    <img 
+      src={pieceImg} 
+      alt='Rook'
+    />
   )
 }

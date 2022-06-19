@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function Bishop() {
+export default function Bishop({pieceImg}) {
   return (
-    <div>Bishop</div>
+    <img src={pieceImg} alt='Bishop'/>
   )
 }

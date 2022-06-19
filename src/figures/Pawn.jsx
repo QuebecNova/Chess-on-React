@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function Pawn() {
+export default function Pawn({pieceImg}) {
   return (
-    <div>Pawn</div>
+    <img src={pieceImg} alt='Pawn'/>
   )
 }

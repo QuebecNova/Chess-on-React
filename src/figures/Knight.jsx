@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function Knight() {
+export default function Knight({pieceImg}) {
   return (
-    <div>Knight</div>
+    <img src={pieceImg} alt='Knight'/>
   )
 }
