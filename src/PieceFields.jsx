@@ -69,7 +69,7 @@ export default function PieceFields(props) {
     const y = e.clientY
     const coords = getPieceCoordinates(x, y)
     if (coords.row !== 0 && coords.col !== 0) {
-      const field = document.querySelector(`#${alphPosOut[coords.row]}`+ `${coords.col}`)
+      const field = document.querySelector(`#${alphPosOut[coords.row]}${coords.col}`)
       if (field.hasChildNodes()) {
         draggedPiece.style = ''
         draggedPiece = undefined;
