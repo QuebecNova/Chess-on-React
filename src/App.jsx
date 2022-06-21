@@ -15,12 +15,12 @@ function App() {
   
   let reveresed = 7;
   
-  for (let i = 0; i < 8; i++) {
-    pieceFields[i] = rows.map(letter => {
+  columns.forEach((col, index) => {
+    pieceFields[index] = rows.map(letter => {
       return letter + columns[reveresed];
     })
     reveresed--;
-  }
+  })
 
   console.log(pieceFields); //see that in action!
 

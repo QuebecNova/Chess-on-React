@@ -8,9 +8,35 @@ export default function Board({pieceFields}) {
   const [fieldSizes, setFieldSizes] = useState([])
   const [chessBoardOffsetLeft, setOffsetLeft] = useState(0)
   const [chessBoardOffsetTop, setOffsetTop] = useState(0)
-
+  
   useEffect(() => {
+    
     let chessBoard = chessBoardRef.current;
+
+    function addUpRowsAndCols(chessBoard) {
+      setFieldSizes([])
+      /*const borderSize = 5;
+      const maxY = chessBoard.clientHeight + chessBoard.offsetTop
+      const minY = chessBoard.offsetTop + borderSize
+      const boardHeight = chessBoard.clientHeight
+      const fieldHeight = boardHeight / 8
+    
+      const maxX = chessBoard.clientWidth + chessBoard.offsetLeft
+      const minX = chessBoard.offsetLeft + borderSize*/
+      setOffsetLeft(chessBoard.offsetLeft)
+      setOffsetTop(chessBoard.offsetTop)
+      const boardWidth  = chessBoard.clientWidth
+      const fieldWidth = boardWidth / 8
+    
+      let fieldStartsOn = 0;
+      const fieldStartsOnArr = [];
+      
+      for (let i = 0; i < 9; i++) {
+        fieldStartsOn = fieldWidth * i;
+        fieldStartsOnArr.push(fieldStartsOn)
+      }
+      setFieldSizes([...fieldStartsOnArr])
+    }
 
     function resizedBoard() {
       chessBoard = chessBoardRef.current;
@@ -20,30 +46,6 @@ export default function Board({pieceFields}) {
     new ResizeObserver(resizedBoard).observe(chessBoard)
   }, [])
   
-  function addUpRowsAndCols(chessBoard) {
-    setFieldSizes([])
-    /*const borderSize = 5;
-    const maxY = chessBoard.clientHeight + chessBoard.offsetTop
-    const minY = chessBoard.offsetTop + borderSize
-    const boardHeight = chessBoard.clientHeight
-    const fieldHeight = boardHeight / 8
-  
-    const maxX = chessBoard.clientWidth + chessBoard.offsetLeft
-    const minX = chessBoard.offsetLeft + borderSize*/
-    setOffsetLeft(chessBoard.offsetLeft)
-    setOffsetTop(chessBoard.offsetTop)
-    const boardWidth  = chessBoard.clientWidth
-    const fieldWidth = boardWidth / 8
-  
-    let fieldStartsOn = 0;
-    const fieldStartsOnArr = [];
-    
-    for (let i = 0; i < 9; i++) {
-      fieldStartsOn = fieldWidth * i;
-      fieldStartsOnArr.push(fieldStartsOn)
-    }
-    setFieldSizes([...fieldSizes, ...fieldStartsOnArr])
-  }
 
   function renderPieceFields() {
     return pieceFields.map((row, index) => 
