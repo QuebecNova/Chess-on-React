@@ -15,6 +15,11 @@
       width: 590px;
       height: 590px;
     }
+
+    img {
+      width: 70px;
+      height: 70px;
+    }
 }
   
 @media screen and (max-width: 599px) and (min-width: 500px) {
@@ -23,6 +28,11 @@
         width: 490px;
         height: 490px;
         margin-bottom: 100px;
+    }
+
+    img {
+      width: 59px;
+      height: 59px;
     }
 }
     
@@ -36,6 +46,11 @@
       width: 315px;
       height: 315px;
       margin-bottom: 200px;
+    }
+
+    img {
+      width: 37px;
+      height: 37px;
     }
   
     nav ul {

@@ -2,3 +2,7 @@ img {
     width: 85.51px;
     height: 85.51px;
 }
+
+img:hover {
+    cursor: pointer;
+}

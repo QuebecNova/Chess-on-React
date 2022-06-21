@@ -2,7 +2,7 @@ import React from 'react'
 export default function Rook({ pieceImg, field }) {
 
   return (
-    <img 
+    <img
       src={pieceImg} 
       alt='Rook'
     />

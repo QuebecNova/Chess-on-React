@@ -3,8 +3,6 @@ import React from "react";
 import Board from "./Board";
 import Header from './Header';
 
-export const PieceFieldsContext = React.createContext(); 
-
 function App() {
 
   console.log('Render');
@@ -28,12 +26,10 @@ function App() {
 
 
   return (
-    <PieceFieldsContext.Provider value={pieceFields}>
-      <div className="wrapper">
-        <Header/>
-        <Board/>
-      </div>
-    </PieceFieldsContext.Provider>
+    <div className="wrapper">
+      <Header/>
+      <Board pieceFields={pieceFields}/>
+    </div>
   );
 }
 
