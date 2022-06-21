@@ -1,5 +1,5 @@
 import React from "react";
-import piecesImages from "./models/piecesImages";
+import piecesImages from "./services/piecesImages";
 import initialPosition from "./configs/initialPosition";
 import King from "./figures/King";
 import Knight from "./figures/Knight";
