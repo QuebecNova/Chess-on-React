@@ -4,22 +4,10 @@ import Knight from "../figures/knight";
 import Pawn from "../figures/pawn";
 import Queen from "../figures/queen";
 import Bishop from "../figures/bishop";
+import getSquares from "../services/getSquares";
 
 export default function setupBoard() {
-    const rows = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-    const columns = [1, 2, 3, 4, 5, 6, 7, 8]
-  
-    const squares = {};
-  
-    let reveresed = 7;
-  
-    columns.forEach((col, index) => {
-        rows.forEach(letter => {
-        const field = letter + columns[reveresed]
-        squares[field] = null;
-        })
-        reveresed--;
-    })
+    const squares = getSquares(null)
     
     squares.a8 = new Rook('black')
     squares.b8 = new Knight('black')

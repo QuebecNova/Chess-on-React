@@ -3,9 +3,13 @@ import { useState, useEffect, useRef } from 'react'
 import alphs from '../services/alphabetPositions.js'
 import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
+import getSquares from "../services/getSquares";
 
 let offsetX = 43.75
 let offsetY = 43.75
+
+let draggedPiece;
+let draggedPieceCoords;
 
 export default function Board() {
 
@@ -13,6 +17,7 @@ export default function Board() {
     const [fieldSizes, setFieldSizes] = useState([])
     const [chessBoardOffsetLeft, setOffsetLeft] = useState(0)
     const [chessBoardOffsetTop, setOffsetTop] = useState(0)
+    const [activeFields, setActiveFields] = useState(getSquares(false))
     const chessBoardRef = useRef()
 
     let chessBoard
@@ -56,9 +61,15 @@ export default function Board() {
         let row = 1
         
         for (const field in squares) {
+            let isActive = '';
+            if (activeFields[field]) {
+                isActive = 'active'
+                if (activeFields[field] === 'currentPiece') isActive = 'active__current-piece'
+            }
+
             if (squares[field]) {
                 board.push(
-                    <div id={field} className={even.defineColor(index, row)} key={index}>
+                    <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index}>
                         <img 
                             src={squares[field].img} 
                             onMouseDown={e => dragStart(e)} 
@@ -73,7 +84,7 @@ export default function Board() {
                 )
             } else {
                 board.push(
-                    <div id={field} className={even.defineColor(index, row)} key={index}/>
+                    <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index}/>
                 )
             }
             index++
@@ -114,32 +125,22 @@ export default function Board() {
         return fieldCoords
     }
 
-    function addActives(moves, divOfPiece) {
-        chessBoard = chessBoardRef.current;
+    function addActives(moves, currentPiece) {
+        const movesActiveFields = {}
         moves.forEach(move => {
-            const fields = []
-            const nodes = [...chessBoard.childNodes]
-            nodes.forEach(field => {
-                if (field.id === move) fields.push(field)
-            });
-            fields.forEach(field => field.classList.add('active'))
+            movesActiveFields[move] = true
         })
-        divOfPiece.classList.add('active__current-piece')
+        movesActiveFields[currentPiece] = 'currentPiece'
+        setActiveFields({...activeFields, ...movesActiveFields})
     }
     
-    function removeActives(divOfPiece) {
-        chessBoard = chessBoardRef.current;
-        const fields = []
-        const nodes = [...chessBoard.childNodes]
-        nodes.forEach(field => {
-            fields.push(field)
-        });
-        fields.forEach(field => field.classList.remove('active'))
-        divOfPiece.classList.remove('active__current-piece')
+    function removeActives() {
+        const clearedActiveFields = {}
+        for (const field in activeFields) {
+            clearedActiveFields[field] = false
+        }
+        setActiveFields({...clearedActiveFields})
     }
-    
-    let draggedPiece;
-    let draggedPieceCoords;
 
     function dragStart(e) {
         if (e.type === 'mousedown') {
@@ -164,9 +165,8 @@ export default function Board() {
 
         const pieceField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
         const moves = squares[pieceField].canMove(pieceField)
-        const divOfPiece = draggedPiece.parentNode
 
-        addActives(moves, divOfPiece)
+        addActives(moves, pieceField)
         
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x - offsetX}px`
@@ -195,8 +195,6 @@ export default function Board() {
     function drop(e) {
         if (!draggedPiece) return
 
-        const divOfPiece = draggedPiece.parentNode
-        
         let x = 0
         let y = 0
         
@@ -222,7 +220,7 @@ export default function Board() {
             if (squares[dropField]) {
                 draggedPiece.style = ''
                 draggedPiece = undefined
-                removeActives(divOfPiece)
+                removeActives()
                 return 
             }
             setSquares(squares => ({
@@ -232,7 +230,7 @@ export default function Board() {
         }
         draggedPiece.style = ''
         draggedPiece = undefined
-        removeActives(divOfPiece)
+        removeActives()
     }
 
     return (
