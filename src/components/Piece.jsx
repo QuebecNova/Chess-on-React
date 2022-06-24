@@ -1,22 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import piecesImages from '../services/piecesImages.js'
-
-import Queen from '../figures/queen'
-import Bishop from '../figures/bishop'
-import King from '../figures/king'
-import Knight from '../figures/knight'
-import Rook from '../figures/rook'
-import Pawn from '../figures/pawn'
-
-const piecesMatch = {
-  'Queen': Queen,
-  'Knight': Knight,
-  'King': King,
-  'Bishop': Bishop,
-  'Pawn': Pawn,
-  'Rook': Rook
-}
+import piecesComponents from '../services/piecesComponents.js'
 
 export default function Piece({ initialPositions, field }) {
 

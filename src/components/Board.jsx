@@ -4,10 +4,12 @@ import { alphPosOut } from '../services/alphabetPositions.js'
 import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
 
+let offsetX = 43.75
+let offsetY = 43.75
+
 export default function Board() {
 
     const [squares, setSquares] = useState(setupBoard())
-    const [dragCoords, setDragCoords] = useState({row: 0, col: 0})
     const [fieldSizes, setFieldSizes] = useState([])
     const [chessBoardOffsetLeft, setOffsetLeft] = useState(0)
     const [chessBoardOffsetTop, setOffsetTop] = useState(0)
@@ -20,18 +22,13 @@ export default function Board() {
     
         function addUpRowsAndCols(chessBoard) {
           setFieldSizes([])
-          /*const borderSize = 5;
-          const maxY = chessBoard.clientHeight + chessBoard.offsetTop
-          const minY = chessBoard.offsetTop + borderSize
-          const boardHeight = chessBoard.clientHeight
-          const fieldHeight = boardHeight / 8
-        
-          const maxX = chessBoard.clientWidth + chessBoard.offsetLeft
-          const minX = chessBoard.offsetLeft + borderSize*/
+
           setOffsetLeft(chessBoard.offsetLeft)
           setOffsetTop(chessBoard.offsetTop)
           const boardWidth  = chessBoard.clientWidth
           const fieldWidth = boardWidth / 8
+          offsetX = fieldWidth / 2.1
+          offsetY = fieldWidth / 1.9
         
           let fieldStartsOn = 0;
           const fieldStartsOnArr = [];
@@ -61,7 +58,13 @@ export default function Board() {
             if (squares[field]) {
                 boardDisplay.push(
                     <div id={field} className={even.defineColor(index, row)} key={index}>
-                        <img src={squares[field].img} onMouseDown={e => dragStart(e)} onMouseMove={e => dragMove(e)} onMouseUp={e => drop(e)}/>
+                        <img 
+                            src={squares[field].img} 
+                            onMouseDown={e => dragStart(e)} 
+                            onMouseMove={e => dragMove(e)} 
+                            onMouseUp={e => drop(e)}
+                            alt={squares[field].type}
+                        />
                     </div>
                 )
             } else {
@@ -80,7 +83,7 @@ export default function Board() {
     
     function getFieldCoordinates(x, y) {
         //displaying coordinates of the mouse related to the board
-        // exmpl: cursor at b3: b = row(2), 3 = col(3)
+        // example: cursor at b3: b = row(2), 3 = col(3)
         // if cursor out the board one of the coords is 0
 
         //mouse positions(x, y)
@@ -120,14 +123,14 @@ export default function Board() {
         draggedPieceCoords = getFieldCoordinates(x, y)
 
         draggedPiece.style.position = 'absolute'
-        draggedPiece.style.left = `${x - 40}px`
-        draggedPiece.style.top = `${y - 45}px`
+        draggedPiece.style.left = `${x - offsetX}px`
+        draggedPiece.style.top = `${y - offsetY}px`
     }
     
     function dragMove(e) {
         if (!draggedPiece) return
-        const x = e.clientX - 40
-        const y = e.clientY - 45
+        const x = e.clientX - offsetX
+        const y = e.clientY - offsetY
     
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
@@ -148,8 +151,6 @@ export default function Board() {
                 [initialPieceField]: null,
                 [dropField]: piece
             }
-
-            console.log(pieceOnField);
 
             if (squares[dropField]) {
                 draggedPiece.style = ''

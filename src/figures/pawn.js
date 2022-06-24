@@ -2,9 +2,13 @@ import Piece from "./piece.js";
 import piecesImages from "../services/piecesImages";
 
 class Pawn extends Piece {
-    constructor(color) {
-        super(color, (color === 'black' ? piecesImages.BlackPawn : piecesImages.WhitePawn))
-    }
+  constructor(color) {
+    super(
+      color,
+      color === "black" ? piecesImages.BlackPawn : piecesImages.WhitePawn,
+      "Pawn"
+    )
+  }
 }
 
-export default Pawn
+export default Pawn;
