@@ -1,29 +1,25 @@
-const posIn = {
-    'a': 1,
-    'b': 2,
-    'c': 3,
-    'd': 4,
-    'e': 5,
-    'f': 6,
-    'g': 7,
-    'h': 8
-}
-
-const posOut = {
-    1: 'a',
-    2: 'b',
-    3: 'c',
-    4: 'd',
-    5: 'e',
-    6: 'f',
-    7: 'g',
-    8: 'h',
-}
-
 const alphs = {
-    posIn,
-
-    posOut,
+    posIn: {
+        'a': 1,
+        'b': 2,
+        'c': 3,
+        'd': 4,
+        'e': 5,
+        'f': 6,
+        'g': 7,
+        'h': 8
+    },
+    
+    posOut: {
+        1: 'a',
+        2: 'b',
+        3: 'c',
+        4: 'd',
+        5: 'e',
+        6: 'f',
+        7: 'g',
+        8: 'h',
+    },
 
     changeAlphPos(field, operator, num, secondOperator = '', secondNum = 0) {
         //here we taking field like 'e4' and using passed operators 'increment or decrement' first letter (e)
@@ -31,9 +27,9 @@ const alphs = {
         if (!field || !operator || !num) throw new Error ('missing argument(s)')
 
         if (operator === '+' && !secondOperator) {
-            return posOut[posIn[field[0]] + num] + field[1]
+            return this.posOut[this.posIn[field[0]] + num] + field[1]
         } else if (operator === '-' && !secondOperator) {
-            return posOut[posIn[field[0]] - num] + field[1]
+            return this.posOut[this.posIn[field[0]] - num] + field[1]
         } else if (operator !== '+' && operator !== '-') {
             throw new Error('not a valid operator')
         }
@@ -41,13 +37,13 @@ const alphs = {
         if (!secondOperator || !secondNum) return
 
         if (operator === '+' && secondOperator === '+') {
-            return posOut[posIn[field[0]] + num] + (parseInt(field[1]) + secondNum)
+            return this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) + secondNum)
         } else if (operator === '-' && secondOperator === '+') {
-            return posOut[posIn[field[0]] - num] + (parseInt(field[1]) + secondNum)
+            return this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) + secondNum)
         } else if (operator === '+' && secondOperator === '-') {
-            return posOut[posIn[field[0]] + num] + (parseInt(field[1]) - secondNum)
+            return this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) - secondNum)
         } else if (operator === '-' && secondOperator === '-') {
-            return posOut[posIn[field[0]] - num] + (parseInt(field[1]) - secondNum)
+            return this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) - secondNum)
         } else if (secondOperator !== '+' && secondOperator !== '-') {
             throw new Error('not a valid operator')
         }
