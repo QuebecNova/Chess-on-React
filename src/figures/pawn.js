@@ -9,6 +9,16 @@ class Pawn extends Piece {
       "Pawn"
     )
   }
+
+  canMove(from) {
+    const moves = [
+        from
+    ]
+  }
+
+  getPath() {
+
+  }
 }
 
 export default Pawn;

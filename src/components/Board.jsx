@@ -148,7 +148,7 @@ export default function Board() {
         let x = 0
         let y = 0
 
-        if (e.type === 'mousedown') {
+        if (e.type === 'mousemove') {
             x = e.clientX - offsetX
             y = e.clientY - offsetY
         } else {
@@ -164,10 +164,11 @@ export default function Board() {
     function drop(e) {
         if (!draggedPiece) return
 
+        
         let x = 0
         let y = 0
-
-        if (e.type === 'mousedown') {
+        
+        if (e.type === 'mouseup') {
             x = e.clientX
             y = e.clientY
         } else {
