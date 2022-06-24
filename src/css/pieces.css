@@ -1,6 +1,7 @@
 img {
     width: 85px;
     height: 85px;
+    touch-action: none;
 }
 
 img:hover {
