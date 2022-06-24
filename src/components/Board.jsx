@@ -63,6 +63,9 @@ export default function Board() {
                             onMouseDown={e => dragStart(e)} 
                             onMouseMove={e => dragMove(e)} 
                             onMouseUp={e => drop(e)}
+                            onTouchStart={e => dragStart(e)} 
+                            onTouchMove={e => dragMove(e)}
+                            onTouchEnd={e => drop(e)}
                             alt={squares[field].type}
                         />
                     </div>
@@ -114,12 +117,24 @@ export default function Board() {
     let draggedPieceCoords;
 
     function dragStart(e) {
-        e.preventDefault()
+        if (e.type === 'mousedown') {
+            e.preventDefault()
+        }    
+        
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
 
+        let x = 0
+        let y = 0
+
+        if (e.type === 'mousedown') {
+            x = e.clientX
+            y = e.clientY
+        } else {
+            x = e.touches[0].clientX
+            y = e.touches[0].clientY
+        }
+
         draggedPiece = e.target;
-        const x = e.clientX
-        const y = e.clientY
         draggedPieceCoords = getFieldCoordinates(x, y)
 
         draggedPiece.style.position = 'absolute'
@@ -129,8 +144,17 @@ export default function Board() {
     
     function dragMove(e) {
         if (!draggedPiece) return
-        const x = e.clientX - offsetX
-        const y = e.clientY - offsetY
+
+        let x = 0
+        let y = 0
+
+        if (e.type === 'mousedown') {
+            x = e.clientX - offsetX
+            y = e.clientY - offsetY
+        } else {
+            x = e.touches[0].clientX - offsetX
+            y = e.touches[0].clientY - offsetY
+        }
     
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
@@ -139,8 +163,18 @@ export default function Board() {
     
     function drop(e) {
         if (!draggedPiece) return
-        const x = e.clientX
-        const y = e.clientY
+
+        let x = 0
+        let y = 0
+
+        if (e.type === 'mousedown') {
+            x = e.clientX
+            y = e.clientY
+        } else {
+            x = e.changedTouches[0].clientX
+            y = e.changedTouches[0].clientY
+        }
+        
         const dropCoords = getFieldCoordinates(x, y)
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
             const initialPieceField = alphPosOut[draggedPieceCoords.row] + draggedPieceCoords.col
