@@ -29,6 +29,10 @@
     box-sizing: border-box;
 }
 
-.dragOver {
-    background-color: brown;
+.active {
+    background-color: rgb(98, 136, 29);
+}
+
+.active__current-piece {
+    background-color: rgb(16, 88, 76);
 }

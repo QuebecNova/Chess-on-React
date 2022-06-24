@@ -1,4 +1,4 @@
-const alphPosIn = {
+const posIn = {
     'a': 1,
     'b': 2,
     'c': 3,
@@ -9,7 +9,7 @@ const alphPosIn = {
     'h': 8
 }
 
-const alphPosOut = {
+const posOut = {
     1: 'a',
     2: 'b',
     3: 'c',
@@ -20,4 +20,39 @@ const alphPosOut = {
     8: 'h',
 }
 
-export {alphPosIn, alphPosOut};
+const alphs = {
+    posIn,
+
+    posOut,
+
+    changeAlphPos(field, operator, num, secondOperator = '', secondNum = 0) {
+        //here we taking field like 'e4' and using passed operators 'increment or decrement' first letter (e)
+        //yea, letters based notation of board complicated and we can use 0-63 notation, but bad boys don't following easy ways
+        if (!field || !operator || !num) throw new Error ('missing argument(s)')
+
+        if (operator === '+' && !secondOperator) {
+            return posOut[posIn[field[0]] + num] + field[1]
+        } else if (operator === '-' && !secondOperator) {
+            return posOut[posIn[field[0]] - num] + field[1]
+        } else if (operator !== '+' && operator !== '-') {
+            throw new Error('not a valid operator')
+        }
+
+        if (!secondOperator || !secondNum) return
+
+        if (operator === '+' && secondOperator === '+') {
+            return posOut[posIn[field[0]] + num] + (parseInt(field[1]) + secondNum)
+        } else if (operator === '-' && secondOperator === '+') {
+            return posOut[posIn[field[0]] - num] + (parseInt(field[1]) + secondNum)
+        } else if (operator === '+' && secondOperator === '-') {
+            return posOut[posIn[field[0]] + num] + (parseInt(field[1]) - secondNum)
+        } else if (operator === '-' && secondOperator === '-') {
+            return posOut[posIn[field[0]] - num] + (parseInt(field[1]) - secondNum)
+        } else if (secondOperator !== '+' && secondOperator !== '-') {
+            throw new Error('not a valid operator')
+        }
+    }
+}
+
+
+export default alphs;

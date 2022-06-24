@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect, useRef } from 'react'
-import { alphPosOut } from '../services/alphabetPositions.js'
+import alphs from '../services/alphabetPositions.js'
 import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
 
@@ -15,10 +15,11 @@ export default function Board() {
     const [chessBoardOffsetTop, setOffsetTop] = useState(0)
     const chessBoardRef = useRef()
 
+    let chessBoard
     //changing usable sizes of the board related on it size in browser
     useEffect(() => {
     
-        let chessBoard = chessBoardRef.current;
+        chessBoard = chessBoardRef.current
     
         function addUpRowsAndCols(chessBoard) {
           setFieldSizes([])
@@ -49,14 +50,14 @@ export default function Board() {
       }, [])
     
     function renderSquares() {
-        const boardDisplay = []
+        const board = []
         
         let index = 0
         let row = 1
         
         for (const field in squares) {
             if (squares[field]) {
-                boardDisplay.push(
+                board.push(
                     <div id={field} className={even.defineColor(index, row)} key={index}>
                         <img 
                             src={squares[field].img} 
@@ -71,7 +72,7 @@ export default function Board() {
                     </div>
                 )
             } else {
-                boardDisplay.push(
+                board.push(
                     <div id={field} className={even.defineColor(index, row)} key={index}/>
                 )
             }
@@ -81,17 +82,17 @@ export default function Board() {
             }
         }
 
-        return boardDisplay
+        return board
     }
-    
+
     function getFieldCoordinates(x, y) {
         //displaying coordinates of the mouse related to the board
         // example: cursor at b3: b = row(2), 3 = col(3)
         // if cursor out the board one of the coords is 0
 
-        //mouse positions(x, y)
-        x -= chessBoardOffsetLeft
-        y -= chessBoardOffsetTop
+        //mouse positions(x, y) including borders, and board offset
+        x -= chessBoardOffsetLeft + 5
+        y -= chessBoardOffsetTop + 5
 
         const fieldCoords = {row: 0, col: 0}
         
@@ -111,6 +112,30 @@ export default function Board() {
         })
 
         return fieldCoords
+    }
+
+    function addActives(moves, divOfPiece) {
+        chessBoard = chessBoardRef.current;
+        moves.forEach(move => {
+            const fields = []
+            const nodes = [...chessBoard.childNodes]
+            nodes.forEach(field => {
+                if (field.id === move) fields.push(field)
+            });
+            fields.forEach(field => field.classList.add('active'))
+        })
+        divOfPiece.classList.add('active__current-piece')
+    }
+    
+    function removeActives(divOfPiece) {
+        chessBoard = chessBoardRef.current;
+        const fields = []
+        const nodes = [...chessBoard.childNodes]
+        nodes.forEach(field => {
+            fields.push(field)
+        });
+        fields.forEach(field => field.classList.remove('active'))
+        divOfPiece.classList.remove('active__current-piece')
     }
     
     let draggedPiece;
@@ -137,6 +162,12 @@ export default function Board() {
         draggedPiece = e.target;
         draggedPieceCoords = getFieldCoordinates(x, y)
 
+        const pieceField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
+        const moves = squares[pieceField].canMove(pieceField)
+        const divOfPiece = draggedPiece.parentNode
+
+        addActives(moves, divOfPiece)
+        
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x - offsetX}px`
         draggedPiece.style.top = `${y - offsetY}px`
@@ -164,6 +195,7 @@ export default function Board() {
     function drop(e) {
         if (!draggedPiece) return
 
+        const divOfPiece = draggedPiece.parentNode
         
         let x = 0
         let y = 0
@@ -175,11 +207,11 @@ export default function Board() {
             x = e.changedTouches[0].clientX
             y = e.changedTouches[0].clientY
         }
-        
+
         const dropCoords = getFieldCoordinates(x, y)
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
-            const initialPieceField = alphPosOut[draggedPieceCoords.row] + draggedPieceCoords.col
-            const dropField = alphPosOut[dropCoords.row] + dropCoords.col
+            const initialPieceField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
+            const dropField = alphs.posOut[dropCoords.row] + dropCoords.col
             const piece = squares[initialPieceField]
 
             const pieceOnField = {
@@ -190,6 +222,7 @@ export default function Board() {
             if (squares[dropField]) {
                 draggedPiece.style = ''
                 draggedPiece = undefined
+                removeActives(divOfPiece)
                 return 
             }
             setSquares(squares => ({
@@ -199,6 +232,7 @@ export default function Board() {
         }
         draggedPiece.style = ''
         draggedPiece = undefined
+        removeActives(divOfPiece)
     }
 
     return (
