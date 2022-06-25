@@ -23,11 +23,10 @@ export default function Board() {
     const [enpassantAvaliable, setEnpassantAvaliable] = useState()
     const chessBoardRef = useRef()
 
-    let chessBoard
     //changing usable sizes of the board related on it size in browser
     useEffect(() => {
     
-        chessBoard = chessBoardRef.current
+        let chessBoard = chessBoardRef.current
     
         function addUpRowsAndCols(chessBoard) {
           setFieldSizes([])
@@ -234,14 +233,14 @@ export default function Board() {
 
             if (enpassantedField) pieceOnField[enpassantedField] = null
 
-            if (squares[dropField] && squares[dropField].color === piece.color || activeFields[dropField] !== true || piece === squares[dropField]) {
+            if ((squares[dropField] && squares[dropField].color === piece.color) || activeFields[dropField] !== true || piece === squares[dropField]) {
                 //if we clicked on illegal move field - reset all states and return
                 draggedPiece.style = ''
                 setDraggedPiece()
                 removeActives()
                 return 
             }
-
+            
             setSquares(squares => ({
                 ...squares,
                 ...pieceOnField,

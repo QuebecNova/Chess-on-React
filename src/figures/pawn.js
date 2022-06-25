@@ -31,7 +31,7 @@ class Pawn extends Piece {
         ]
         blackMoves.forEach((move, index) => {
             
-            if (index < 2 && squareState[move] || (index < 2 && pieceInfront)) {
+            if ((index < 2 && squareState[move]) || (index < 2 && pieceInfront)) {
                 pieceInfront = true
                 return
             }
@@ -76,7 +76,7 @@ class Pawn extends Piece {
         ]
         whiteMoves.forEach((move, index) => {
             
-            if (index < 2 && squareState[move] || (index < 2 && pieceInfront)) {
+            if ((index < 2 && squareState[move]) || (index < 2 && pieceInfront)) {
                 pieceInfront = true
                 return
             }
