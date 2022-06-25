@@ -46,7 +46,8 @@ class Pawn extends Piece {
             }
 
             if (index > 3 
-                && squareState[move] 
+                && squareState[move]
+                && initialState[squareState[move].lastMove] 
                 && initialState[squareState[move].lastMove.at(-1)] 
                 && parseInt(squareState[move].lastMove.at(-1)[1]) === (parseInt(move[1]) - 2)
                 && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
@@ -64,6 +65,7 @@ class Pawn extends Piece {
             if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) rawMoves.push(move)
         })
     } else {
+        //same but for white pawns
         const whiteMoves = [
             from[0] + (parseInt(from[1]) + 1),
             from[0] + (parseInt(from[1]) + 2),
@@ -91,6 +93,7 @@ class Pawn extends Piece {
 
             if (index > 3 
                 && squareState[move]
+                && initialState[squareState[move].lastMove]
                 && initialState[squareState[move].lastMove.at(-1)]
                 && parseInt(squareState[move].lastMove.at(-1)[1]) === (parseInt(move[1]) + 2)
                 && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
