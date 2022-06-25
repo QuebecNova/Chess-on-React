@@ -164,7 +164,9 @@ export default function Board() {
         const pieceField = alphs.posOut[localDraggedPieceCoords.row] + localDraggedPieceCoords.col
         const moves = squares[pieceField].canMove(pieceField, squares, setupBoard())
 
-        if (moves.length && moves.at(-1).includes('enpassant')) setEnpassantAvaliable(moves.at(-1))
+        if (moves.length 
+            && squares[pieceField].type === 'Pawn' 
+            && moves.at(-1).includes('enpassant')) setEnpassantAvaliable(moves.at(-1))
 
         addActives(moves, pieceField)
         

@@ -29,6 +29,7 @@ class Rook extends Piece {
         alphs.changeAlphPos(from, '-', 5),
         alphs.changeAlphPos(from, '-', 6),
         alphs.changeAlphPos(from, '-', 7),
+        
         // 7-13 right
         alphs.changeAlphPos(from, '+', 1),
         alphs.changeAlphPos(from, '+', 2),
@@ -47,6 +48,7 @@ class Rook extends Piece {
         from[0] + (parseInt(from[1]) - 5),
         from[0] + (parseInt(from[1]) - 6),
         from[0] + (parseInt(from[1]) - 7),
+
         // 20-27 front
         from[0] + (parseInt(from[1]) + 1),
         from[0] + (parseInt(from[1]) + 2),
