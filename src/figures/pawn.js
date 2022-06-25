@@ -21,10 +21,13 @@ class Pawn extends Piece {
 
     if (this.color === 'Black') {
         const blackMoves = [
+            //basic moves
             from[0] + (parseInt(from[1]) - 1),
             from[0] + (parseInt(from[1]) - 2),
+            //eat figures moves
             alphs.changeAlphPos(from, '-', 1, '-', 1),
             alphs.changeAlphPos(from, '+', 1, '-', 1),
+            //enpassant moves
             alphs.changeAlphPos(from, '-', 1),
             alphs.changeAlphPos(from, '+', 1),
         ]
@@ -48,9 +51,9 @@ class Pawn extends Piece {
             if (index > 3 
                 && squareState[move]
                 && squareState[move].lastMove
-                && initialState[squareState[move].lastMove.at(-1)] 
-                && parseInt(squareState[move].lastMove.at(-1)[1]) === (parseInt(move[1]) - 2)
-                && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
+                && initialState[squareState[move].lastMove.slice().pop()] 
+                && parseInt(squareState[move].lastMove.slice().pop()[1]) === (parseInt(move[1]) - 2)
+                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMove.slice().pop()}`) 
                 && squareState[move].color === 'White') 
             {
                 if (index === 4) {
@@ -94,9 +97,9 @@ class Pawn extends Piece {
             if (index > 3 
                 && squareState[move]
                 && squareState[move].lastMove
-                && initialState[squareState[move].lastMove.at(-1)]
-                && parseInt(squareState[move].lastMove.at(-1)[1]) === (parseInt(move[1]) + 2)
-                && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
+                && initialState[squareState[move].lastMove.slice().pop()]
+                && parseInt(squareState[move].lastMove.slice().pop()[1]) === (parseInt(move[1]) + 2)
+                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMove.slice().pop()}`) 
                 && squareState[move].color === 'Black') 
             {
                 if (index === 4) {

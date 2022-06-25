@@ -166,7 +166,7 @@ export default function Board() {
 
         if (moves.length 
             && squares[pieceField].type === 'Pawn' 
-            && moves.at(-1).includes('enpassant')) setEnpassantAvaliable(moves.at(-1))
+            && moves.slice().pop().includes('enpassant')) setEnpassantAvaliable(moves.slice().pop())
 
         addActives(moves, pieceField)
         

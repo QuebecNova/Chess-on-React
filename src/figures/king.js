@@ -15,6 +15,7 @@ class King extends Piece {
     const moves = []
     
     const rawMoves = [
+        //circular moves starting from kingpos[1] + 1
         from[0] + (parseInt(from[1]) + 1),
         alphs.changeAlphPos(from, '+', 1, '+', 1),
         alphs.changeAlphPos(from, '+', 1),
