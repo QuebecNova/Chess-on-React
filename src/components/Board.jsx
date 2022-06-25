@@ -217,7 +217,7 @@ export default function Board() {
                 [dropField]: piece
             }
 
-            if (squares[dropField]) {
+            if (squares[dropField] && squares[dropField].color === piece.color) {
                 draggedPiece.style = ''
                 setDraggedPiece()
                 removeActives()
