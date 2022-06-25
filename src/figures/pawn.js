@@ -47,6 +47,7 @@ class Pawn extends Piece {
 
             if (index > 3 
                 && squareState[move]
+                && squareState[move].lastMove
                 && initialState[squareState[move].lastMove.at(-1)] 
                 && parseInt(squareState[move].lastMove.at(-1)[1]) === (parseInt(move[1]) - 2)
                 && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
@@ -92,6 +93,7 @@ class Pawn extends Piece {
 
             if (index > 3 
                 && squareState[move]
+                && squareState[move].lastMove
                 && initialState[squareState[move].lastMove.at(-1)]
                 && parseInt(squareState[move].lastMove.at(-1)[1]) === (parseInt(move[1]) + 2)
                 && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
