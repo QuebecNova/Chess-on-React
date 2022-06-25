@@ -5,12 +5,6 @@ import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
 import getSquares from "../services/getSquares";
 
-let offsetX = 43.75
-let offsetY = 43.75
-
-let draggedPiece;
-let draggedPieceCoords;
-
 export default function Board() {
 
     const [squares, setSquares] = useState(setupBoard())
@@ -18,6 +12,10 @@ export default function Board() {
     const [chessBoardOffsetLeft, setOffsetLeft] = useState(0)
     const [chessBoardOffsetTop, setOffsetTop] = useState(0)
     const [activeFields, setActiveFields] = useState(getSquares(false))
+    const [draggedPiece, setDraggedPiece] = useState()
+    const [draggedPieceCoords, setDraggedPieceCoords] = useState({col: 0, row: 0})
+    const [offsetX, setOffsetX] = useState(43.75)
+    const [offsetY, setOffsetY] = useState(43.75)
     const chessBoardRef = useRef()
 
     let chessBoard
@@ -33,8 +31,8 @@ export default function Board() {
           setOffsetTop(chessBoard.offsetTop)
           const boardWidth  = chessBoard.clientWidth
           const fieldWidth = boardWidth / 8
-          offsetX = fieldWidth / 2.1
-          offsetY = fieldWidth / 1.9
+          setOffsetX(fieldWidth / 2.1)
+          setOffsetY(fieldWidth / 1.9)
         
           let fieldStartsOn = 0;
           const fieldStartsOnArr = [];
@@ -148,7 +146,9 @@ export default function Board() {
         }    
         
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
-
+        
+        setDraggedPiece(e.target);
+        
         let x = 0
         let y = 0
 
@@ -160,17 +160,17 @@ export default function Board() {
             y = e.touches[0].clientY
         }
 
-        draggedPiece = e.target;
-        draggedPieceCoords = getFieldCoordinates(x, y)
+        const localDraggedPieceCoords = getFieldCoordinates(x, y)
+        setDraggedPieceCoords(getFieldCoordinates(x, y))
 
-        const pieceField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
+        const pieceField = alphs.posOut[localDraggedPieceCoords.row] + localDraggedPieceCoords.col
         const moves = squares[pieceField].canMove(pieceField)
 
         addActives(moves, pieceField)
         
-        draggedPiece.style.position = 'absolute'
-        draggedPiece.style.left = `${x - offsetX}px`
-        draggedPiece.style.top = `${y - offsetY}px`
+        e.target.style.position = 'absolute'
+        e.target.style.left = `${x - offsetX}px`
+        e.target.style.top = `${y - offsetY}px`
     }
     
     function dragMove(e) {
@@ -219,7 +219,7 @@ export default function Board() {
 
             if (squares[dropField]) {
                 draggedPiece.style = ''
-                draggedPiece = undefined
+                setDraggedPiece()
                 removeActives()
                 return 
             }
@@ -229,7 +229,7 @@ export default function Board() {
             }))
         }
         draggedPiece.style = ''
-        draggedPiece = undefined
+        setDraggedPiece()   
         removeActives()
     }
 
