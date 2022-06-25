@@ -37,7 +37,7 @@ export default function setupBoard() {
     squares.h2 = new Pawn('White')
 
     squares.a1 = new Rook('White')
-    squares.b1 = new Knight('White')
+    squares.e4 = new Knight('White')
     squares.c1 = new Bishop('White')
     squares.d1 = new Queen('White')
     squares.e1 = new King('White')

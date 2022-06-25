@@ -146,7 +146,6 @@ export default function Board() {
     }
 
     function dragStart(e) {
-        console.log(e.type);
         e.preventDefault() 
         
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
@@ -234,7 +233,7 @@ export default function Board() {
             //last moves
             makedMoves.push(`${piece.color} ${piece.type} ${initialPieceField} to ${dropField}`)
             rawMakedMoves.push(`${piece.type.slice(0, 1)}${initialPieceField}`)
-            piece.lastMove.push(initialPieceField)
+            if (piece.lastMove) piece.lastMove.push(initialPieceField)
             console.log(makedMoves); // all played moves here!    
         }
 

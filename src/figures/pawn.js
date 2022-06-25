@@ -16,7 +16,7 @@ class Pawn extends Piece {
 
   canMove(from, squareState, initialState) {
 
-    const rawMoves = []
+    const moves = []
     let pieceInfront = false
 
     if (this.color === 'Black') {
@@ -53,15 +53,15 @@ class Pawn extends Piece {
                 && squareState[move].color === 'White') 
             {
                 if (index === 4) {
-                    rawMoves.push(blackMoves[2])
-                    rawMoves.push('enpassantLeft')
+                    moves.push(blackMoves[2])
+                    moves.push('enpassantLeft')
                 } else {
-                    rawMoves.push(blackMoves[3])
-                    rawMoves.push('enpassantRight')
+                    moves.push(blackMoves[3])
+                    moves.push('enpassantRight')
                 }
             }
 
-            if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) rawMoves.push(move)
+            if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) moves.push(move)
         })
     } else {
         //same but for white pawns
@@ -98,19 +98,19 @@ class Pawn extends Piece {
                 && squareState[move].color === 'Black') 
             {
                 if (index === 4) {
-                    rawMoves.push(whiteMoves[2])
-                    rawMoves.push('enpassantLeft')
+                    moves.push(whiteMoves[2])
+                    moves.push('enpassantLeft')
                 } else {
-                    rawMoves.push(whiteMoves[3])
-                    rawMoves.push('enpassantRight')
+                    moves.push(whiteMoves[3])
+                    moves.push('enpassantRight')
                 }
             }
 
-            if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) rawMoves.push(move)
+            if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) moves.push(move)
         })
     }
 
-    return rawMoves
+    return moves
   }
 }
 
