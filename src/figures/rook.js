@@ -64,13 +64,13 @@ class Rook extends Piece {
         //backRowMoves = index < 7
         //frontRowMoves = (index > 6 && index < 14)
 
-        //backColMoves = (index > 13 && index < 20)
-        //frontColMoves = index > 19
+        //backColMoves = (index > 13 && index < 21)
+        //frontColMoves = index > 20
 
         if (index < 7 && pieceInbackRow) return
         if ((index > 6 && index < 14) && pieceInfrontRow) return
-        if ((index > 13 && index < 20) && pieceInbackCol) return
-        if (index > 19 && pieceInfrontCol) return
+        if ((index > 13 && index < 21) && pieceInbackCol) return
+        if (index > 20 && pieceInfrontCol) return
 
         if (squareState[move]) {
             
@@ -97,7 +97,7 @@ class Rook extends Piece {
                 }
             }
 
-            if (index > 13 && index < 20) {
+            if (index > 13 && index < 21) {
                 //backColMoves = (index > 13 && index < 20)
                 if (sameColor) {
                     pieceInbackCol = true
@@ -107,8 +107,8 @@ class Rook extends Piece {
                 }
             }
 
-            if (index > 19) {
-                //frontColMoves = index > 19
+            if (index > 20) {
+                //frontColMoves = index > 20
                 if (sameColor) {
                     pieceInfrontCol = true
                     return

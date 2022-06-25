@@ -10,6 +10,7 @@ class Bishop extends Piece {
       "Bishop"
     )
   }
+  
   canMove(from, squareState) {
     const moves = []
 
@@ -61,13 +62,13 @@ class Bishop extends Piece {
         //NWdiagonalMoves = index < 7
         //SEdiagonalMoves = (index > 6 && index < 14)
 
-        //NEdiagonalMoves = (index > 13 && index < 20)
-        //SWdiagonalMoves = index > 19
+        //NEdiagonalMoves = (index > 13 && index < 21)
+        //SWdiagonalMoves = index > 20
 
         if (index < 7 && NWdiagonalMoves) return
         if ((index > 6 && index < 14) && SEdiagonalMoves) return
-        if ((index > 13 && index < 20) && NEdiagonalMoves) return
-        if (index > 19 && SWdiagonalMoves) return
+        if ((index > 13 && index < 21) && NEdiagonalMoves) return
+        if (index > 20 && SWdiagonalMoves) return
 
         if (squareState[move]) {
             
@@ -94,8 +95,8 @@ class Bishop extends Piece {
                 }
             }
 
-            if (index > 13 && index < 20) {
-                //backColMoves = (index > 13 && index < 20)
+            if (index > 13 && index < 21) {
+                //backColMoves = (index > 13 && index < 21)
                 if (sameColor) {
                     NEdiagonalMoves = true
                     return
@@ -104,8 +105,8 @@ class Bishop extends Piece {
                 }
             }
 
-            if (index > 19) {
-                //frontColMoves = index > 19
+            if (index > 20) {
+                //frontColMoves = index > 20
                 if (sameColor) {
                     SWdiagonalMoves = true
                     return
