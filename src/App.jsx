@@ -5,7 +5,7 @@ import Board from "./components/Board"
 function App() {
 
   console.log('Render');
-  
+
   return (
     <div className="wrapper">
       <Header/>
