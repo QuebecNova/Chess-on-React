@@ -4,4 +4,8 @@ export default class Piece {
         this.img = img
         this.type = type
     }
+
+    canMove() {
+        throw new Error('no avialibale moves')
+    }
 }

@@ -5,6 +5,10 @@ import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
 import getSquares from "../services/getSquares";
 
+const makedMoves = []
+const rawMakedMoves = []
+export { rawMakedMoves }
+
 export default function Board() {
 
     const [squares, setSquares] = useState(setupBoard())
@@ -16,6 +20,7 @@ export default function Board() {
     const [draggedPieceCoords, setDraggedPieceCoords] = useState({col: 0, row: 0})
     const [offsetX, setOffsetX] = useState(43.75)
     const [offsetY, setOffsetY] = useState(43.75)
+    const [enpassantAvaliable, setEnpassantAvaliable] = useState()
     const chessBoardRef = useRef()
 
     let chessBoard
@@ -164,7 +169,9 @@ export default function Board() {
         setDraggedPieceCoords(getFieldCoordinates(x, y))
 
         const pieceField = alphs.posOut[localDraggedPieceCoords.row] + localDraggedPieceCoords.col
-        const moves = squares[pieceField].canMove(pieceField)
+        const moves = squares[pieceField].canMove(pieceField, squares, setupBoard())
+
+        if (moves.length && moves.at(-1).includes('enpassant')) setEnpassantAvaliable(moves.at(-1))
 
         addActives(moves, pieceField)
         
@@ -211,23 +218,43 @@ export default function Board() {
             const initialPieceField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
             const dropField = alphs.posOut[dropCoords.row] + dropCoords.col
             const piece = squares[initialPieceField]
+            let enpassantedField
+
+            if (enpassantAvaliable) {
+                if (piece.color === 'White' && enpassantAvaliable.includes('Left')) enpassantedField = alphs.changeAlphPos(initialPieceField, '-', 1)
+                if (piece.color === 'White' && enpassantAvaliable.includes('Right')) enpassantedField = alphs.changeAlphPos(initialPieceField, '+', 1)
+                if (piece.color === 'Black' && enpassantAvaliable.includes('Left')) enpassantedField = alphs.changeAlphPos(initialPieceField, '-', 1)
+                if (piece.color === 'Black' && enpassantAvaliable.includes('Right')) enpassantedField = alphs.changeAlphPos(initialPieceField, '+', 1)
+            }
 
             const pieceOnField = {
                 [initialPieceField]: null,
                 [dropField]: piece
             }
 
-            if (squares[dropField] && squares[dropField].color === piece.color) {
+            if (enpassantedField) pieceOnField[enpassantedField] = null
+
+            if (squares[dropField] && squares[dropField].color === piece.color || activeFields[dropField] !== true || piece === squares[dropField]) {
+                //if we clicked on illegal move field - reset all states and return
                 draggedPiece.style = ''
                 setDraggedPiece()
                 removeActives()
                 return 
             }
+
             setSquares(squares => ({
                 ...squares,
                 ...pieceOnField,
             }))
+
+            //last moves
+            makedMoves.push(`${piece.color} ${piece.type} ${initialPieceField} to ${dropField}`)
+            rawMakedMoves.push(`${piece.type.slice(0, 1)}${initialPieceField}`)
+            piece.lastMove.push(initialPieceField)
+            console.log(makedMoves); // all played moves here!    
         }
+
+        setEnpassantAvaliable()
         draggedPiece.style = ''
         setDraggedPiece()   
         removeActives()

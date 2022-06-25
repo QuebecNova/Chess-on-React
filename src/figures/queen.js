@@ -5,7 +5,7 @@ class Queen extends Piece {
   constructor(color) {
     super(
       color,
-      color === "black" ? piecesImages.BlackQueen : piecesImages.WhiteQueen,
+      color === "Black" ? piecesImages.BlackQueen : piecesImages.WhiteQueen,
       "Queen"
     )
   }
