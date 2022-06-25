@@ -18,7 +18,6 @@ class Pawn extends Piece {
 
     const rawMoves = []
     let pieceInfront = false
-    let enpassant = false
 
     if (this.color === 'Black') {
         const blackMoves = [
@@ -53,7 +52,6 @@ class Pawn extends Piece {
                 && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
                 && squareState[move].color === 'White') 
             {
-                enpassant = true
                 if (index === 4) {
                     rawMoves.push(blackMoves[2])
                     rawMoves.push('enpassantLeft')
@@ -98,7 +96,6 @@ class Pawn extends Piece {
                 && rawMakedMoves.at(-1) === (`P${squareState[move].lastMove.at(-1)}`) 
                 && squareState[move].color === 'Black') 
             {
-                enpassant = true
                 if (index === 4) {
                     rawMoves.push(whiteMoves[2])
                     rawMoves.push('enpassantLeft')
