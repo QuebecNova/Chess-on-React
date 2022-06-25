@@ -4,6 +4,7 @@ import alphs from '../services/alphabetPositions.js'
 import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
 import getSquares from "../services/getSquares";
+import touch2Mouse from '../services/touch2mouse.js'
 
 const makedMoves = []
 const rawMakedMoves = []
@@ -77,9 +78,9 @@ export default function Board() {
                             onMouseDown={e => dragStart(e)} 
                             onMouseMove={e => dragMove(e)} 
                             onMouseUp={e => drop(e)}
-                            onTouchStart={e => dragStart(e)} 
-                            onTouchMove={e => dragMove(e)}
-                            onTouchEnd={e => drop(e)}
+                            onTouchStart={e => touch2Mouse(e)} 
+                            onTouchMove={e => touch2Mouse(e)}
+                            onTouchEnd={e => touch2Mouse(e)}
                             alt={squares[field].type}
                         />
                     </div>
@@ -145,9 +146,8 @@ export default function Board() {
     }
 
     function dragStart(e) {
-        if (e.type === 'mousedown') {
-            e.preventDefault()
-        }    
+        console.log(e.type);
+        e.preventDefault() 
         
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
         
@@ -156,13 +156,8 @@ export default function Board() {
         let x = 0
         let y = 0
 
-        if (e.type === 'mousedown') {
-            x = e.clientX
-            y = e.clientY
-        } else {
-            x = e.touches[0].clientX
-            y = e.touches[0].clientY
-        }
+        x = e.clientX
+        y = e.clientY
 
         const localDraggedPieceCoords = getFieldCoordinates(x, y)
         setDraggedPieceCoords(getFieldCoordinates(x, y))
@@ -185,13 +180,8 @@ export default function Board() {
         let x = 0
         let y = 0
 
-        if (e.type === 'mousemove') {
-            x = e.clientX - offsetX
-            y = e.clientY - offsetY
-        } else {
-            x = e.touches[0].clientX - offsetX
-            y = e.touches[0].clientY - offsetY
-        }
+        x = e.clientX - offsetX
+        y = e.clientY - offsetY
     
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
@@ -203,14 +193,9 @@ export default function Board() {
 
         let x = 0
         let y = 0
-        
-        if (e.type === 'mouseup') {
-            x = e.clientX
-            y = e.clientY
-        } else {
-            x = e.changedTouches[0].clientX
-            y = e.changedTouches[0].clientY
-        }
+
+        x = e.clientX
+        y = e.clientY
 
         const dropCoords = getFieldCoordinates(x, y)
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
