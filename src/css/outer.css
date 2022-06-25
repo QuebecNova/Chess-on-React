@@ -93,6 +93,9 @@ header {
     border-collapse: collapse;
     height: 12%;
     width: 100%;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;  
 }
 
 header h1 {
