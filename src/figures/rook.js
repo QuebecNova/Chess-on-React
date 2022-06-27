@@ -10,7 +10,7 @@ class Rook extends Piece {
       "Rook"
     )
   }
-  canMove(from, squareState) {
+  canMove(from, squareState, movesLeadsToCheck) {
     const moves = []
 
     let pieceInbackCol = false
@@ -118,7 +118,8 @@ class Rook extends Piece {
             }
         }
 
-        moves.push(move)
+        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
+        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
     })
 
     return moves

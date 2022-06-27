@@ -11,7 +11,7 @@ class Knight extends Piece {
     )
   }
 
-  canMove(from, squareState) {
+  canMove(from, squareState, movesLeadsToCheck) {
     const moves = []
     
     const rawMoves = [
@@ -26,8 +26,9 @@ class Knight extends Piece {
     ]
 
     rawMoves.forEach(move => {
-        if (squareState[move] && squareState[move].color === this.color) return
-        moves.push(move)
+        if (squareState[move] && (squareState[move].color === this.color)) return
+        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
+        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
     })
 
     return moves

@@ -36,3 +36,7 @@
 .active__current-piece {
     background-color: rgb(16, 88, 76);
 }
+
+.active__danger-field {
+    background-color: rgb(150, 58, 31);
+}

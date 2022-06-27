@@ -1,5 +1,6 @@
 import Piece from "./piece.js";
 import piecesImages from "../services/piecesImages";
+import getSquares from "../services/getSquares.js";
 import alphs from "../services/alphabetPositions.js";
 
 class King extends Piece {
@@ -10,8 +11,9 @@ class King extends Piece {
       "King"
     )
   }
-
-  canMove(from, squareState) {
+  
+  canMove(from, squareState, movesLeadsToCheck) {
+    
     const moves = []
     
     const rawMoves = [
@@ -28,7 +30,8 @@ class King extends Piece {
 
     rawMoves.forEach(move => {
         if (squareState[move] && squareState[move].color === this.color) return
-        moves.push(move)
+        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
+        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
     })
 
     return moves

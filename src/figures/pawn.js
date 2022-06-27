@@ -14,7 +14,7 @@ class Pawn extends Piece {
 
   lastMove = []
 
-  canMove(from, squareState, initialState) {
+  canMove(from, squareState, movesLeadsToCheck, initialState) {
 
     const moves = []
     let pieceInfront = false
@@ -37,8 +37,8 @@ class Pawn extends Piece {
                 pieceInfront = true
                 return
             }
-            
-            if (index === 1 && !initialState[from]) return 
+
+            if (index === 1 && initialState && !initialState[from]) return
             
             if (index > 1) {
                 if (!squareState[move]) {
@@ -48,9 +48,10 @@ class Pawn extends Piece {
                 }
             }
 
-            if (index > 3 
+            if (index > 3
+                && initialState
                 && squareState[move]
-                && squareState[move].lastMove
+                && squareState[move].type === 'Pawn'
                 && initialState[squareState[move].lastMove.slice().pop()] 
                 && parseInt(squareState[move].lastMove.slice().pop()[1]) === (parseInt(move[1]) - 2)
                 && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMove.slice().pop()}`) 
@@ -65,6 +66,7 @@ class Pawn extends Piece {
                 }
             }
 
+            if (movesLeadsToCheck && movesLeadsToCheck[move]) return
             if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) moves.push(move)
         })
     } else {
@@ -84,7 +86,7 @@ class Pawn extends Piece {
                 return
             }
 
-            if (index === 1 && !initialState[from]) return
+            if (index === 1 && initialState && !initialState[from]) return
 
             if (index > 1) {
                 if (!squareState[move]) {
@@ -94,9 +96,10 @@ class Pawn extends Piece {
                 }
             }
 
-            if (index > 3 
+            if (index > 3
+                && initialState
                 && squareState[move]
-                && squareState[move].lastMove
+                && squareState[move].type === 'Pawn'
                 && initialState[squareState[move].lastMove.slice().pop()]
                 && parseInt(squareState[move].lastMove.slice().pop()[1]) === (parseInt(move[1]) + 2)
                 && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMove.slice().pop()}`) 
@@ -111,7 +114,8 @@ class Pawn extends Piece {
                 }
             }
 
-            if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) moves.push(move)
+            if (movesLeadsToCheck && movesLeadsToCheck[move]) return
+            if (move && move[1] && !move[2] && move[1] < 9 && move[1] > 0 && index < 4) moves.push(move)
         })
     }
 
