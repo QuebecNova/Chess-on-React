@@ -1,11 +1,12 @@
 import React from 'react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import alphs from '../services/alphabetPositions.js'
 import setupBoard from '../configs/setupBoard.js'
 import even from '../services/even.js'
 import getSquares from "../services/getSquares";
 import touch2Mouse from '../services/touch2mouse.js'
 import calculateMoves from '../services/calculateMoves.js'
+import { useCallback } from 'react'
 
 const makedMoves = []
 const rawMakedMoves = []
@@ -24,10 +25,6 @@ export default function Board() {
     const [offsetY, setOffsetY] = useState(43.75)
     const [enpassantAvailable, setEnpassantAvailable] = useState()
     const [turn, setTurn] = useState('White')
-
-    const mated = React.useMemo(() => {
-        return isMated()
-    }, [squares])
 
     const chessBoardRef = useRef()
 
@@ -134,7 +131,7 @@ export default function Board() {
         return fieldCoords
     }
 
-    function getMovesThatLeadsToCheck(squares, draggedPiece, coords) {
+    const getMovesThatLeadsToCheck = useCallback((squares, draggedPiece, coords) => {
         
         const kingOnCheckAfterThisMoves = getSquares(false)
         //simulating next move for check
@@ -159,28 +156,29 @@ export default function Board() {
         })
 
         return kingOnCheckAfterThisMoves
-    }
+    }, [turn])
 
-    function isMated() {
-
-        console.log('used');
-
-        //simulating next move for check
-        const allLegalMoves = []
-        for (const field in squares) {
-            if (squares[field]) {
-                if (squares[field].color === turn) {
-                    allLegalMoves.push(squares[field].canMove(field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), setupBoard()))
+    const mated = useMemo(() => {
+        function isMated() {
+    
+            //simulating next move for check
+            const allLegalMoves = []
+            for (const field in squares) {
+                if (squares[field]) {
+                    if (squares[field].color === turn) {
+                        allLegalMoves.push(squares[field].canMove(field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), setupBoard()))
+                    }
                 }
             }
+            
+            const mated = (function checkForNoLegalMoves() {
+                return allLegalMoves.every(legalMoves => legalMoves.length === 0);
+            })()
+    
+            return mated
         }
-        
-        const mated = (function checkForNoLegalMoves() {
-            return allLegalMoves.every(legalMoves => legalMoves.length === 0);
-        })()
-
-        return mated
-    }
+        return isMated()
+    }, [squares, turn, getMovesThatLeadsToCheck])
 
     function addActives(moves, currentPiece) {
         const movesActiveFields = {}
