@@ -6,8 +6,10 @@ import Queen from "../figures/queen";
 import Bishop from "../figures/bishop";
 import getSquares from "../services/getSquares";
 
+const nullSquares = getSquares(null)
+
 export default function setupBoard() {
-    const squares = getSquares(null)
+    const squares = nullSquares
     
     squares.a8 = new Rook('Black')
     squares.b8 = new Knight('Black')

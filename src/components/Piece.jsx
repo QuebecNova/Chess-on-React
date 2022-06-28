@@ -1,7 +1,6 @@
 import React from 'react'
 
 import piecesImages from '../services/piecesImages.js'
-import piecesComponents from '../services/piecesComponents.js'
 
 export default function Piece({ initialPositions, field }) {
 
