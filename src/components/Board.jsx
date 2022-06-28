@@ -25,7 +25,9 @@ export default function Board() {
     const [enpassantAvailable, setEnpassantAvailable] = useState()
     const [turn, setTurn] = useState('White')
 
-    const mated = isMated()
+    const mated = React.useMemo(() => {
+        return isMated()
+    }, [squares])
 
     const chessBoardRef = useRef()
 
@@ -160,6 +162,8 @@ export default function Board() {
     }
 
     function isMated() {
+
+        console.log('used');
 
         //simulating next move for check
         const allLegalMoves = []
