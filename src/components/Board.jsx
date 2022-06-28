@@ -250,7 +250,7 @@ export default function Board() {
     function drop(e) {
         if (!draggedPiece) return
         if (!draggedPiece.src.includes(turn)) return
-
+        
         let x = 0
         let y = 0
 
@@ -277,6 +277,7 @@ export default function Board() {
             }
 
             if (enpassantedField) pieceOnField[enpassantedField] = null
+            console.log(dropCoords);
 
             if ((squares[dropField] 
                 && squares[dropField].color === piece.color) 
@@ -305,6 +306,11 @@ export default function Board() {
             setTurn(turn === 'White' ? 'Black' : 'White')
             setDraggedPiece()   
             removeActives()
+        } else {
+            draggedPiece.style = ''
+            setDraggedPiece()
+            removeActives()
+            return 
         }
     }
 
