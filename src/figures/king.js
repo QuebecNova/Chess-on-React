@@ -13,9 +13,16 @@ class King extends Piece {
   }
 
   lastMoves = []
+  onCheck = false
 
   canMove(from, squareState, movesLeadsToCheck, initialState) {
     
+    if (movesLeadsToCheck && movesLeadsToCheck[from]) {
+        this.onCheck = true
+    } else {
+        this.onCheck = false
+    }
+
     let moves = []
 
     //rooks here

@@ -54,10 +54,6 @@
     transform: translate(-50%, -35%);
 }
 
-button {
-    border: none
-}
-
 div .inactive {
     visibility: hidden;
     opacity: 0;

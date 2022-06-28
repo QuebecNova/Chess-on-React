@@ -6,6 +6,7 @@ import even from '../services/even.js'
 import getSquares from "../services/getSquares";
 import touch2Mouse from '../services/touch2mouse.js'
 import { useCallback } from 'react'
+import sounds from '../services/sounds.js'
 
 const makedMoves = []
 const rawMakedMoves = []
@@ -27,7 +28,6 @@ export default function Board() {
     const [enpassantAvailable, setEnpassantAvailable] = useState()
     const [castleAvailable, setCastleAvailable] = useState()
     const [turn, setTurn] = useState('White')
-
 
     const chessBoardRef = useRef()
 
@@ -63,7 +63,7 @@ export default function Board() {
         
         new ResizeObserver(resizedBoard).observe(chessBoard)
       }, [])
-    
+
     function renderSquares() {
         const board = []
         
@@ -172,7 +172,7 @@ export default function Board() {
     }, [turn])
     
     const mated = useMemo(() => {
-        
+
         function isMated() {
     
             //simulating next move for check
@@ -181,6 +181,8 @@ export default function Board() {
                 if (squares[field]) {
                     if (squares[field].color === turn) {
                         allLegalMoves.push(squares[field].canMove(field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), initialPositions))
+                        //checked or not
+                        if (squares[field].onCheck) sounds.check.play()
                     }
                 }
             }
@@ -189,8 +191,14 @@ export default function Board() {
                 return allLegalMoves.every(legalMoves => legalMoves.length === 0);
             })()
 
+            if(mated) {
+                if (turn === 'Black') sounds.win.play()
+                if (turn === 'White') sounds.lose.play()
+            }
+
             return mated
         }
+        
         return isMated()
     }, [squares, turn, getMovesThatLeadsToCheck])
 
@@ -337,11 +345,16 @@ export default function Board() {
                 removeActives()
                 return 
             }
-            
+
             setSquares(squares => ({
                 ...squares,
                 ...pieceOnField,
             }))
+            if (squares[dropField] || enpassantAvailable) {
+                sounds.takePiece.play()
+            } else {
+                sounds.placePiece.play()
+            }
 
             //last moves
             makedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)
@@ -363,6 +376,7 @@ export default function Board() {
     }
 
     function restartGame() {
+        sounds.newGame.play()
         setSquares(initialPositions)
         setTurn('White')
     }

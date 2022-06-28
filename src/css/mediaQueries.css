@@ -1,14 +1,5 @@
 /* Layout for phones */
 
-@media screen and (max-width: 760px) {
-    
-    nav ul {
-      flex-flow: column wrap;
-      text-align: right;
-      margin-right: 10px;
-    }
-}
-  
 @media screen and (max-width: 760px) and (min-width: 600px) {
   
     .board {
@@ -37,9 +28,9 @@
 }
     
 @media screen and (max-width: 499px) {
-    h1 {
+    header h1 {
         font-size: 1.4em;
-        margin: 0px 10px;
+        align-self: center;
     }
         
     .board {
@@ -51,9 +42,5 @@
     img {
       width: 37px;
       height: 37px;
-    }
-  
-    nav ul {
-      font-size: 0.8em;
     }
 }

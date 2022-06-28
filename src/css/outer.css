@@ -52,6 +52,10 @@ li {
 
   /* Link style */
 
+a {
+    margin-right: 10%;
+}
+
 a:link {
     color:rgb(78, 194, 178);
     text-decoration: none;
@@ -86,8 +90,9 @@ a:active {
 
 header {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-self: flex-start;
+    align-items: center;
     border-bottom: 3px solid rgb(2, 17, 15);
     background-color: rgba(2, 20, 9, 0.8);
     border-collapse: collapse;
@@ -99,21 +104,12 @@ header {
 }
 
 header h1 {
-    margin-left: 10px;
+    align-self: flex-start;
+    margin-left: 10%;
 }
 
-nav {
-    width: 100%;
-    align-self: flex-end;
-}
+/* Misc */
 
-
-nav ul {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-around;
-    font-family: 'fira_sansitalic';
-    margin: 5px 0px;
-    list-style: none;
-    line-height: 1.4em;
+button {
+    border: none;
 }
