@@ -9,23 +9,23 @@ import getSquares from "../services/getSquares";
 export default function setupBoard() {
     const squares = getSquares(null)
     
-    //squares.a8 = new Rook('Black')
-    //squares.b8 = new Knight('Black')
-    //squares.f5 = new Bishop('Black')
+    squares.a8 = new Rook('Black')
+    squares.b8 = new Knight('Black')
+    squares.c8 = new Bishop('Black')
     squares.d8 = new Queen('Black')
-    squares.g8 = new King('Black')
-    /*squares.f8 = new Bishop('Black')
+    squares.e8 = new King('Black')
+    squares.f8 = new Bishop('Black')
     squares.g8 = new Knight('Black')
     squares.h8 = new Rook('Black')
 
     squares.a7 = new Pawn('Black')
-    squares.b7 = new Pawn('Black')*/
-    //squares.c5 = new Pawn('Black')
-    //squares.d7 = new Pawn('Black')
-    //squares.e7 = new Pawn('Black')
-    //squares.f5 = new Pawn('Black')
-    /*squares.g7 = new Pawn('Black')
-    squares.h7 = new Pawn('Black')*/
+    squares.b7 = new Pawn('Black')
+    squares.c7 = new Pawn('Black')
+    squares.d7 = new Pawn('Black')
+    squares.e7 = new Pawn('Black')
+    squares.f7 = new Pawn('Black')
+    squares.g7 = new Pawn('Black')
+    squares.h7 = new Pawn('Black')
 
     squares.a2 = new Pawn('White')
     squares.b2 = new Pawn('White')
@@ -38,8 +38,8 @@ export default function setupBoard() {
 
     squares.a1 = new Rook('White')
     squares.b1 = new Knight('White')
-    squares.e5 = new Bishop('White')
-    squares.f7 = new Queen('White')
+    squares.c1 = new Bishop('White')
+    squares.d1 = new Queen('White')
     squares.e1 = new King('White')
     squares.f1 = new Bishop('White')
     squares.g1 = new Knight('White')

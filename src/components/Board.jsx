@@ -24,7 +24,8 @@ export default function Board() {
     const [offsetY, setOffsetY] = useState(43.75)
     const [enpassantAvailable, setEnpassantAvailable] = useState()
     const [turn, setTurn] = useState('White')
-    const [mated, setMated] = useState(false)
+
+    const mated = isMated()
 
     const chessBoardRef = useRef()
 
@@ -132,8 +133,7 @@ export default function Board() {
         return fieldCoords
     }
 
-    function getMovesThatLeadsToCheck(draggedPiece, coords) {
-        console.log('rerender');
+    function getMovesThatLeadsToCheck(squares, draggedPiece, coords) {
         
         const kingOnCheckAfterThisMoves = getSquares(false)
         //simulating next move for check
@@ -147,7 +147,7 @@ export default function Board() {
                 ...squares,
                 ...pieceOnField
             }
-            const simulateNextOppositeMoves = calculateMoves.getOppositeMoves(simulateNextMoveSquares, turn)
+            const simulateNextOppositeMoves = calculateMoves.getOppositeMoves(simulateNextMoveSquares, turn, null, setupBoard())
             for (const field in simulateNextMoveSquares) {
                 if (simulateNextMoveSquares[field] 
                     && simulateNextOppositeMoves[field] 
@@ -158,6 +158,25 @@ export default function Board() {
         })
 
         return kingOnCheckAfterThisMoves
+    }
+
+    function isMated() {
+        
+        //simulating next move for check
+        const allLegalMoves = []
+        for (const field in squares) {
+            if (squares[field]) {
+                if (squares[field].color === turn) {
+                    allLegalMoves.push(squares[field].canMove(field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), setupBoard()))
+                }
+            }
+        }
+        
+        const mated = (function checkForNoLegalMoves() {
+            return allLegalMoves.every(legalMoves => legalMoves.length === 0);
+        })()
+
+        return mated
     }
 
     function addActives(moves, currentPiece) {
@@ -200,7 +219,7 @@ export default function Board() {
 
         const pieceField = alphs.posOut[localDraggedPieceCoords.row] + localDraggedPieceCoords.col
         const piece = squares[pieceField]
-        const moves = piece.canMove(pieceField, squares, getMovesThatLeadsToCheck(piece, pieceField), setupBoard())
+        const moves = piece.canMove(pieceField, squares, getMovesThatLeadsToCheck(squares, piece, pieceField), setupBoard())
         
         if (moves.length 
             && piece.type === 'Pawn' 
@@ -290,8 +309,18 @@ export default function Board() {
         }
     }
 
+    function restartGame() {
+        setSquares(setupBoard())
+        setTurn('White')
+    }
+
     return (
         <div className='board' ref={chessBoardRef}>
+            <div className={`board__mated ${mated ? 'active' : 'inactive'}`}>
+                <p>Mate!</p>
+                <p>{turn === 'White' ? 'Black' : 'White'} player wins!</p>
+                <button className="custom-btn btn-5" onClick={restartGame}><span>New game</span></button>
+            </div>
             {renderSquares()}
         </div>
     )

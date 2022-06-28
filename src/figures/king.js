@@ -1,6 +1,5 @@
 import Piece from "./piece.js";
 import piecesImages from "../services/piecesImages";
-import getSquares from "../services/getSquares.js";
 import alphs from "../services/alphabetPositions.js";
 
 class King extends Piece {
@@ -11,7 +10,7 @@ class King extends Piece {
       "King"
     )
   }
-  
+
   canMove(from, squareState, movesLeadsToCheck) {
     
     const moves = []
