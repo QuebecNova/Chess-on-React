@@ -81,7 +81,6 @@ export default function Board() {
                         <img 
                             src={squares[field].img} 
                             onMouseDown={e => dragStart(e)} 
-                            onMouseMove={e => dragMove(e)} 
                             onMouseUp={e => drop(e)}
                             onTouchStart={e => touch2Mouse(e)} 
                             onTouchMove={e => touch2Mouse(e)}
@@ -161,7 +160,7 @@ export default function Board() {
     }
 
     function isMated() {
-        
+
         //simulating next move for check
         const allLegalMoves = []
         for (const field in squares) {
@@ -315,7 +314,7 @@ export default function Board() {
     }
 
     return (
-        <div className='board' ref={chessBoardRef}>
+        <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)} >
             <div className={`board__mated ${mated ? 'active' : 'inactive'}`}>
                 <p>Mate!</p>
                 <p>{turn === 'White' ? 'Black' : 'White'} player wins!</p>
