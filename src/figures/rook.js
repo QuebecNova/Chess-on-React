@@ -10,6 +10,9 @@ class Rook extends Piece {
       "Rook"
     )
   }
+
+  lastMoves = []
+  
   canMove(from, squareState, movesLeadsToCheck) {
     const moves = []
 

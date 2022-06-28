@@ -12,7 +12,7 @@ class Pawn extends Piece {
     )
   }
 
-  lastMove = []
+  lastMoves = []
 
   canMove(from, squareState, movesLeadsToCheck, initialState) {
 
@@ -47,14 +47,14 @@ class Pawn extends Piece {
                     return
                 }
             }
-
+            
             if (index > 3
                 && initialState
                 && squareState[move]
                 && squareState[move].type === 'Pawn'
-                && initialState[squareState[move].lastMove.slice().pop()] 
-                && parseInt(squareState[move].lastMove.slice().pop()[1]) === (parseInt(move[1]) - 2)
-                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMove.slice().pop()}`) 
+                && initialState[squareState[move].lastMoves.slice().pop()] 
+                && parseInt(squareState[move].lastMoves.slice().pop()[1]) === (parseInt(move[1]) - 2)
+                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMoves.slice().pop()}`) 
                 && squareState[move].color === 'White') 
             {
                 if (index === 4) {
@@ -100,9 +100,9 @@ class Pawn extends Piece {
                 && initialState
                 && squareState[move]
                 && squareState[move].type === 'Pawn'
-                && initialState[squareState[move].lastMove.slice().pop()]
-                && parseInt(squareState[move].lastMove.slice().pop()[1]) === (parseInt(move[1]) + 2)
-                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMove.slice().pop()}`) 
+                && initialState[squareState[move].lastMoves.slice().pop()]
+                && parseInt(squareState[move].lastMoves.slice().pop()[1]) === (parseInt(move[1]) + 2)
+                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMoves.slice().pop()}`) 
                 && squareState[move].color === 'Black') 
             {
                 if (index === 4) {

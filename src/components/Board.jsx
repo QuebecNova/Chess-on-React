@@ -25,6 +25,7 @@ export default function Board() {
     const [offsetX, setOffsetX] = useState(43.75)
     const [offsetY, setOffsetY] = useState(43.75)
     const [enpassantAvailable, setEnpassantAvailable] = useState()
+    const [castleAvailable, setCastleAvailable] = useState()
     const [turn, setTurn] = useState('White')
 
 
@@ -171,7 +172,7 @@ export default function Board() {
     }, [turn])
     
     const mated = useMemo(() => {
-        console.log('called');
+        
         function isMated() {
     
             //simulating next move for check
@@ -234,12 +235,20 @@ export default function Board() {
         const pieceField = alphs.posOut[localDraggedPieceCoords.row] + localDraggedPieceCoords.col
         const piece = squares[pieceField]
         const moves = piece.canMove(pieceField, squares, getMovesThatLeadsToCheck(squares, piece, pieceField), initialPositions)
-        
+
         if (moves.length 
             && piece.type === 'Pawn' 
-            && moves.slice().pop().includes('enpassant')) 
-            setEnpassantAvailable(moves.slice().pop())
+            && moves.slice().pop().includes('enpassant')) {
+                setEnpassantAvailable(moves.slice().pop())
+        }
             
+        if (moves.length  && piece.type === 'King') {
+            const castleOnThisSides = []
+            if (moves.includes('castleRight')) castleOnThisSides.push('castleRight')
+            if (moves.includes('castleLeft')) castleOnThisSides.push('castleLeft')
+            setCastleAvailable(castleOnThisSides)
+        }
+
         addActives(moves, pieceField)
         
         e.target.style.position = 'absolute'
@@ -274,24 +283,49 @@ export default function Board() {
 
         const dropCoords = getFieldCoordinates(x, y)
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
-            const initialPieceField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
+            const pieceFromThisField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
             const dropField = alphs.posOut[dropCoords.row] + dropCoords.col
-            const piece = squares[initialPieceField]
-            let enpassantedField
-
-            if (enpassantAvailable) {
-                if (piece.color === 'White' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(initialPieceField, '-', 1)
-                if (piece.color === 'White' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(initialPieceField, '+', 1)
-                if (piece.color === 'Black' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(initialPieceField, '-', 1)
-                if (piece.color === 'Black' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(initialPieceField, '+', 1)
-            }
+            const piece = squares[pieceFromThisField]
 
             const pieceOnField = {
-                [initialPieceField]: null,
+                [pieceFromThisField]: null,
                 [dropField]: piece
             }
 
-            if (enpassantedField) pieceOnField[enpassantedField] = null
+            if (enpassantAvailable) {
+                let enpassantedField
+                if (piece.color === 'White' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
+                if (piece.color === 'White' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
+                if (piece.color === 'Black' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
+                if (piece.color === 'Black' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
+                pieceOnField[enpassantedField] = null
+            }
+            
+            if (castleAvailable) {
+
+                const kingMovedLeft = (alphs.changeAlphPos(pieceFromThisField, '-', 2) === dropField)
+                const kingMovedRight = (alphs.changeAlphPos(pieceFromThisField, '+', 2) === dropField)
+                let castledRookLeft
+                let castledRookRight
+                const rookLeft = alphs.changeAlphPos(pieceFromThisField, '-', 4)
+                const rookRight = alphs.changeAlphPos(pieceFromThisField, '+', 3)
+
+                castleAvailable.forEach(castle => {
+                    if (castle.includes('Left') && kingMovedLeft) castledRookLeft = alphs.changeAlphPos(rookLeft, '+', 3)
+                    if (castle.includes('Right') && kingMovedRight) castledRookRight = alphs.changeAlphPos(rookRight, '-', 2)
+                })
+
+                if (castledRookLeft) {
+                    pieceOnField[rookLeft] = null
+                    pieceOnField[castledRookLeft] = squares[rookLeft]
+                }
+
+                if (castledRookRight) {
+                    pieceOnField[rookRight] = null
+                    pieceOnField[castledRookRight] = squares[rookRight]
+                }
+            }
+
 
             if ((squares[dropField] 
                 && squares[dropField].color === piece.color) 
@@ -310,9 +344,9 @@ export default function Board() {
             }))
 
             //last moves
-            makedMoves.push(`${piece.color} ${piece.type} ${initialPieceField} to ${dropField}`)
-            rawMakedMoves.push(`${piece.type.slice(0, 1)}${initialPieceField}`)
-            if (piece.lastMove) piece.lastMove.push(initialPieceField)
+            makedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)
+            rawMakedMoves.push(`${piece.type.slice(0, 1)}${pieceFromThisField}`)
+            if (piece.lastMoves) piece.lastMoves.push(pieceFromThisField)
             console.log(makedMoves); // all played moves here!
 
             setEnpassantAvailable()
