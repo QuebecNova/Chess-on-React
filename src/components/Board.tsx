@@ -374,6 +374,7 @@ export default function Board() : ReactElement {
         sounds.newGame.play()
         setSquares(initialPositions)
         setTurn('White')
+        setVariant(variant === 'white' ? 'black' : 'white')
     }
 
     return (
