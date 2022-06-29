@@ -5,15 +5,21 @@ Now we have:
   
   1.All pieces follows their movement rules
 
-  2.Check and mate
+  2.Castling
 
-  3.Even stalemate!
+  3.Enpassant
 
-  4.On start you can choose side to play on!
+  4.Promotion
 
-  5.When you end game you can restart it starting from opposite side!
+  5.Check and mate
 
-  6.Phones-friendly
+  6.Even stalemate!
+
+  7.On start you can choose side to play on!
+
+  8.When you end game you can restart it starting from opposite side!
+
+  9.Phones-friendly
 
 
 Live: https://hamchess.netlify.app/
