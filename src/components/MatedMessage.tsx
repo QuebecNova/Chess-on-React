@@ -1,12 +1,12 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 
-type Props = {
+type MatedMessageProps = {
     turn: string;
     restartGame: undefined;
     mated: boolean;
 }
 
-export default function MatedMessage({turn, restartGame, mated}: Props) {
+export default function MatedMessage({turn, restartGame, mated}: MatedMessageProps) : ReactElement {
   return (
     <div className={`board__mated ${mated ? 'active' : 'inactive'}`}>
         <p>Mate!</p>

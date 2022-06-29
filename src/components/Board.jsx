@@ -1,14 +1,14 @@
 import React from 'react'
 import { useState, useEffect, useRef, useMemo } from 'react'
-import alphs from '../services/alphabetPositions.js'
-import setupBoard from '../configs/setupBoard.js'
+import alphs from '../services/alphabetPositions'
+import setupBoard from '../configs/setupBoard'
 import getSquares from "../services/getSquares";
-import touch2Mouse from '../services/touch2mouse.js'
+import touch2Mouse from '../services/touch2mouse'
 import { useCallback } from 'react'
-import sounds from '../services/sounds.js'
+import sounds from '../services/sounds'
 import PieceFields from './PieceFields.tsx'
 import MatedMessage from './MatedMessage.tsx';
-import settings from '../configs/settings.ts';
+import settings from '../configs/settings';
 
 const makedMoves = []
 const rawMakedMoves = []
@@ -79,7 +79,7 @@ export default function Board() {
         const yCoord = y
 
         const fieldCoords = {row: 0, col: 0}
-        
+
         if (settings.choosenVariant === 'black') {
             x = yCoord
             y = xCoord
@@ -99,8 +99,6 @@ export default function Board() {
             settings.choosenVariant === 'black' ? fieldCoords.row = col : fieldCoords.col = col
         }
         })
-        
-        console.log(fieldCoords);
 
         return fieldCoords
     }
@@ -163,7 +161,7 @@ export default function Board() {
             })()
 
             if(mated) {
-                if (settings.choosenVariant === 'black') {
+                if (settings.choosenVariant === 'white') {
                     if (turn === 'Black') sounds.win.play()
                     if (turn === 'White') sounds.lose.play()
                 } else {

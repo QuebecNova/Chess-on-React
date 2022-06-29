@@ -1,9 +1,10 @@
-import Piece from "./piece.js";
+import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
-import alphs from "../services/alphabetPositions.js";
+import alphs from "../services/alphabetPositions";
+import { keyableSquares, keyableBoolean } from "../interfaces/keyable";
 
 class Knight extends Piece {
-  constructor(color) {
+  constructor(color : string) {
     super(
       color,
       color === "Black" ? piecesImages.BlackKnight : piecesImages.WhiteKnight,
@@ -11,8 +12,12 @@ class Knight extends Piece {
     )
   }
 
-  canMove(from, squareState, movesLeadsToCheck) {
-    const moves = []
+  canMove(
+    from : string, 
+    squareState : keyableSquares, 
+    movesLeadsToCheck : keyableBoolean
+    ) {
+    const moves : Array<string> = []
     
     const rawMoves = [
         alphs.changeAlphPos(from, '+', 1, '+', 2),
@@ -28,7 +33,7 @@ class Knight extends Piece {
     rawMoves.forEach(move => {
         if (squareState[move] && (squareState[move].color === this.color)) return
         if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
+        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9) moves.push(move)
     })
 
     return moves

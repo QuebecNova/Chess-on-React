@@ -1,9 +1,10 @@
-import Piece from "./piece.js";
+import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
-import alphs from "../services/alphabetPositions.js";
+import alphs from "../services/alphabetPositions";
+import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
 
 class Rook extends Piece {
-  constructor(color) {
+  constructor(color : string) {
     super(
       color,
       color === "Black" ? piecesImages.BlackRook : piecesImages.WhiteRook,
@@ -13,7 +14,11 @@ class Rook extends Piece {
 
   lastMoves = []
   
-  canMove(from, squareState, movesLeadsToCheck) {
+  canMove(
+    from : string, 
+    squareState : keyableSquares, 
+    movesLeadsToCheck : keyableBoolean
+    ) {
     const moves = []
 
     let pieceInbackCol = false
@@ -122,7 +127,7 @@ class Rook extends Piece {
         }
 
         if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
+        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9) moves.push(move)
     })
 
     return moves

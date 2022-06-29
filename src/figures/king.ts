@@ -1,21 +1,30 @@
-import Piece from "./piece.js";
+import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
-import alphs from "../services/alphabetPositions.js";
-import arrayRemove from "../services/arrayRemove.js";
+import alphs from "../services/alphabetPositions";
+import arrayRemove from "../services/arrayRemove";
+import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
 
 class King extends Piece {
-  constructor(color) {
+    
+  lastMoves : Array<string>
+
+  constructor(color : string) {
     super(
       color,
       color === "Black" ? piecesImages.BlackKing : piecesImages.WhiteKing,
       "King"
     )
+    this.lastMoves = []
   }
 
-  lastMoves = []
   onCheck = false
 
-  canMove(from, squareState, movesLeadsToCheck, initialState) {
+  canMove(
+    from : string, 
+    squareState : keyableSquares, 
+    movesLeadsToCheck : keyableBoolean, 
+    initialState : keyableSquares
+    ) {
     
     if (movesLeadsToCheck && movesLeadsToCheck[from]) {
         this.onCheck = true
@@ -88,7 +97,7 @@ class King extends Piece {
             }
         }
         if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && move[1] > 0 && move[1] < 9 && index < 11) moves.push(move)
+        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9 && index < 11) moves.push(move)
 
         if (movesLeadsToCheck) {
             if (movesLeadsToCheck[rawMoves[6]]

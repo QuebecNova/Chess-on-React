@@ -12,7 +12,9 @@ import WhiteKing from '../models/kingWhite.svg';
 import WhiteQueen from '../models/queenWhite.svg';
 import WhiteRook from '../models/rookWhite.svg';
 
-const piecesImages = {
+import { keyableSVGElement } from '../interfaces/keyable';
+
+const piecesImages : keyableSVGElement = {
     WhitePawn,
     WhiteRook,
     WhiteKnight,

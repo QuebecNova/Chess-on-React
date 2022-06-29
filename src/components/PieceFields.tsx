@@ -1,17 +1,17 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import even from '../services/even'
 import settings from '../configs/settings';
 
-type Props = {
+type PieceFieldsProps = {
     squares: object;
     activeFields: object;
-    dragStart: Function;
-    dragMove: Function;
-    drop: Function;
-    touch2Mouse: Function;
+    dragStart: (e : any) => void;
+    dragMove: (e : any) => void;
+    drop: (e : any) => void;
+    touch2Mouse: (e : any) => void;
 }
 
-export default function PieceFields(props: Props) {
+export default function PieceFields(props : PieceFieldsProps) : ReactElement {
 
     const {
         squares,
@@ -62,5 +62,9 @@ export default function PieceFields(props: Props) {
         }
     }
 
-    return variant === 'white' ? board : board.reverse()
+    return (
+        <>
+            {variant === 'white' ? board : board.reverse()}
+        </>
+    )
 }

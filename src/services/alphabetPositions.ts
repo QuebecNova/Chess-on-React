@@ -1,4 +1,25 @@
-const alphs = {
+interface IPosNumber {
+    [key: string] : number
+}
+
+interface IPosString {
+    [key: number] : String
+}
+
+interface IAlphs {
+    posIn: IPosNumber,
+    posOut: IPosString,
+    
+    changeAlphPos: 
+        (
+        field : string, 
+        operator : string, 
+        num : number, secondOperator? : 
+        string, secondNum? : number
+        ) => string
+}
+
+const alphs : IAlphs = {
     posIn: {
         'a': 1,
         'b': 2,

@@ -1,9 +1,10 @@
-import Piece from "./piece.js";
+import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
-import alphs from "../services/alphabetPositions.js";
+import alphs from "../services/alphabetPositions";
+import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
 
 class Bishop extends Piece {
-  constructor(color) {
+  constructor(color : string) {
     super(
       color,
       color === "Black" ? piecesImages.BlackBishop : piecesImages.WhiteBishop,
@@ -11,7 +12,11 @@ class Bishop extends Piece {
     )
   }
   
-  canMove(from, squareState, movesLeadsToCheck) {
+  canMove(
+    from : string, 
+    squareState : keyableSquares, 
+    movesLeadsToCheck : keyableBoolean
+    ) {
     const moves = []
 
     let NWdiagonalMoves = false
@@ -119,7 +124,7 @@ class Bishop extends Piece {
         
         if (movesLeadsToCheck && movesLeadsToCheck[move]) return
 
-        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
+        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9) moves.push(move)
     })
 
     return moves

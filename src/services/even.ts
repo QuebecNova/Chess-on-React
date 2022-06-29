@@ -1,4 +1,9 @@
-const even = {
+interface Ieven {
+    isEven: (num : number) => boolean,
+    defineColor: (index : number, row : number) => string
+}
+
+const even : Ieven = {
 
     isEven(num) {
         return num % 2 === 0

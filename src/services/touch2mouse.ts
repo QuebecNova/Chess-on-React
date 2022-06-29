@@ -1,6 +1,6 @@
-export default function touch2Mouse(e) {
+export default function touch2Mouse(e : any) : undefined {
     const theTouch = e.changedTouches[0];
-    let mouseEv;
+    let mouseEv : string;
 
     switch(e.type)
     {

@@ -1,3 +1,4 @@
+import { keyableSquares } from './../interfaces/keyable';
 import Rook from "../figures/rook";
 import King from "../figures/king";
 import Knight from "../figures/knight";
@@ -8,7 +9,7 @@ import getSquares from "../services/getSquares";
 
 const nullSquares = getSquares(null)
 
-export default function setupBoard() {
+export default function setupBoard() : keyableSquares {
     const squares = nullSquares
     
     squares.a8 = new Rook('Black')

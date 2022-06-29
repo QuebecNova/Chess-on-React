@@ -1,10 +1,11 @@
-import Piece from "./piece.js";
-import piecesImages from "../services/piecesImages.js";
-import Bishop from "./bishop.js";
-import Rook from "./rook.js";
+import Piece from "./piece";
+import piecesImages from "../services/piecesImages";
+import Bishop from "./bishop";
+import Rook from "./rook";
+import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
 
 class Queen extends Piece {
-  constructor(color) {
+  constructor(color : string) {
     super(
       color,
       color === "Black" ? piecesImages.BlackQueen : piecesImages.WhiteQueen,
@@ -12,7 +13,11 @@ class Queen extends Piece {
     )
   }
 
-  canMove(from, squareState, movesLeadsToCheck) {
+  canMove(
+    from : string, 
+    squareState : keyableSquares, 
+    movesLeadsToCheck : keyableBoolean
+    ) {
     const moves = []
 
     console.log();
@@ -20,8 +25,8 @@ class Queen extends Piece {
     const QueenExtendsBishop = new Bishop(this.color)
     const QueenExtendsRook = new Rook(this.color)
     
-    const diagonalRawMoves = QueenExtendsBishop.canMove(from, squareState)
-    const linearRawMoves = QueenExtendsRook.canMove(from, squareState)
+    const diagonalRawMoves = QueenExtendsBishop.canMove(from, squareState, movesLeadsToCheck)
+    const linearRawMoves = QueenExtendsRook.canMove(from, squareState, movesLeadsToCheck)
 
     const rawMoves = [...diagonalRawMoves, ...linearRawMoves]
 

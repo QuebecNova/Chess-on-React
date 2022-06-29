@@ -4,8 +4,9 @@ import check from '../sounds/check.wav'
 import win from '../sounds/win.wav'
 import lose from '../sounds/lose.wav'
 import newGame from '../sounds/newGame.wav'
+import { keyableAudio } from '../interfaces/keyable'
 
-const sounds = {
+const sounds : keyableAudio = {
     placePiece: new Audio(placedPieceSound),
     takePiece: new Audio(takePiece),
     check: new Audio(check),

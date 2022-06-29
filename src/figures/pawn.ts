@@ -1,23 +1,31 @@
-import Piece from "./piece.js";
+import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
-import alphs from "../services/alphabetPositions.js";
+import alphs from "../services/alphabetPositions";
 import { rawMakedMoves } from "../components/Board.jsx";
+import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
 
 class Pawn extends Piece {
-  constructor(color) {
+
+  lastMoves : Array<string>
+
+  constructor(color : string) {
     super(
       color,
       color === 'Black' ? piecesImages.BlackPawn : piecesImages.WhitePawn,
       'Pawn'
     )
+    this.lastMoves = []
   }
 
-  lastMoves = []
+  canMove(
+    from : string, 
+    squareState : keyableSquares, 
+    movesLeadsToCheck : keyableBoolean, 
+    initialState : keyableSquares
+    ) {
 
-  canMove(from, squareState, movesLeadsToCheck, initialState) {
-
-    const moves = []
-    let pieceInfront = false
+    const moves : Array<string> = []
+    let pieceInfront : boolean = false
 
     if (this.color === 'Black') {
         const blackMoves = [
@@ -67,7 +75,7 @@ class Pawn extends Piece {
             }
 
             if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-            if (move[0] && move[1] && move[1] <= 8 && move[1] > 0 && index < 4) moves.push(move)
+            if (move[0] && move[1] && parseInt(move[1]) <= 8 && parseInt(move[1]) > 0 && index < 4) moves.push(move)
         })
     } else {
         //same but for white pawns
@@ -115,7 +123,7 @@ class Pawn extends Piece {
             }
 
             if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-            if (move && move[1] && !move[2] && move[1] < 9 && move[1] > 0 && index < 4) moves.push(move)
+            if (move && move[1] && !move[2] && parseInt(move[1]) < 9 && parseInt(move[1]) > 0 && index < 4) moves.push(move)
         })
     }
 

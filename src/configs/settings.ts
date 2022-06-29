@@ -1,8 +1,6 @@
-interface keyable {
-    [key: string]: string
-}
+import { keyableString } from "../interfaces/keyable"
 
-const settings: keyable = {
+const settings: keyableString = {
     choosenVariant: 'white'
 }
 
