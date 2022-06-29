@@ -2,11 +2,12 @@ import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
 import alphs from "../services/alphabetPositions";
 import arrayRemove from "../services/arrayRemove";
-import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
+import { keyableSquares } from "../interfaces/keyable";
 
 class King extends Piece {
     
   lastMoves : Array<string>
+  onCheck : boolean
 
   constructor(color : string) {
     super(
@@ -15,15 +16,15 @@ class King extends Piece {
       "King"
     )
     this.lastMoves = []
+    this.onCheck = false
   }
 
-  onCheck = false
 
   canMove(
     from : string, 
     squareState : keyableSquares, 
-    movesLeadsToCheck : keyableBoolean, 
-    initialState : keyableSquares
+    movesLeadsToCheck : keyableSquares, 
+    initialState? : keyableSquares
     ) {
     
     if (movesLeadsToCheck && movesLeadsToCheck[from]) {

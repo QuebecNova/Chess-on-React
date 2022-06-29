@@ -1,20 +1,11 @@
+import IPiece from "./IPiece"
+
 export interface keyableString {
     [key: string]: string
 }
 
-interface piece {
-    color: string,
-    type: string,
-    img: React.FunctionComponent<React.SVGAttributes<SVGElement>>
-    lastMoves?: Array<string>
-}
-
 export interface keyableSquares {
-    [key: string]: piece | null
-}
-
-export interface keyableBoolean {
-    [key: string]: boolean
+    [key: string]: IPiece | null
 }
 
 export interface keyableSVGElement {

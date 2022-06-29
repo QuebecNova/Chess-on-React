@@ -1,45 +1,47 @@
 import React from 'react'
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, ReactElement } from 'react'
+import { keyableSquares, keyableString } from '../interfaces/keyable';
+import { useCallback } from 'react'
 import alphs from '../services/alphabetPositions'
 import setupBoard from '../configs/setupBoard'
 import getSquares from "../services/getSquares";
 import touch2Mouse from '../services/touch2mouse'
-import { useCallback } from 'react'
 import sounds from '../services/sounds'
-import PieceFields from './PieceFields.tsx'
-import MatedMessage from './MatedMessage.tsx';
+import PieceFields from './PieceFields'
+import MatedMessage from './MatedMessage';
 import settings from '../configs/settings';
+import Coords from '../interfaces/Coords';
+import IPiece from '../interfaces/IPiece';
 
 const makedMoves = []
 const rawMakedMoves = []
 export { rawMakedMoves }
 const initialPositions = setupBoard()
-const falseSquares = getSquares(false)
+const nullSquares = getSquares(null)
 
-export default function Board() {
+export default function Board() : ReactElement {
 
     const [squares, setSquares] = useState(initialPositions)
-    const [fieldSizes, setFieldSizes] = useState([])
-    const [chessBoardOffsetLeft, setOffsetLeft] = useState(0)
-    const [chessBoardOffsetTop, setOffsetTop] = useState(0)
-    const [activeFields, setActiveFields] = useState({...falseSquares})
-    const [draggedPiece, setDraggedPiece] = useState()
-    const [draggedPieceCoords, setDraggedPieceCoords] = useState({col: 0, row: 0})
-    const [offsetX, setOffsetX] = useState(43.75)
-    const [offsetY, setOffsetY] = useState(43.75)
-    const [enpassantAvailable, setEnpassantAvailable] = useState()
-    const [castleAvailable, setCastleAvailable] = useState()
-    const [turn, setTurn] = useState('White')
+    const [activeFields, setActiveFields] = useState({...nullSquares})
+    const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
+    const [draggedPieceCoords, setDraggedPieceCoords] = useState <Coords>({col: 0, row: 0})
+    const [chessBoardOffsetLeft, setOffsetLeft] = useState <number>(0)
+    const [chessBoardOffsetTop, setOffsetTop] = useState <number>(0)
+    const [offsetX, setOffsetX] = useState <number>(43.75)
+    const [offsetY, setOffsetY] = useState <number>(43.75)
+    const [fieldSizes, setFieldSizes] = useState <Array<number>>([])
+    const [castleAvailable, setCastleAvailable] = useState <Array<string>>([])
+    const [enpassantAvailable, setEnpassantAvailable] = useState <string>(null)
+    const [turn, setTurn] = useState <string>('White')
 
-    const chessBoardRef = useRef()
+    const chessBoardRef = useRef<HTMLDivElement>(null)
 
     //changing usable sizes of the board related on it size in browser
     useEffect(() => {
     
         let chessBoard = chessBoardRef.current
     
-        function addUpRowsAndCols(chessBoard) {
-          setFieldSizes([])
+        function addUpRowsAndCols(chessBoard : HTMLDivElement) : void {
 
           setOffsetLeft(chessBoard.offsetLeft)
           setOffsetTop(chessBoard.offsetTop)
@@ -49,7 +51,7 @@ export default function Board() {
           setOffsetY(fieldWidth / 1.9)
         
           let fieldStartsOn = 0;
-          const fieldStartsOnArr = [];
+          const fieldStartsOnArr : Array<number> = [];
           
           for (let i = 0; i < 9; i++) {
             fieldStartsOn = fieldWidth * i;
@@ -66,7 +68,7 @@ export default function Board() {
         new ResizeObserver(resizedBoard).observe(chessBoard)
       }, [])
 
-    function getFieldCoordinates(x, y) {
+    function getFieldCoordinates(x : number, y : number) : Coords {
         //displaying coordinates of the mouse related to the board
         // example: cursor at b3: b = row(2), 3 = col(3)
         // if cursor out the board one of the coords is 0
@@ -103,12 +105,12 @@ export default function Board() {
         return fieldCoords
     }
 
-    const getMovesThatLeadsToCheck = useCallback((squares, draggedPiece, coords) => {
+    const getMovesThatLeadsToCheck = useCallback((squares : keyableSquares, draggedPiece : IPiece, coords : string) => {
         
-        const kingOnCheckAfterThisMoves = {...falseSquares}
+        const kingOnCheckAfterThisMoves = {...nullSquares}
         //simulating next move for check
         const moves = draggedPiece.canMove(coords, squares, null, initialPositions)
-        moves.forEach(move => {
+        moves.forEach((move : string) => {
             const pieceOnField = {
                 [coords]: null,
                 [move]: draggedPiece
@@ -118,12 +120,14 @@ export default function Board() {
                 ...pieceOnField
             }
 
-            const simulateNextOppositeMoves = {...falseSquares}
+            const simulateNextOppositeMoves = {...nullSquares}
             for (const field in simulateNextMoveSquares) {
                 if (simulateNextMoveSquares[field] && simulateNextMoveSquares[field].color !== turn) {
-                    const moves = simulateNextMoveSquares[field].canMove(field, simulateNextMoveSquares, null, initialPositions)
+                    const moves = simulateNextMoveSquares[field].canMove
+                        (field, simulateNextMoveSquares, null, initialPositions)
+
                      moves.forEach(move => {
-                        if (move) simulateNextOppositeMoves[move] = true
+                        if (move) simulateNextOppositeMoves[move] = simulateNextMoveSquares[field]
                     })
                 }
             }
@@ -133,32 +137,32 @@ export default function Board() {
                     && simulateNextOppositeMoves[field] 
                     && simulateNextMoveSquares[field].type === 'King' 
                     && simulateNextMoveSquares[field].color === turn)
-                    kingOnCheckAfterThisMoves[move] = true
+                    kingOnCheckAfterThisMoves[move] = simulateNextMoveSquares[field]
             }
         })
 
         return kingOnCheckAfterThisMoves
     }, [turn])
     
-    const mated = useMemo(() => {
+    const mated : boolean = useMemo(() => {
 
-        function isMated() {
+        function isMated() : boolean {
     
             //simulating next move for check
             const allLegalMoves = []
             for (const field in squares) {
                 if (squares[field]) {
                     if (squares[field].color === turn) {
-                        allLegalMoves.push(squares[field].canMove(field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), initialPositions))
+                        allLegalMoves.push(squares[field].canMove
+                            (field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), initialPositions))
+                            
                         //checked or not
                         if (squares[field].onCheck) sounds.check.play()
                     }
                 }
             }
-
-            const mated = (function checkForNoLegalMoves() {
-                return allLegalMoves.every(legalMoves => legalMoves.length === 0);
-            })()
+            
+            const mated = allLegalMoves.every(legalMoves => legalMoves.length === 0);
 
             if(mated) {
                 if (settings.choosenVariant === 'white') {
@@ -176,17 +180,17 @@ export default function Board() {
         return isMated()
     }, [squares, turn, getMovesThatLeadsToCheck])
 
-    function addActives(moves, currentPiece) {
+    function addActives(moves : Array<string>, currentPiece : string) : keyableString  {
         const movesActiveFields = {}
-        moves.forEach(move => {
-            movesActiveFields[move] = true
+        moves.forEach((move) => {
+            movesActiveFields[move] = 'pieceCanMoveHere'
         })
         movesActiveFields[currentPiece] = 'currentPiece'
         setActiveFields({...activeFields, ...movesActiveFields})
         return movesActiveFields
     }
     
-    function removeActives() {
+    function removeActives() : void {
         const clearedActiveFields = {}
         for (const field in activeFields) {
             clearedActiveFields[field] = false
@@ -194,7 +198,7 @@ export default function Board() {
         setActiveFields({...clearedActiveFields})
     }
 
-    function dragStart(e) {
+    function dragStart(e : any) : void {
 
         e.preventDefault() 
         
@@ -214,9 +218,10 @@ export default function Board() {
         const localDraggedPieceCoords = getFieldCoordinates(x, y)
         setDraggedPieceCoords(getFieldCoordinates(x, y))
 
-        const pieceField = alphs.posOut[localDraggedPieceCoords.row] + localDraggedPieceCoords.col
+        const pieceField = alphs.posOut[localDraggedPieceCoords.row].toString() + localDraggedPieceCoords.col.toString()
         const piece = squares[pieceField]
-        const moves = piece.canMove(pieceField, squares, getMovesThatLeadsToCheck(squares, piece, pieceField), initialPositions)
+        const moves = piece.canMove
+            (pieceField, squares, getMovesThatLeadsToCheck(squares, piece, pieceField), initialPositions)
 
         if (moves.length 
             && piece.type === 'Pawn' 
@@ -238,7 +243,7 @@ export default function Board() {
         e.target.style.top = `${y - offsetY}px`
     }
     
-    function dragMove(e) {
+    function dragMove(e : any) : void {
         if (!draggedPiece) return
         if (!draggedPiece.src.includes(turn)) return
 
@@ -253,7 +258,7 @@ export default function Board() {
         draggedPiece.style.top = `${y}px`
     }
     
-    function drop(e) {
+    function drop(e : any) : void {
         if (!draggedPiece) return
         if (!draggedPiece.src.includes(turn)) return
         
@@ -265,8 +270,8 @@ export default function Board() {
 
         const dropCoords = getFieldCoordinates(x, y)
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
-            const pieceFromThisField = alphs.posOut[draggedPieceCoords.row] + draggedPieceCoords.col
-            const dropField = alphs.posOut[dropCoords.row] + dropCoords.col
+            const pieceFromThisField = alphs.posOut[draggedPieceCoords.row].toString() + draggedPieceCoords.col.toString() 
+            const dropField = alphs.posOut[dropCoords.row].toString()  + dropCoords.col.toString() 
             const piece = squares[pieceFromThisField]
 
             const pieceOnField = {
@@ -275,7 +280,7 @@ export default function Board() {
             }
 
             if (enpassantAvailable) {
-                let enpassantedField
+                let enpassantedField : string
                 if (piece.color === 'White' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
                 if (piece.color === 'White' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
                 if (piece.color === 'Black' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
@@ -287,8 +292,8 @@ export default function Board() {
 
                 const kingMovedLeft = (alphs.changeAlphPos(pieceFromThisField, '-', 2) === dropField)
                 const kingMovedRight = (alphs.changeAlphPos(pieceFromThisField, '+', 2) === dropField)
-                let castledRookLeft
-                let castledRookRight
+                let castledRookLeft : string
+                let castledRookRight : string
                 const rookLeft = alphs.changeAlphPos(pieceFromThisField, '-', 4)
                 const rookRight = alphs.changeAlphPos(pieceFromThisField, '+', 3)
 
@@ -311,11 +316,11 @@ export default function Board() {
 
             if ((squares[dropField] 
                 && squares[dropField].color === piece.color) 
-                || activeFields[dropField] !== true 
+                || !activeFields[dropField]
                 || piece === squares[dropField]) {
                 //if we clicked on illegal move field - reset all states and return
-                draggedPiece.style = ''
-                setDraggedPiece()
+                draggedPiece.setAttribute('style', '');
+                setDraggedPiece(null)
                 removeActives()
                 return 
             }
@@ -336,20 +341,20 @@ export default function Board() {
             if (piece.lastMoves) piece.lastMoves.push(pieceFromThisField)
             console.log(makedMoves); // all played moves here!
 
-            setEnpassantAvailable()
-            draggedPiece.style = ''
+            setEnpassantAvailable(null)
+            draggedPiece.setAttribute('style', '');
             setTurn(turn === 'White' ? 'Black' : 'White')
-            setDraggedPiece()   
+            setDraggedPiece(null)   
             removeActives()
         } else {
-            draggedPiece.style = ''
-            setDraggedPiece()
+            draggedPiece.setAttribute('style', '');
+            setDraggedPiece(null)
             removeActives()
             return 
         }
     }
 
-    function restartGame() {
+    function restartGame() : void {
         sounds.newGame.play()
         setSquares(initialPositions)
         setTurn('White')

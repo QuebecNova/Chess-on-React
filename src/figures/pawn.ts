@@ -1,8 +1,8 @@
 import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
 import alphs from "../services/alphabetPositions";
-import { rawMakedMoves } from "../components/Board.jsx";
-import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
+import { rawMakedMoves } from "../components/Board";
+import { keyableSquares } from "../interfaces/keyable";
 
 class Pawn extends Piece {
 
@@ -20,8 +20,8 @@ class Pawn extends Piece {
   canMove(
     from : string, 
     squareState : keyableSquares, 
-    movesLeadsToCheck : keyableBoolean, 
-    initialState : keyableSquares
+    movesLeadsToCheck : keyableSquares, 
+    initialState? : keyableSquares
     ) {
 
     const moves : Array<string> = []

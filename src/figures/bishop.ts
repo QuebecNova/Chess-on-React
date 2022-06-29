@@ -1,7 +1,7 @@
 import Piece from "./piece";
 import piecesImages from "../services/piecesImages";
 import alphs from "../services/alphabetPositions";
-import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
+import { keyableSquares } from "../interfaces/keyable";
 
 class Bishop extends Piece {
   constructor(color : string) {
@@ -15,7 +15,7 @@ class Bishop extends Piece {
   canMove(
     from : string, 
     squareState : keyableSquares, 
-    movesLeadsToCheck : keyableBoolean
+    movesLeadsToCheck : keyableSquares
     ) {
     const moves = []
 

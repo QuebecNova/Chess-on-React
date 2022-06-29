@@ -1,6 +1,6 @@
 import { keyableSquares } from "../interfaces/keyable";
 
-export default function getSquares(value : boolean | null) : keyableSquares {
+export default function getSquares(value : null) : keyableSquares {
     const squares = {}
 
     const rows = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']

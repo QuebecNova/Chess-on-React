@@ -1,4 +1,4 @@
-import { keyableBoolean, keyableSquares } from "../interfaces/keyable";
+import { keyableSquares } from "../interfaces/keyable";
 
 export default class Piece {
     readonly color: string;
@@ -10,7 +10,8 @@ export default class Piece {
         this.img = img
         this.type = type
     }
-    canMove(from : string, squareState : keyableSquares, movesLeadsToCheck : keyableBoolean, initialState? : keyableSquares) : Array<string> | Error{
+    
+    canMove(from : string, squareState : keyableSquares, movesLeadsToCheck : keyableSquares, initialState? : keyableSquares) : Array<string> {
         if (from || squareState || movesLeadsToCheck) throw new Error('missing arguments')
         const moves = []
         return moves
