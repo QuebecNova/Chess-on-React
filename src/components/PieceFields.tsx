@@ -1,6 +1,5 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement } from 'react'
 import even from '../services/even'
-import settings from '../configs/settings';
 
 type PieceFieldsProps = {
     squares: object;

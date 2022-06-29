@@ -182,7 +182,7 @@ export default function Board() : ReactElement {
         }
         
         return isMated()
-    }, [squares, turn, getMovesThatLeadsToCheck])
+    }, [squares, turn, getMovesThatLeadsToCheck, variant])
 
     function addActives(moves : Array<string>, currentPiece : string) : keyableString  {
         const movesActiveFields = {}
