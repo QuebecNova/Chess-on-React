@@ -26,6 +26,7 @@ export default function Board() : ReactElement {
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState({...nullSquares})
     const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
+    const [isStaleMate, setStaleMate] = useState<boolean>(false)
     const [draggedPieceCoords, setDraggedPieceCoords] = useState <Coords>({col: 0, row: 0})
     const [chessBoardOffsetLeft, setOffsetLeft] = useState <number>(0)
     const [chessBoardOffsetTop, setOffsetTop] = useState <number>(0)
@@ -165,6 +166,10 @@ export default function Board() : ReactElement {
                     }
                 }
             }
+
+            if (allLegalMoves.length === 1 && allLegalMoves[0].length === 1 && squares[allLegalMoves[0][0]].type === 'King') setStaleMate(true);
+            
+            
             
             const mated = allLegalMoves.every(legalMoves => legalMoves.length === 0);
 
@@ -373,6 +378,7 @@ export default function Board() : ReactElement {
     function restartGame() : void {
         sounds.newGame.play()
         setSquares(initialPositions)
+        setStaleMate(false)
         setTurn('White')
         setVariant(variant === 'white' ? 'black' : 'white')
     }
@@ -396,7 +402,7 @@ export default function Board() : ReactElement {
                 squares={squares} 
                 setSquares={setSquares}
             />
-            <MatedMessage turn={turn} restartGame={restartGame} mated={mated}/>
+            <MatedMessage turn={turn} restartGame={restartGame} mated={mated} isStaleMate={isStaleMate}/>
         </div>
     )
 }

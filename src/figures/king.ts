@@ -82,7 +82,7 @@ class King extends Piece {
             if (index === 9
                 && (this.lastMoves.length === 0 
                     && squareState[rookLeft] 
-                    && squareState[rookLeft].type === 'Rook' 
+                    && squareState[rookLeft].type === 'Rook'
                     && initialState[rookLeft].type === 'Rook' 
                     && initialState[rookLeft].lastMoves.length === 0
                     && !squareState[rawMoves[6]]
