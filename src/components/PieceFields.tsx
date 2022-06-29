@@ -32,8 +32,8 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
     for (const field in squares) {
         let isActive = '';
         if (activeFields[field]) {
-            if (activeFields[field] === 'pieceCanMoveHere') isActive = 'active'
-            if (activeFields[field] === 'currentPiece') isActive = 'active__current-piece'
+            if (activeFields[field] === 'pieceCanMoveHere') isActive = 'canMoveHere'
+            if (activeFields[field] === 'currentPiece') isActive = 'current-piece'
         }
 
         if (squares[field]) {

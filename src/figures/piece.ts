@@ -1,6 +1,7 @@
+import IPiece from "../interfaces/IPiece";
 import { keyableSquares } from "../interfaces/keyable";
 
-export default class Piece {
+export default class Piece implements IPiece {
     readonly color: string;
     readonly img: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
     readonly type: string;
@@ -11,7 +12,7 @@ export default class Piece {
         this.type = type
     }
     
-    canMove(from : string, squareState : keyableSquares, movesLeadsToCheck : keyableSquares, initialState? : keyableSquares) : Array<string> {
+    canMove(from : string, squareState : keyableSquares, movesLeadsToCheck : keyableSquares) : Array<string> {
         if (from || squareState || movesLeadsToCheck) throw new Error('missing arguments')
         const moves = []
         return moves

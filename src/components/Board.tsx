@@ -9,6 +9,7 @@ import touch2Mouse from '../services/touch2mouse'
 import sounds from '../services/sounds'
 import PieceFields from './PieceFields'
 import MatedMessage from './MatedMessage';
+import Promotion from './Promotion';
 import settings from '../configs/settings';
 import Coords from '../interfaces/Coords';
 import IPiece from '../interfaces/IPiece';
@@ -32,6 +33,7 @@ export default function Board() : ReactElement {
     const [fieldSizes, setFieldSizes] = useState <Array<number>>([])
     const [castleAvailable, setCastleAvailable] = useState <Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState <string>(null)
+    const [promotedField, setPromotedField] = useState<string>(null)
     const [turn, setTurn] = useState <string>('White')
 
     const chessBoardRef = useRef<HTMLDivElement>(null)
@@ -56,7 +58,7 @@ export default function Board() : ReactElement {
           for (let i = 0; i < 9; i++) {
             fieldStartsOn = fieldWidth * i;
             fieldStartsOnArr.push(fieldStartsOn)
-          }
+          }        
           setFieldSizes([...fieldStartsOnArr])
         }
     
@@ -207,13 +209,9 @@ export default function Board() : ReactElement {
         if (e.target !== draggedPiece) setDraggedPiece(e.target);
         
         if (!e.target.src.includes(turn)) return
-        
-        
-        let x = 0
-        let y = 0
 
-        x = e.clientX
-        y = e.clientY
+        const x = e.clientX
+        const y = e.clientY
 
         const localDraggedPieceCoords = getFieldCoordinates(x, y)
         setDraggedPieceCoords(getFieldCoordinates(x, y))
@@ -273,11 +271,19 @@ export default function Board() : ReactElement {
             const pieceFromThisField = alphs.posOut[draggedPieceCoords.row].toString() + draggedPieceCoords.col.toString() 
             const dropField = alphs.posOut[dropCoords.row].toString()  + dropCoords.col.toString() 
             const piece = squares[pieceFromThisField]
+            let empassanted = false
 
             const pieceOnField = {
                 [pieceFromThisField]: null,
                 [dropField]: piece
             }
+
+            if ((dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black') 
+                || (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White')) 
+            {
+                setPromotedField(dropField)
+            }
+
 
             if (enpassantAvailable) {
                 let enpassantedField : string
@@ -285,7 +291,14 @@ export default function Board() : ReactElement {
                 if (piece.color === 'White' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
                 if (piece.color === 'Black' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
                 if (piece.color === 'Black' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
-                pieceOnField[enpassantedField] = null
+                if (dropField === alphs.changeAlphPos(pieceFromThisField, '+', 1, '+', 1) 
+                    || dropField === alphs.changeAlphPos(pieceFromThisField, '+', 1, '-', 1)
+                    || dropField === alphs.changeAlphPos(pieceFromThisField, '-', 1, '-', 1)
+                    || dropField === alphs.changeAlphPos(pieceFromThisField, '-', 1, '+', 1)) 
+                    {
+                        pieceOnField[enpassantedField] = null
+                        empassanted = true
+                    }
             }
             
             if (castleAvailable) {
@@ -329,7 +342,8 @@ export default function Board() : ReactElement {
                 ...squares,
                 ...pieceOnField,
             }))
-            if (squares[dropField] || enpassantAvailable) {
+
+            if (squares[dropField] || empassanted) {
                 sounds.takePiece.play()
             } else {
                 sounds.placePiece.play()
@@ -369,6 +383,13 @@ export default function Board() : ReactElement {
                 dragMove={dragMove} 
                 drop={drop} 
                 touch2Mouse={touch2Mouse}
+            />
+            <Promotion 
+                promotedField={promotedField} 
+                setPromotedField={setPromotedField} 
+                turn={turn} 
+                squares={squares} 
+                setSquares={setSquares}
             />
             <MatedMessage turn={turn} restartGame={restartGame} mated={mated}/>
         </div>
