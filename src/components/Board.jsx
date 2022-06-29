@@ -2,11 +2,13 @@ import React from 'react'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import alphs from '../services/alphabetPositions.js'
 import setupBoard from '../configs/setupBoard.js'
-import even from '../services/even.js'
 import getSquares from "../services/getSquares";
 import touch2Mouse from '../services/touch2mouse.js'
 import { useCallback } from 'react'
 import sounds from '../services/sounds.js'
+import PieceFields from './PieceFields.tsx'
+import MatedMessage from './MatedMessage.tsx';
+import settings from '../configs/settings.ts';
 
 const makedMoves = []
 const rawMakedMoves = []
@@ -64,47 +66,6 @@ export default function Board() {
         new ResizeObserver(resizedBoard).observe(chessBoard)
       }, [])
 
-    function renderSquares() {
-        const board = []
-        
-        let index = 0
-        let row = 1
-        
-        for (const field in squares) {
-            let isActive = '';
-            if (activeFields[field]) {
-                isActive = 'active'
-                if (activeFields[field] === 'currentPiece') isActive = 'active__current-piece'
-            }
-
-            if (squares[field]) {
-                board.push(
-                    <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index}>
-                        <img 
-                            src={squares[field].img} 
-                            onMouseDown={e => dragStart(e)} 
-                            onMouseUp={e => drop(e)}
-                            onTouchStart={e => touch2Mouse(e)} 
-                            onTouchMove={e => touch2Mouse(e)}
-                            onTouchEnd={e => touch2Mouse(e)}
-                            alt={squares[field].type}
-                        />
-                    </div>
-                )
-            } else {
-                board.push(
-                    <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index}/>
-                )
-            }
-            index++
-            if (index % 8 === 0) {
-                row++
-            }
-        }
-
-        return board
-    }
-
     function getFieldCoordinates(x, y) {
         //displaying coordinates of the mouse related to the board
         // example: cursor at b3: b = row(2), 3 = col(3)
@@ -114,12 +75,20 @@ export default function Board() {
         x -= chessBoardOffsetLeft + 5
         y -= chessBoardOffsetTop + 5
 
+        const xCoord = x
+        const yCoord = y
+
         const fieldCoords = {row: 0, col: 0}
         
+        if (settings.choosenVariant === 'black') {
+            x = yCoord
+            y = xCoord
+        }
+
         fieldSizes.forEach((fieldStartsOn, index) => {
         if (x >= fieldStartsOn && x <= fieldSizes[index + 1]) {
             const row = index + 1
-            fieldCoords.row = row
+            settings.choosenVariant === 'black' ? fieldCoords.col = row : fieldCoords.row = row
         } 
         })
 
@@ -127,9 +96,11 @@ export default function Board() {
         fieldSizesReversed.forEach((fieldStartsOn, index) => {
         if (y <= fieldStartsOn && y >= fieldSizesReversed[index + 1]) {
             const col = index + 1
-            fieldCoords.col = col
+            settings.choosenVariant === 'black' ? fieldCoords.row = col : fieldCoords.col = col
         }
         })
+        
+        console.log(fieldCoords);
 
         return fieldCoords
     }
@@ -192,8 +163,13 @@ export default function Board() {
             })()
 
             if(mated) {
-                if (turn === 'Black') sounds.win.play()
-                if (turn === 'White') sounds.lose.play()
+                if (settings.choosenVariant === 'black') {
+                    if (turn === 'Black') sounds.win.play()
+                    if (turn === 'White') sounds.lose.play()
+                } else {
+                    if (turn === 'White') sounds.win.play()
+                    if (turn === 'Black') sounds.lose.play()
+                }
             }
 
             return mated
@@ -383,12 +359,15 @@ export default function Board() {
 
     return (
         <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)} >
-            <div className={`board__mated ${mated ? 'active' : 'inactive'}`}>
-                <p>Mate!</p>
-                <p>{turn === 'White' ? 'Black' : 'White'} player wins!</p>
-                <button className="custom-btn btn-5" onClick={restartGame}><span>New game</span></button>
-            </div>
-            {renderSquares()}
+            <PieceFields
+                squares={squares} 
+                activeFields={activeFields} 
+                dragStart={dragStart} 
+                dragMove={dragMove} 
+                drop={drop} 
+                touch2Mouse={touch2Mouse}
+            />
+            <MatedMessage turn={turn} restartGame={restartGame} mated={mated}/>
         </div>
     )
 }
