@@ -2,6 +2,7 @@
 @import 'board.css';
 @import 'pieces.css';
 @import 'fonts.css';
+@import 'button.css';
 @import 'mediaQueries.css';
 
 * {

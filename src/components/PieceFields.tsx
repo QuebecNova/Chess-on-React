@@ -1,10 +1,11 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import even from '../services/even'
 import settings from '../configs/settings';
 
 type PieceFieldsProps = {
     squares: object;
     activeFields: object;
+    variant: string;
     dragStart: (e : any) => void;
     dragMove: (e : any) => void;
     drop: (e : any) => void;
@@ -12,17 +13,15 @@ type PieceFieldsProps = {
 }
 
 export default function PieceFields(props : PieceFieldsProps) : ReactElement {
-
     const {
         squares,
         activeFields,
+        variant,
         dragStart,
         dragMove,
         drop,
         touch2Mouse
     } = props
-    
-    const variant = settings.choosenVariant
 
     const board = []
         

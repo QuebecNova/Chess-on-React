@@ -13,6 +13,7 @@ import Promotion from './Promotion';
 import settings from '../configs/settings';
 import Coords from '../interfaces/Coords';
 import IPiece from '../interfaces/IPiece';
+import DefineSide from './DefineSide';
 
 const makedMoves = []
 const rawMakedMoves = []
@@ -34,6 +35,7 @@ export default function Board() : ReactElement {
     const [castleAvailable, setCastleAvailable] = useState <Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState <string>(null)
     const [promotedField, setPromotedField] = useState<string>(null)
+    const [variant, setVariant] = useState<string>(settings.choosenVariant)
     const [turn, setTurn] = useState <string>('White')
 
     const chessBoardRef = useRef<HTMLDivElement>(null)
@@ -84,7 +86,7 @@ export default function Board() : ReactElement {
 
         const fieldCoords = {row: 0, col: 0}
 
-        if (settings.choosenVariant === 'black') {
+        if (variant === 'black') {
             x = yCoord
             y = xCoord
         }
@@ -92,7 +94,7 @@ export default function Board() : ReactElement {
         fieldSizes.forEach((fieldStartsOn, index) => {
         if (x >= fieldStartsOn && x <= fieldSizes[index + 1]) {
             const row = index + 1
-            settings.choosenVariant === 'black' ? fieldCoords.col = row : fieldCoords.row = row
+            variant === 'black' ? fieldCoords.col = row : fieldCoords.row = row
         } 
         })
 
@@ -100,7 +102,7 @@ export default function Board() : ReactElement {
         fieldSizesReversed.forEach((fieldStartsOn, index) => {
         if (y <= fieldStartsOn && y >= fieldSizesReversed[index + 1]) {
             const col = index + 1
-            settings.choosenVariant === 'black' ? fieldCoords.row = col : fieldCoords.col = col
+            variant === 'black' ? fieldCoords.row = col : fieldCoords.col = col
         }
         })
 
@@ -167,7 +169,7 @@ export default function Board() : ReactElement {
             const mated = allLegalMoves.every(legalMoves => legalMoves.length === 0);
 
             if(mated) {
-                if (settings.choosenVariant === 'white') {
+                if (variant === 'white') {
                     if (turn === 'Black') sounds.win.play()
                     if (turn === 'White') sounds.lose.play()
                 } else {
@@ -375,10 +377,12 @@ export default function Board() : ReactElement {
     }
 
     return (
-        <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)} >
+        <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)}>
+            <DefineSide setVariant={setVariant}/>
             <PieceFields
                 squares={squares} 
-                activeFields={activeFields} 
+                activeFields={activeFields}
+                variant={variant}
                 dragStart={dragStart} 
                 dragMove={dragMove} 
                 drop={drop} 

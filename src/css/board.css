@@ -37,7 +37,7 @@
     background-color: rgb(16, 88, 76);
 }
 
-.board__mated, .board__promotion {
+.board__mated, .board__promotion, .board__define-side {
     position: absolute;
     display: flex;
     justify-content: center;
@@ -50,6 +50,10 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -35%);
+}
+
+.board__define-side p {
+    margin: 5px 15px 0px 15px;
 }
 
 .board__mated {
@@ -78,72 +82,4 @@ div .inactive {
 div .active {
     opacity: 1;
     transition: opacity 0.3s ease;
-}
-
-.custom-btn {
-    width: 130px;
-    height: 40px;
-    padding: 10px 25px;
-    border: 2px solid #000;
-    border-radius: 3px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 500;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    display: inline-block;
-}
-
-.btn-5 {
-    background: rgb(1, 10, 4);
-    color: #fff;
-    line-height: 42px;
-    padding: 0;
-    border: none;
-}
-
-.btn-5 span {
-    color: rgb(197, 191, 124);
-    font-size: 1.3em;
-    font-family: 'fira_sansitalic';
-}
-  
-.btn-5:hover {
-    background: rgb(228, 230, 210);
-    color: #000;
-     box-shadow:
-     -1px -1px 20px 0px #fff9,
-     -1px -1px 5px 0px #fff9,
-     7px 7px 20px 0px #0002,
-     4px 4px 5px 0px #0001;
-}
-
-.btn-5:hover span {
-    color: rgb(0, 0, 0);
-}
-
-.btn-5:before,
-.btn-5:after{
-    content:'';
-    position:absolute;
-    top:0;
-    right:0;
-    height:2px;
-    width:0;
-    background: #000;
-    transition:400ms ease all;
-}
-
-.btn-5:after{
-    right:inherit;
-    top:inherit;
-    left:0;
-    bottom:0;
-}
-
-.btn-5:hover:before,
-.btn-5:hover:after{
-    width:100%;
-    transition:800ms ease all;
 }

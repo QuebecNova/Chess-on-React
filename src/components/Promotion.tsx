@@ -31,7 +31,7 @@ export default function Promotion(props: Props) : ReactElement {
     const bishop = new Bishop(turnReversed)
     const rook = new Rook(turnReversed)
 
-    function transformPiece(piece : IPiece) {
+    function transformPiece(piece : IPiece) : void {
         squares[promotedField] = piece
         
         const pieceOnField = {
