@@ -10,7 +10,6 @@ import sounds from '../services/sounds'
 import PieceFields from './PieceFields'
 import MatedMessage from './MatedMessage';
 import Promotion from './Promotion';
-import settings from '../configs/settings';
 import Coords from '../interfaces/Coords';
 import IPiece from '../interfaces/IPiece';
 import DefineSide from './DefineSide';
@@ -26,7 +25,8 @@ export default function Board() : ReactElement {
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState({...nullSquares})
     const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
-    const [isStaleMate, setStaleMate] = useState<boolean>(false)
+    const [clickedPiece, setClickedPiece] = useState <HTMLImageElement>(null)
+    const [isStaleMate, setStaleMate] = useState <boolean>(false)
     const [draggedPieceCoords, setDraggedPieceCoords] = useState <Coords>({col: 0, row: 0})
     const [chessBoardOffsetLeft, setOffsetLeft] = useState <number>(0)
     const [chessBoardOffsetTop, setOffsetTop] = useState <number>(0)
@@ -35,8 +35,8 @@ export default function Board() : ReactElement {
     const [fieldSizes, setFieldSizes] = useState <Array<number>>([])
     const [castleAvailable, setCastleAvailable] = useState <Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState <string>(null)
-    const [promotedField, setPromotedField] = useState<string>(null)
-    const [variant, setVariant] = useState<string>(settings.choosenVariant)
+    const [promotedField, setPromotedField] = useState <string>(null)
+    const [variant, setVariant] = useState <string>('notChoosen')
     const [turn, setTurn] = useState <string>('White')
 
     const chessBoardRef = useRef<HTMLDivElement>(null)
@@ -167,9 +167,10 @@ export default function Board() : ReactElement {
                 }
             }
 
-            if (allLegalMoves.length === 1 && allLegalMoves[0].length === 1 && squares[allLegalMoves[0][0]].type === 'King') setStaleMate(true);
-            
-            
+            if (allLegalMoves.length === 1 && allLegalMoves[0].length === 1 && squares[allLegalMoves[0][0]].type === 'King') {
+                setStaleMate(true)
+                setVariant('notChoosen')
+            }
             
             const mated = allLegalMoves.every(legalMoves => legalMoves.length === 0);
 
@@ -177,10 +178,11 @@ export default function Board() : ReactElement {
                 if (variant === 'white') {
                     if (turn === 'Black') sounds.win.play()
                     if (turn === 'White') sounds.lose.play()
-                } else {
+                } else if (variant === 'black') {
                     if (turn === 'White') sounds.win.play()
                     if (turn === 'Black') sounds.lose.play()
                 }
+                setVariant('notChoosen')
             }
 
             return mated
@@ -195,7 +197,7 @@ export default function Board() : ReactElement {
             movesActiveFields[move] = 'pieceCanMoveHere'
         })
         movesActiveFields[currentPiece] = 'currentPiece'
-        setActiveFields({...activeFields, ...movesActiveFields})
+        setActiveFields({...movesActiveFields})
         return movesActiveFields
     }
     
@@ -207,16 +209,28 @@ export default function Board() : ReactElement {
         setActiveFields({...clearedActiveFields})
     }
 
+    function click(e : any, field : string) : void {
+        if (!e.target.classList.contains('canMoveHere') || variant === 'notChoosen') return
+        if (activeFields[field] || e.nativeEvent.path[1].classList.contains('canMoveHere')) {
+            drop(e)
+        }
+    }
+
     function dragStart(e : any) : void {
 
         e.preventDefault() 
+
+        if (variant === 'notChoosen') return
+        
+        if (e.target.src.includes(turn)) setClickedPiece(e.target)
         
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
         
-        if (e.target !== draggedPiece) setDraggedPiece(e.target);
+        if (e.target !== draggedPiece && e.target.src.includes(turn)) setDraggedPiece(e.target);
         
         if (!e.target.src.includes(turn)) return
-
+        
+        
         const x = e.clientX
         const y = e.clientY
 
@@ -264,9 +278,11 @@ export default function Board() : ReactElement {
     }
     
     function drop(e : any) : void {
-        if (!draggedPiece) return
-        if (!draggedPiece.src.includes(turn)) return
         
+        if (!draggedPiece && !clickedPiece) return
+        
+        if (draggedPiece && !draggedPiece.src.includes(turn)) return
+
         let x = 0
         let y = 0
 
@@ -274,6 +290,7 @@ export default function Board() : ReactElement {
         y = e.clientY
 
         const dropCoords = getFieldCoordinates(x, y)
+        
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
             const pieceFromThisField = alphs.posOut[draggedPieceCoords.row].toString() + draggedPieceCoords.col.toString() 
             const dropField = alphs.posOut[dropCoords.row].toString()  + dropCoords.col.toString() 
@@ -285,8 +302,9 @@ export default function Board() : ReactElement {
                 [dropField]: piece
             }
 
-            if ((dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black') 
-                || (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White')) 
+            if (((dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black') 
+                || (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White'))
+                && squares[dropField].color === turn) 
             {
                 setPromotedField(dropField)
             }
@@ -333,13 +351,16 @@ export default function Board() : ReactElement {
                 }
             }
 
-
             if ((squares[dropField] 
                 && squares[dropField].color === piece.color) 
-                || !activeFields[dropField]
-                || piece === squares[dropField]) {
+                || !activeFields[dropField]) {
+                if (piece === squares[dropField]) {
+                    if (draggedPiece) draggedPiece.setAttribute('style', '');
+                    setDraggedPiece(null)
+                    return
+                }
                 //if we clicked on illegal move field - reset all states and return
-                draggedPiece.setAttribute('style', '');
+                if (draggedPiece) draggedPiece.setAttribute('style', '');
                 setDraggedPiece(null)
                 removeActives()
                 return 
@@ -363,13 +384,15 @@ export default function Board() : ReactElement {
             console.log(makedMoves); // all played moves here!
 
             setEnpassantAvailable(null)
-            draggedPiece.setAttribute('style', '');
+            if (draggedPiece) draggedPiece.setAttribute('style', '');
             setTurn(turn === 'White' ? 'Black' : 'White')
-            setDraggedPiece(null)   
+            setDraggedPiece(null)
+            setClickedPiece(null)  
             removeActives()
         } else {
-            draggedPiece.setAttribute('style', '');
+            if (draggedPiece) draggedPiece.setAttribute('style', '');
             setDraggedPiece(null)
+            setClickedPiece(null)
             removeActives()
             return 
         }
@@ -390,6 +413,7 @@ export default function Board() : ReactElement {
                 squares={squares} 
                 activeFields={activeFields}
                 variant={variant}
+                click={click}
                 dragStart={dragStart} 
                 dragMove={dragMove} 
                 drop={drop} 

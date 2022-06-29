@@ -8,6 +8,10 @@ export interface keyableSquares {
     [key: string]: IPiece | null
 }
 
+export interface keyableStringOrBoolean {
+    [key: string]: boolean | string
+}
+
 export interface keyableSVGElement {
     [key: string] : React.FunctionComponent<React.SVGAttributes<SVGElement>>
 }

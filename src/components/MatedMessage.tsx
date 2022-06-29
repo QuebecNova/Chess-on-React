@@ -7,7 +7,7 @@ type MatedMessageProps = {
     isStaleMate: boolean;
 }
 
-export default function MatedMessage({turn, restartGame, mated, isStaleMate}: MatedMessageProps) : ReactElement {
+export default function MatedMessage({ turn, restartGame, mated, isStaleMate }: MatedMessageProps) : ReactElement {
 
     const mateMessage = isStaleMate ? 'Stalemate!' : 'Mate!'
     const message = isStaleMate ? 'Draw!' : `${turn === 'White' ? 'Black' : 'White'} player wins`!

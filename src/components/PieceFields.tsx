@@ -5,6 +5,7 @@ type PieceFieldsProps = {
     squares: object;
     activeFields: object;
     variant: string;
+    click: (e : any, field : string) => void;
     dragStart: (e : any) => void;
     dragMove: (e : any) => void;
     drop: (e : any) => void;
@@ -16,6 +17,7 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
         squares,
         activeFields,
         variant,
+        click,
         dragStart,
         dragMove,
         drop,
@@ -36,9 +38,9 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
 
         if (squares[field]) {
             board.push(
-                <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index}>
+                <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index} onClick={(e) => click(e, field)}>
                     <img 
-                        src={squares[field].img} 
+                        src={squares[field].img}
                         onMouseDown={e => dragStart(e)}
                         onMouseMove={e => dragMove(e)} 
                         onMouseUp={e => drop(e)}
@@ -51,7 +53,7 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
             )
         } else {
             board.push(
-                <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index}/>
+                <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index} onClick={(e) => click(e, field)}/>
             )
         }
         index++
@@ -62,7 +64,7 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
 
     return (
         <>
-            {variant === 'white' ? board : board.reverse()}
+            {variant === 'black' ? board.reverse() : board}
         </>
     )
 }

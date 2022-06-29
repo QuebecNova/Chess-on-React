@@ -31,6 +31,7 @@
 
 .canMoveHere {
     background-color: rgb(98, 136, 29);
+    cursor: pointer;
 }
 
 .current-piece {

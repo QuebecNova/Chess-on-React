@@ -25,6 +25,10 @@
       width: 59px;
       height: 59px;
     }
+
+    .board__define-side p {
+      font-size: 1.2em;
+    }
 }
     
 @media screen and (max-width: 499px) {
@@ -42,6 +46,16 @@
       width: 315px;
       height: 315px;
       margin-bottom: 200px;
+    }
+
+    .board__define-side button {
+      width: 150px;
+      height: 40px;
+      margin: 15px
+    }
+
+    .board__define-side p {
+      font-size: 1em;
     }
 
     img {
