@@ -299,10 +299,10 @@ export default function Board() : ReactElement {
                 [pieceFromThisField]: null,
                 [dropField]: piece
             }
-
+            
             if (((dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black') 
                 || (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White'))
-                && squares[dropField].color === turn) 
+                && piece.color === turn) 
             {
                 setPromotedField(dropField)
             }
