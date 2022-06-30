@@ -31,9 +31,15 @@ class Knight extends Piece {
     ]
 
     rawMoves.forEach(move => {
-        if (squareState[move] && (squareState[move].color === this.color)) return
-        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9) moves.push(move)
+      
+        const pieceOnMove = squareState[move]
+        const samePieceOnMove = pieceOnMove && squareState[move].color === this.color
+        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
+
+        if (samePieceOnMove) return
+        if (moveLeadsToCheck) return
+        if (movePassingValidation) moves.push(move)
     })
 
     return moves

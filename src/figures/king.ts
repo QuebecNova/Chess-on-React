@@ -27,7 +27,8 @@ class King extends Piece {
     initialState? : keyableSquares
     ) {
     
-    if (movesLeadsToCheck && movesLeadsToCheck[from]) {
+    const isKingOnCheck = movesLeadsToCheck && movesLeadsToCheck[from]
+    if (isKingOnCheck) {
         this.onCheck = true
     } else {
         this.onCheck = false
@@ -55,75 +56,115 @@ class King extends Piece {
         from,
         alphs.changeAlphPos(from, '-', 3),
     ]
-
+    
     rawMoves.forEach((move, index) => {
-        if (squareState[move] && squareState[move].color === this.color && squareState[move].type !== 'King') return
-        if (index > 7) {
-            //checking for castle available
+
+        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9 && index < 11)
+        
+        const pieceOnMove = squareState[move]
+        const samePieceOnMove = pieceOnMove && squareState[move].color === this.color
+
+        const kingOnCheck = movesLeadsToCheck && movesLeadsToCheck[from]
+
+        if (samePieceOnMove && pieceOnMove.type !== 'King') return
+
+        //castle logic
+        const kingMoved = this.lastMoves.length > 0
+        const castilngMove = index > 7
+        
+        if (castilngMove) {
+        
+            const castlingToRight = index === 8
+            const castlingToLeft = index === 9
+
             //GOD HELP ME
             //THAT'S SMELLS LIKE A BOLEAN ALGEBRA
-            if (index === 8 
-                && (this.lastMoves.length === 0 
-                    && squareState[rookRight] 
-                    && squareState[rookRight].type === 'Rook' 
-                    && initialState[rookRight].type === 'Rook' 
-                    && initialState[rookRight].lastMoves.length === 0
-                    && !squareState[rawMoves[2]]
-                    && !squareState[move]
-                    && movesLeadsToCheck
-                    && !movesLeadsToCheck[rawMoves[2]]
-                    && !movesLeadsToCheck[move]))
-            {
+            const castlePassingValidationToRight = 
+                (!kingMoved 
+                && squareState[rookRight] 
+                && squareState[rookRight].type === 'Rook' 
+                && initialState[rookRight].type === 'Rook' 
+                && initialState[rookRight].lastMoves.length === 0
+                && !pieceOnMove
+                && !squareState[rawMoves[2]]
+                && !kingOnCheck
+                && movesLeadsToCheck
+                && !movesLeadsToCheck[rawMoves[2]])
+
+            const castlePassingValidationToLeft = 
+                (!kingMoved 
+                && squareState[rookLeft] 
+                && squareState[rookLeft].type === 'Rook'
+                && initialState[rookLeft].type === 'Rook' 
+                && initialState[rookLeft].lastMoves.length === 0
+                && !pieceOnMove
+                && !squareState[rawMoves[6]]
+                && !squareState[rawMoves[11]]
+                && !kingOnCheck
+                && movesLeadsToCheck
+                && !movesLeadsToCheck[rawMoves[6]])
+
+            if (castlingToRight && castlePassingValidationToRight) {
                 moves.push(rawMoves[8])
                 moves.push('castleRight')
                 return
             }
             
-            if (index === 9
-                && (this.lastMoves.length === 0 
-                    && squareState[rookLeft] 
-                    && squareState[rookLeft].type === 'Rook'
-                    && initialState[rookLeft].type === 'Rook' 
-                    && initialState[rookLeft].lastMoves.length === 0
-                    && !squareState[rawMoves[6]]
-                    && !squareState[move]
-                    && !squareState[rawMoves[11]]
-                    && movesLeadsToCheck
-                    && !movesLeadsToCheck[rawMoves[6]]
-                    && !movesLeadsToCheck[move]))
-            {
+            if (castlingToLeft && castlePassingValidationToLeft) {
                 moves.push(rawMoves[9])
                 moves.push('castleLeft')
                 return
             }
         }
-        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9 && index < 11) moves.push(move)
 
-        if (movesLeadsToCheck) {
-            if (movesLeadsToCheck[rawMoves[6]]
-                || movesLeadsToCheck[from]
-                || this.lastMoves.length !== 0
-                || !squareState[rookLeft] 
-                || (initialState[rookLeft] 
-                    && squareState[rookLeft].type === 'Rook' 
-                    && initialState[rookLeft].lastMoves.length !== 0) 
-                || squareState[rawMoves[6]] 
-                || squareState[rawMoves[9]] 
-                || squareState[rawMoves[11]]) {
-                moves = arrayRemove(moves, rawMoves[9])
-            }
-            if (movesLeadsToCheck[rawMoves[2]]
-                || movesLeadsToCheck[from]
-                || this.lastMoves.length !== 0
-                || !squareState[rookRight]
-                || (initialState[rookRight] 
-                    && squareState[rookRight].type === 'Rook' 
-                    && initialState[rookRight].lastMoves.length !== 0) 
-                || squareState[rawMoves[2]] 
-                || squareState[rawMoves[8]])  {
-                moves = arrayRemove(moves, rawMoves[8])
-            }
+        if (moveLeadsToCheck) return
+        if (movePassingValidation) moves.push(move)
+
+        //checking that enemy piece attacking field that used to castle king
+        //or your piece blocking castling
+        //or (king or rook) moved or not on the right spot
+        //if true => delete castle move
+
+        const sameColorPieceBlockingCastleToLeft = 
+        (squareState[rawMoves[6]] 
+        || squareState[rawMoves[9]] 
+        || squareState[rawMoves[11]])
+
+        const rookLeftMoved = 
+            (initialState[rookLeft] 
+            && squareState[rookLeft].type === 'Rook' 
+            && initialState[rookLeft].lastMoves.length !== 0)
+
+        const rookRightMoved =
+            (initialState[rookRight] 
+            && squareState[rookRight].type === 'Rook' 
+            && initialState[rookRight].lastMoves.length !== 0)
+
+        const somethingBlockingCastleToLeft = 
+            ((movesLeadsToCheck 
+            && movesLeadsToCheck[rawMoves[6]])
+            || kingOnCheck
+            || kingMoved
+            || !squareState[rookLeft]
+            || rookLeftMoved
+            || sameColorPieceBlockingCastleToLeft)
+
+        const somethingBlockingCastleToRight =
+            ((movesLeadsToCheck 
+            && movesLeadsToCheck[rawMoves[2]])
+            || kingOnCheck
+            || kingMoved
+            || !squareState[rookRight]
+            || rookRightMoved 
+            || squareState[rawMoves[2]] 
+            || squareState[rawMoves[8]])
+
+        if (somethingBlockingCastleToLeft) {
+            moves = arrayRemove(moves, rawMoves[9])
+        }
+        if (somethingBlockingCastleToRight)  {
+            moves = arrayRemove(moves, rawMoves[8])
         }
     })
     

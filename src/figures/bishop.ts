@@ -19,10 +19,10 @@ class Bishop extends Piece {
     ) {
     const moves = []
 
-    let NWdiagonalMoves = false
-    let SEdiagonalMoves = false
-    let NEdiagonalMoves = false
-    let SWdiagonalMoves = false
+    let NWDiagonalMoved = false
+    let SEDiagonalMoved = false
+    let NEDiagonalMoved = false
+    let SWDiagonalMoved = false
     
     const rawMoves = [
         //NW diagonal 0-6
@@ -64,67 +64,63 @@ class Bishop extends Piece {
 
     rawMoves.forEach((move, index) => {
 
-        //NWdiagonalMoves = index < 7
-        //SEdiagonalMoves = (index > 6 && index < 14)
+        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
 
-        //NEdiagonalMoves = (index > 13 && index < 21)
-        //SWdiagonalMoves = index > 20
-
+        const NWDiagonal = index < 7
+        const SEDiagonal = (index > 6 && index < 14)
+        const NEDiagonal = (index > 13 && index < 21)
+        const SWDiagonal = index > 20
         
-        if (index < 7 && NWdiagonalMoves) return
-        if ((index > 6 && index < 14) && SEdiagonalMoves) return
-        if ((index > 13 && index < 21) && NEdiagonalMoves) return
-        if (index > 20 && SWdiagonalMoves) return
+        if (NWDiagonal && NWDiagonalMoved) return
+        if (SEDiagonal && SEDiagonalMoved) return
+        if (NEDiagonal && NEDiagonalMoved) return
+        if (SWDiagonal && SWDiagonalMoved) return
         
         if (squareState[move]) {
             
             const sameColor = squareState[move].color === this.color
             const enemyColor = squareState[move].color !== this.color
 
-            if (index < 7) {
-                //backRowMoves = index < 7
+            if (NWDiagonal) {
                 if (sameColor) {
-                    NWdiagonalMoves = true
+                    NWDiagonalMoved = true
                     return
                 } else if (enemyColor) {
-                    NWdiagonalMoves = true
+                    NWDiagonalMoved = true
                 }
             }
 
-            if (index > 6 && index < 14) {
-                //frontRowMoves = (index > 6 && index < 14)
+            if (SEDiagonal) {
                 if (sameColor) {
-                    SEdiagonalMoves = true
+                    SEDiagonalMoved = true
                     return
                 } else if (enemyColor) {
-                    SEdiagonalMoves = true
+                    SEDiagonalMoved = true
                 }
             }
 
-            if (index > 13 && index < 21) {
-                //backColMoves = (index > 13 && index < 21)
+            if (NEDiagonal) {
                 if (sameColor) {
-                    NEdiagonalMoves = true
+                    NEDiagonalMoved = true
                     return
                 } else if (enemyColor) {
-                    NEdiagonalMoves = true
+                    NEDiagonalMoved = true
                 }
             }
 
-            if (index > 20) {
-                //frontColMoves = index > 20
+            if (SWDiagonal) {
                 if (sameColor) {
-                    SWdiagonalMoves = true
+                    SWDiagonalMoved = true
                     return
                 } else if (enemyColor) {
-                    SWdiagonalMoves = true
+                    SWDiagonalMoved = true
                 }
             }
         }
-        
-        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
 
-        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9) moves.push(move)
+        if (moveLeadsToCheck) return
+        if (movePassingValidation) moves.push(move)
     })
 
     return moves

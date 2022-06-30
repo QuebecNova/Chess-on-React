@@ -182,9 +182,7 @@ export default function Board() : ReactElement {
                     if (turn === 'White') sounds.win.play()
                     if (turn === 'Black') sounds.lose.play()
                 }
-                setVariant('notChoosen')
             }
-
             return mated
         }
         
