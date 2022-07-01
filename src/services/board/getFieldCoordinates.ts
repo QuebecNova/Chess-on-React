@@ -8,7 +8,7 @@ function getFieldCoordinates(coords: keyableNumbers, chessBoardOffsets : keyable
 
     //mouse positions(x, y) including borders, and board offset
     
-    let x = coords.x - chessBoardOffsets.left + 5
+    let x = coords.x - chessBoardOffsets.left - 5
     let y = coords.y - chessBoardOffsets.top - 5
 
     const xCoord = x
