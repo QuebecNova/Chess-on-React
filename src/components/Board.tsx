@@ -26,12 +26,11 @@ const makedMoves = []
 const rawMakedMoves = []
 export { rawMakedMoves }
 const initialPositions = setupBoard()
-const nullSquares = getSquares(null)
 
 export default function Board() : ReactElement {
 
     const [squares, setSquares] = useState(initialPositions)
-    const [activeFields, setActiveFields] = useState({...nullSquares})
+    const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
     const [clickedPiece, setClickedPiece] = useState <HTMLImageElement>(null)
     const [isStaleMate, setStaleMate] = useState <boolean>(false)
