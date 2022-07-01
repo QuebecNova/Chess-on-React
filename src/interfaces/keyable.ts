@@ -1,7 +1,7 @@
 import IPiece from "./IPiece"
 
 export interface keyableString {
-    [key: string]: string
+    [key: string]: string | null
 }
 
 export interface keyableSquares {
@@ -10,6 +10,10 @@ export interface keyableSquares {
 
 export interface keyableStringOrBoolean {
     [key: string]: boolean | string
+}
+
+export interface keyableNumbers {
+    [key: string]: number
 }
 
 export interface keyableSVGElement {

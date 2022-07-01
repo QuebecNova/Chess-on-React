@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import sounds from '../services/sounds'
+import sounds from '../services/misc/sounds'
 
 type Props = {
     setVariant: React.Dispatch<React.SetStateAction<string>>

@@ -1,4 +1,4 @@
-import IAlphs from "../interfaces/IAlphs"
+import IAlphs from "../../interfaces/IAlphs"
 
 const alphs : IAlphs = {
     posIn: {

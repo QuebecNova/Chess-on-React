@@ -1,17 +1,25 @@
 import React from 'react'
 import { useState, useEffect, useRef, useMemo, ReactElement } from 'react'
-import { keyableSquares, keyableString } from '../interfaces/keyable';
-import { useCallback } from 'react'
-import alphs from '../services/alphabetPositions'
+
+import { keyableNumbers } from '../interfaces/keyable';
+import Coords from '../interfaces/Coords';
+
+import { getMovesThatLeadsToCheck, isMated } from '../services/board/checkAndMateHandler';
+import { addActives, removeActives } from '../services/board/setActives';
+import { setCastle, setEnpassant } from '../services/board/dragStartHandlers';
+import { checkForCastle, checkForEnpassant } from '../services/board/dropHandlers';
+import getFieldCoordinates from '../services/board/getFieldCoordinates';
+import getSquares from "../services/board/getSquares";
+
+import sounds, { playTakedPieceSound } from '../services/misc/sounds'
+import alphs from '../services/math/alphabetPositions'
+import touch2Mouse from '../services/misc/touch2mouse'
+
 import setupBoard from '../configs/setupBoard'
-import getSquares from "../services/getSquares";
-import touch2Mouse from '../services/touch2mouse'
-import sounds from '../services/sounds'
+
 import PieceFields from './PieceFields'
 import MatedMessage from './MatedMessage';
 import Promotion from './Promotion';
-import Coords from '../interfaces/Coords';
-import IPiece from '../interfaces/IPiece';
 import DefineSide from './DefineSide';
 
 const makedMoves = []
@@ -28,10 +36,8 @@ export default function Board() : ReactElement {
     const [clickedPiece, setClickedPiece] = useState <HTMLImageElement>(null)
     const [isStaleMate, setStaleMate] = useState <boolean>(false)
     const [draggedPieceCoords, setDraggedPieceCoords] = useState <Coords>({col: 0, row: 0})
-    const [chessBoardOffsetLeft, setOffsetLeft] = useState <number>(0)
-    const [chessBoardOffsetTop, setOffsetTop] = useState <number>(0)
-    const [offsetX, setOffsetX] = useState <number>(43.75)
-    const [offsetY, setOffsetY] = useState <number>(43.75)
+    const [chessBoardOffsets, setChessBoardOffsets] = useState <keyableNumbers>({left: 0, top: 0})
+    const [fieldOffsets, setFieldOffsets] = useState <keyableNumbers>({x: 43.75, y: 43.75})
     const [fieldSizes, setFieldSizes] = useState <Array<number>>([])
     const [castleAvailable, setCastleAvailable] = useState <Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState <string>(null)
@@ -48,12 +54,12 @@ export default function Board() : ReactElement {
     
         function addUpRowsAndCols(chessBoard : HTMLDivElement) : void {
 
-          setOffsetLeft(chessBoard.offsetLeft)
-          setOffsetTop(chessBoard.offsetTop)
+          setChessBoardOffsets({left: chessBoard.offsetLeft, top: chessBoard.offsetTop})
+
           const boardWidth  = chessBoard.clientWidth
           const fieldWidth = boardWidth / 8
-          setOffsetX(fieldWidth / 2.1)
-          setOffsetY(fieldWidth / 1.9)
+
+          setFieldOffsets({x: fieldWidth / 2.1, y: fieldWidth / 1.9})
         
           let fieldStartsOn = 0;
           const fieldStartsOnArr : Array<number> = [];
@@ -71,141 +77,17 @@ export default function Board() : ReactElement {
         }
         
         new ResizeObserver(resizedBoard).observe(chessBoard)
-      }, [])
+      }, [window.devicePixelRatio])
 
-    function getFieldCoordinates(x : number, y : number) : Coords {
-        //displaying coordinates of the mouse related to the board
-        // example: cursor at b3: b = row(2), 3 = col(3)
-        // if cursor out the board one of the coords is 0
-
-        //mouse positions(x, y) including borders, and board offset
-        x -= chessBoardOffsetLeft + 5
-        y -= chessBoardOffsetTop + 5
-
-        const xCoord = x
-        const yCoord = y
-
-        const fieldCoords = {row: 0, col: 0}
-
-        if (variant === 'black') {
-            x = yCoord
-            y = xCoord
-        }
-
-        fieldSizes.forEach((fieldStartsOn, index) => {
-        if (x >= fieldStartsOn && x <= fieldSizes[index + 1]) {
-            const row = index + 1
-            variant === 'black' ? fieldCoords.col = row : fieldCoords.row = row
-        } 
-        })
-
-        const fieldSizesReversed = fieldSizes.slice().reverse()
-        fieldSizesReversed.forEach((fieldStartsOn, index) => {
-        if (y <= fieldStartsOn && y >= fieldSizesReversed[index + 1]) {
-            const col = index + 1
-            variant === 'black' ? fieldCoords.row = col : fieldCoords.col = col
-        }
-        })
-
-        return fieldCoords
-    }
-
-    const getMovesThatLeadsToCheck = useCallback((squares : keyableSquares, draggedPiece : IPiece, coords : string) => {
-        
-        const kingOnCheckAfterThisMoves = {...nullSquares}
-        //simulating next move for check
-        const moves = draggedPiece.canMove(coords, squares, null, initialPositions)
-        moves.forEach((move : string) => {
-            const pieceOnField = {
-                [coords]: null,
-                [move]: draggedPiece
-            }
-            const simulateNextMoveSquares = {
-                ...squares,
-                ...pieceOnField
-            }
-
-            const simulateNextOppositeMoves = {...nullSquares}
-            for (const field in simulateNextMoveSquares) {
-                if (simulateNextMoveSquares[field] && simulateNextMoveSquares[field].color !== turn) {
-                    const moves = simulateNextMoveSquares[field].canMove
-                        (field, simulateNextMoveSquares, null, initialPositions)
-
-                     moves.forEach(move => {
-                        if (move) simulateNextOppositeMoves[move] = simulateNextMoveSquares[field]
-                    })
-                }
-            }
-
-            for (const field in simulateNextMoveSquares) {
-                if (simulateNextMoveSquares[field] 
-                    && simulateNextOppositeMoves[field] 
-                    && simulateNextMoveSquares[field].type === 'King' 
-                    && simulateNextMoveSquares[field].color === turn)
-                    kingOnCheckAfterThisMoves[move] = simulateNextMoveSquares[field]
-            }
-        })
-
-        return kingOnCheckAfterThisMoves
-    }, [turn])
-    
     const mated : boolean = useMemo(() => {
+        const matedOrStaleMated = isMated(squares, turn)
 
-        function isMated() : boolean {
-    
-            //simulating next move for check
-            const allLegalMoves = []
-            for (const field in squares) {
-                if (squares[field]) {
-                    if (squares[field].color === turn) {
-                        allLegalMoves.push(squares[field].canMove
-                            (field, squares, getMovesThatLeadsToCheck(squares, squares[field], field), initialPositions))
-                            
-                        //checked or not
-                        if (squares[field].onCheck) sounds.check.play()
-                    }
-                }
-            }
-
-            if (allLegalMoves.length === 1 && allLegalMoves[0].length === 1 && squares[allLegalMoves[0][0]].type === 'King') {
-                setStaleMate(true)
-                setVariant('notChoosen')
-            }
-            
-            const mated = allLegalMoves.every(legalMoves => legalMoves.length === 0);
-
-            if(mated) {
-                if (variant === 'white') {
-                    if (turn === 'Black') sounds.win.play()
-                    if (turn === 'White') sounds.lose.play()
-                } else if (variant === 'black') {
-                    if (turn === 'White') sounds.win.play()
-                    if (turn === 'Black') sounds.lose.play()
-                }
-            }
-            return mated
+        if (typeof matedOrStaleMated === 'string') {
+            setStaleMate(true)
+        } else {
+             return matedOrStaleMated
         }
-        
-        return isMated()
-    }, [squares, turn, getMovesThatLeadsToCheck, variant])
-
-    function addActives(moves : Array<string>, currentPiece : string) : keyableString  {
-        const movesActiveFields = {}
-        moves.forEach((move) => {
-            movesActiveFields[move] = 'pieceCanMoveHere'
-        })
-        movesActiveFields[currentPiece] = 'currentPiece'
-        setActiveFields({...movesActiveFields})
-        return movesActiveFields
-    }
-    
-    function removeActives() : void {
-        const clearedActiveFields = {}
-        for (const field in activeFields) {
-            clearedActiveFields[field] = false
-        }
-        setActiveFields({...clearedActiveFields})
-    }
+    }, [squares, turn])
 
     function click(e : any, field : string) : void {
         if (!e.target.classList.contains('canMoveHere') || variant === 'notChoosen') return
@@ -228,47 +110,34 @@ export default function Board() : ReactElement {
         
         if (!e.target.src.includes(turn)) return
         
-        
         const x = e.clientX
         const y = e.clientY
 
-        const localDraggedPieceCoords = getFieldCoordinates(x, y)
-        setDraggedPieceCoords(getFieldCoordinates(x, y))
+        const coords = {x: e.clientX, y: e.clientY}
+        
+        const localDraggedPieceCoords = getFieldCoordinates(coords, chessBoardOffsets, fieldSizes, variant)
+        setDraggedPieceCoords(localDraggedPieceCoords)
 
         const pieceField = alphs.posOut[localDraggedPieceCoords.row].toString() + localDraggedPieceCoords.col.toString()
         const piece = squares[pieceField]
         const moves = piece.canMove
-            (pieceField, squares, getMovesThatLeadsToCheck(squares, piece, pieceField), initialPositions)
+            (pieceField, squares, getMovesThatLeadsToCheck(squares, piece, pieceField, turn), initialPositions)
 
-        if (moves.length 
-            && piece.type === 'Pawn' 
-            && moves.slice().pop().includes('enpassant')) {
-                setEnpassantAvailable(moves.slice().pop())
-        }
-            
-        if (moves.length  && piece.type === 'King') {
-            const castleOnThisSides = []
-            if (moves.includes('castleRight')) castleOnThisSides.push('castleRight')
-            if (moves.includes('castleLeft')) castleOnThisSides.push('castleLeft')
-            setCastleAvailable(castleOnThisSides)
-        }
-
-        addActives(moves, pieceField)
+        setEnpassant(moves, piece, setEnpassantAvailable)
+        setCastle(moves, piece, setCastleAvailable)
+        addActives(moves, pieceField, setActiveFields)
         
         e.target.style.position = 'absolute'
-        e.target.style.left = `${x - offsetX}px`
-        e.target.style.top = `${y - offsetY}px`
+        e.target.style.left = `${x - fieldOffsets.x}px`
+        e.target.style.top = `${y - fieldOffsets.y}px`
     }
     
     function dragMove(e : any) : void {
         if (!draggedPiece) return
         if (!draggedPiece.src.includes(turn)) return
 
-        let x = 0
-        let y = 0
-
-        x = e.clientX - offsetX
-        y = e.clientY - offsetY
+        const x = e.clientX - fieldOffsets.x
+        const y = e.clientY - fieldOffsets.y
     
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
@@ -281,13 +150,9 @@ export default function Board() : ReactElement {
         
         if (draggedPiece && !draggedPiece.src.includes(turn)) return
 
-        let x = 0
-        let y = 0
+        const coords = {x: e.clientX, y: e.clientY}
 
-        x = e.clientX
-        y = e.clientY
-
-        const dropCoords = getFieldCoordinates(x, y)
+        const dropCoords = getFieldCoordinates(coords, chessBoardOffsets, fieldSizes, variant)
         
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
             const pieceFromThisField = alphs.posOut[draggedPieceCoords.row].toString() + draggedPieceCoords.col.toString() 
@@ -295,105 +160,65 @@ export default function Board() : ReactElement {
             const piece = squares[pieceFromThisField]
             let empassanted = false
 
-            const pieceOnField = {
+            let pieceOnField = {
                 [pieceFromThisField]: null,
                 [dropField]: piece
             }
-            
-            if (((dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black') 
-                || (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White'))
-                && piece.color === turn) 
-            {
-                setPromotedField(dropField)
-            }
 
+            const blackPawnOnPromotionField = (dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black')
+            const whitePawnOnPromotionField = (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White')
+            const pawnOnPromotionField = (blackPawnOnPromotionField || whitePawnOnPromotionField)
+
+            if (pawnOnPromotionField && piece.color === turn) setPromotedField(dropField)
 
             if (enpassantAvailable) {
-                let enpassantedField : string
-                if (piece.color === 'White' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
-                if (piece.color === 'White' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
-                if (piece.color === 'Black' && enpassantAvailable.includes('Left')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '-', 1)
-                if (piece.color === 'Black' && enpassantAvailable.includes('Right')) enpassantedField = alphs.changeAlphPos(pieceFromThisField, '+', 1)
-                if (dropField === alphs.changeAlphPos(pieceFromThisField, '+', 1, '+', 1) 
-                    || dropField === alphs.changeAlphPos(pieceFromThisField, '+', 1, '-', 1)
-                    || dropField === alphs.changeAlphPos(pieceFromThisField, '-', 1, '-', 1)
-                    || dropField === alphs.changeAlphPos(pieceFromThisField, '-', 1, '+', 1)) 
-                    {
-                        pieceOnField[enpassantedField] = null
-                        empassanted = true
-                    }
-            }
-            
-            if (castleAvailable) {
-
-                const kingMovedLeft = (alphs.changeAlphPos(pieceFromThisField, '-', 2) === dropField)
-                const kingMovedRight = (alphs.changeAlphPos(pieceFromThisField, '+', 2) === dropField)
-                let castledRookLeft : string
-                let castledRookRight : string
-                const rookLeft = alphs.changeAlphPos(pieceFromThisField, '-', 4)
-                const rookRight = alphs.changeAlphPos(pieceFromThisField, '+', 3)
-
-                castleAvailable.forEach(castle => {
-                    if (castle.includes('Left') && kingMovedLeft) castledRookLeft = alphs.changeAlphPos(rookLeft, '+', 3)
-                    if (castle.includes('Right') && kingMovedRight) castledRookRight = alphs.changeAlphPos(rookRight, '-', 2)
-                })
-
-                if (castledRookLeft) {
-                    pieceOnField[rookLeft] = null
-                    pieceOnField[castledRookLeft] = squares[rookLeft]
-                }
-
-                if (castledRookRight) {
-                    pieceOnField[rookRight] = null
-                    pieceOnField[castledRookRight] = squares[rookRight]
-                }
+                const enpassantedFields = checkForEnpassant(squares, dropField, pieceFromThisField, enpassantAvailable)
+                pieceOnField = {...pieceOnField, ...enpassantedFields}
+                empassanted = true
             }
 
-            if ((squares[dropField] 
-                && squares[dropField].color === piece.color) 
-                || !activeFields[dropField]) {
-                if (piece === squares[dropField]) {
+            if (castleAvailable.length) {
+                const castledFields = checkForCastle(squares, dropField, pieceFromThisField, castleAvailable)
+                pieceOnField = {...pieceOnField, ...castledFields}
+            }
+
+            const IllegalMove = 
+                (squares[dropField] && squares[dropField].color === piece.color) || !activeFields[dropField]
+            const tryingToMoveOnInitialField = piece === squares[dropField]
+
+            if (IllegalMove) {
+                if (tryingToMoveOnInitialField) {
                     if (draggedPiece) draggedPiece.setAttribute('style', '');
                     setDraggedPiece(null)
                     return
                 }
-                //if we clicked on illegal move field - reset all states and return
-                if (draggedPiece) draggedPiece.setAttribute('style', '');
-                setDraggedPiece(null)
-                removeActives()
+                resetAll(draggedPiece)
                 return 
             }
 
-            setSquares(squares => ({
-                ...squares,
-                ...pieceOnField,
-            }))
+            setSquares({...squares, ...pieceOnField})
+            playTakedPieceSound(squares[dropField], empassanted)
 
-            if (squares[dropField] || empassanted) {
-                sounds.takePiece.play()
-            } else {
-                sounds.placePiece.play()
-            }
-
-            //last moves
+            //last moves, all played moves here!
             makedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)
             rawMakedMoves.push(`${piece.type.slice(0, 1)}${pieceFromThisField}`)
             if (piece.lastMoves) piece.lastMoves.push(pieceFromThisField)
-            console.log(makedMoves); // all played moves here!
+            console.log(makedMoves); 
+            //
 
-            setEnpassantAvailable(null)
-            if (draggedPiece) draggedPiece.setAttribute('style', '');
+            resetAll(draggedPiece)
             setTurn(turn === 'White' ? 'Black' : 'White')
-            setDraggedPiece(null)
-            setClickedPiece(null)  
-            removeActives()
         } else {
-            if (draggedPiece) draggedPiece.setAttribute('style', '');
-            setDraggedPiece(null)
-            setClickedPiece(null)
-            removeActives()
-            return 
+            resetAll(draggedPiece)
         }
+    }
+
+    function resetAll(draggedPiece : HTMLImageElement) {
+        if (draggedPiece) draggedPiece.setAttribute('style', '');
+        setEnpassantAvailable(null)
+        setDraggedPiece(null)
+        setClickedPiece(null)  
+        removeActives(activeFields, setActiveFields)
     }
 
     function restartGame() : void {
@@ -424,7 +249,13 @@ export default function Board() : ReactElement {
                 squares={squares} 
                 setSquares={setSquares}
             />
-            <MatedMessage turn={turn} restartGame={restartGame} mated={mated} isStaleMate={isStaleMate}/>
+            <MatedMessage 
+                turn={turn} 
+                restartGame={restartGame} 
+                mated={mated} 
+                isStaleMate={isStaleMate} 
+                variant={variant}
+            />
         </div>
     )
 }

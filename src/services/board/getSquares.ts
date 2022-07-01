@@ -1,4 +1,4 @@
-import { keyableSquares } from "../interfaces/keyable";
+import { keyableSquares } from "../../interfaces/keyable";
 
 export default function getSquares(value : null) : keyableSquares {
 

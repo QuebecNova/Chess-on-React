@@ -5,7 +5,7 @@ import Knight from "../figures/knight";
 import Pawn from "../figures/pawn";
 import Queen from "../figures/queen";
 import Bishop from "../figures/bishop";
-import getSquares from "../services/getSquares";
+import getSquares from "../services/board/getSquares";
 
 const nullSquares = getSquares(null)
 

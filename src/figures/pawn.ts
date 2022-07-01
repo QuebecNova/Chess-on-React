@@ -1,6 +1,6 @@
 import Piece from "./piece";
-import piecesImages from "../services/piecesImages";
-import alphs from "../services/alphabetPositions";
+import piecesImages from "../services/misc/piecesImages";
+import alphs from "../services/math/alphabetPositions";
 import { rawMakedMoves } from "../components/Board";
 import { keyableSquares } from "../interfaces/keyable";
 

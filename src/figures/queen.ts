@@ -1,5 +1,5 @@
 import Piece from "./piece";
-import piecesImages from "../services/piecesImages";
+import piecesImages from "../services/misc/piecesImages";
 import Bishop from "./bishop";
 import Rook from "./rook";
 import { keyableSquares } from "../interfaces/keyable";
