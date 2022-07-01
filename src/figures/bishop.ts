@@ -18,11 +18,6 @@ class Bishop extends Piece {
     movesLeadsToCheck : keyableSquares
     ) {
     const moves = []
-
-    let NWDiagonalMoved = false
-    let SEDiagonalMoved = false
-    let NEDiagonalMoved = false
-    let SWDiagonalMoved = false
     
     const rawMoves = [
         //NW diagonal 0-6
@@ -62,59 +57,65 @@ class Bishop extends Piece {
         alphs.changeAlphPos(from, '+', 7, '-', 7),
     ]
 
+    let NWDiagonalHavePiece = false
+    let SEDiagonalHavePiece = false
+    let NEDiagonalHavePiece = false
+    let SWDiagonalHavePiece = false
+
     rawMoves.forEach((move, index) => {
 
         const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
         const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
+        const pieceOnMove = squareState[move]
 
         const NWDiagonal = index < 7
         const SEDiagonal = (index > 6 && index < 14)
         const NEDiagonal = (index > 13 && index < 21)
         const SWDiagonal = index > 20
         
-        if (NWDiagonal && NWDiagonalMoved) return
-        if (SEDiagonal && SEDiagonalMoved) return
-        if (NEDiagonal && NEDiagonalMoved) return
-        if (SWDiagonal && SWDiagonalMoved) return
+        if (NWDiagonal && NWDiagonalHavePiece) return
+        if (SEDiagonal && SEDiagonalHavePiece) return
+        if (NEDiagonal && NEDiagonalHavePiece) return
+        if (SWDiagonal && SWDiagonalHavePiece) return
         
-        if (squareState[move]) {
+        if (pieceOnMove) {
             
-            const sameColor = squareState[move].color === this.color
-            const enemyColor = squareState[move].color !== this.color
+            const sameColor = pieceOnMove.color === this.color
+            const enemyColor = pieceOnMove.color !== this.color
 
             if (NWDiagonal) {
                 if (sameColor) {
-                    NWDiagonalMoved = true
+                    NWDiagonalHavePiece = true
                     return
                 } else if (enemyColor) {
-                    NWDiagonalMoved = true
+                    NWDiagonalHavePiece = true
                 }
             }
 
             if (SEDiagonal) {
                 if (sameColor) {
-                    SEDiagonalMoved = true
+                    SEDiagonalHavePiece = true
                     return
                 } else if (enemyColor) {
-                    SEDiagonalMoved = true
+                    SEDiagonalHavePiece = true
                 }
             }
 
             if (NEDiagonal) {
                 if (sameColor) {
-                    NEDiagonalMoved = true
+                    NEDiagonalHavePiece = true
                     return
                 } else if (enemyColor) {
-                    NEDiagonalMoved = true
+                    NEDiagonalHavePiece = true
                 }
             }
 
             if (SWDiagonal) {
                 if (sameColor) {
-                    SWDiagonalMoved = true
+                    SWDiagonalHavePiece = true
                     return
                 } else if (enemyColor) {
-                    SWDiagonalMoved = true
+                    SWDiagonalHavePiece = true
                 }
             }
         }

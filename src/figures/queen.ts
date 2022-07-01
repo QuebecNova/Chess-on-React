@@ -31,9 +31,15 @@ class Queen extends Piece {
     const rawMoves = [...diagonalRawMoves, ...linearRawMoves]
 
     rawMoves.forEach(move => {
-        if (squareState[move] && squareState[move].color === this.color) return
-        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && move[1] > 0 && move[1] < 9) moves.push(move)
+      
+      const movePassingValidation = move && !move[2] && move[1] > 0 && move[1] < 9
+      const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+      const pieceOnMove = squareState[move]
+      const sameColorPieceOnMove = pieceOnMove && pieceOnMove.color === this.color
+
+        if (sameColorPieceOnMove) return
+        if (moveLeadsToCheck) return
+        if (movePassingValidation) moves.push(move)
     })
 
     return moves

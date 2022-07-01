@@ -63,7 +63,7 @@ class King extends Piece {
         const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9 && index < 11)
         
         const pieceOnMove = squareState[move]
-        const samePieceOnMove = pieceOnMove && squareState[move].color === this.color
+        const samePieceOnMove = pieceOnMove && pieceOnMove.color === this.color
 
         const kingOnCheck = movesLeadsToCheck && movesLeadsToCheck[from]
 
@@ -132,12 +132,14 @@ class King extends Piece {
         || squareState[rawMoves[11]])
 
         const rookLeftMoved = 
-            (initialState[rookLeft] 
+            (initialState[rookLeft]
+            && squareState[rookLeft]
             && squareState[rookLeft].type === 'Rook' 
             && initialState[rookLeft].lastMoves.length !== 0)
 
         const rookRightMoved =
-            (initialState[rookRight] 
+            (initialState[rookRight]
+            && squareState[rookLeft]
             && squareState[rookRight].type === 'Rook' 
             && initialState[rookRight].lastMoves.length !== 0)
 

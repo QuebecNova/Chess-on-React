@@ -19,13 +19,8 @@ class Rook extends Piece {
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares
     ) {
+
     const moves = []
-
-    let pieceInbackCol = false
-    let pieceInfrontCol = false
-
-    let pieceInbackRow = false
-    let pieceInfrontRow = false
     
     const rawMoves = [
         // rows 0-13
@@ -67,67 +62,72 @@ class Rook extends Piece {
         from[0] + (parseInt(from[1]) + 7),
     ]
 
+    let pieceInbackCol = false
+    let pieceInfrontCol = false
+
+    let pieceInbackRow = false
+    let pieceInfrontRow = false
+
     rawMoves.forEach((move, index) => {
 
-        //backRowMoves = index < 7
-        //frontRowMoves = (index > 6 && index < 14)
+        const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
+        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const pieceOnMove = squareState[move]
 
-        //backColMoves = (index > 13 && index < 21)
-        //frontColMoves = index > 20
+        const sameColorOnMove = pieceOnMove && pieceOnMove.color === this.color
+        const enemyColorOnMove = pieceOnMove && pieceOnMove.color !== this.color
 
-        if (index < 7 && pieceInbackRow) return
-        if ((index > 6 && index < 14) && pieceInfrontRow) return
-        if ((index > 13 && index < 21) && pieceInbackCol) return
-        if (index > 20 && pieceInfrontCol) return
+        const backRowMoves = index < 7
+        const frontRowMoves = (index > 6 && index < 14)
+        const backColMoves = (index > 13 && index < 21)
+        const frontColMoves = index > 20
 
-        if (squareState[move]) {
-            
-            const sameColor = squareState[move].color === this.color
-            const enemyColor = squareState[move].color !== this.color
+        if (backRowMoves && pieceInbackRow) return
+        if (frontRowMoves && pieceInfrontRow) return
+        if (backColMoves && pieceInbackCol) return
+        if (frontColMoves && pieceInfrontCol) return
 
-            if (index < 7) {
-                //backRowMoves = index < 7
-                if (sameColor) {
+        if (pieceOnMove) {
+
+            if (backRowMoves) {
+                if (sameColorOnMove) {
                     pieceInbackRow = true
                     return
-                } else if (enemyColor) {
+                } else if (enemyColorOnMove) {
                     pieceInbackRow = true
                 }
             }
 
-            if (index > 6 && index < 14) {
-                //frontRowMoves = (index > 6 && index < 14)
-                if (sameColor) {
+            if (frontRowMoves) {
+                if (sameColorOnMove) {
                     pieceInfrontRow = true
                     return
-                } else if (enemyColor) {
+                } else if (enemyColorOnMove) {
                     pieceInfrontRow = true
                 }
             }
 
-            if (index > 13 && index < 21) {
-                //backColMoves = (index > 13 && index < 20)
-                if (sameColor) {
+            if (backColMoves) {
+                if (sameColorOnMove) {
                     pieceInbackCol = true
                     return
-                } else if (enemyColor) {
+                } else if (enemyColorOnMove) {
                     pieceInbackCol = true
                 }
             }
 
-            if (index > 20) {
-                //frontColMoves = index > 20
-                if (sameColor) {
+            if (frontColMoves) {
+                if (sameColorOnMove) {
                     pieceInfrontCol = true
                     return
-                } else if (enemyColor) {
+                } else if (enemyColorOnMove) {
                     pieceInfrontCol = true
                 }
             }
         }
 
-        if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-        if (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9) moves.push(move)
+        if (moveLeadsToCheck) return
+        if (movePassingValidation) moves.push(move)
     })
 
     return moves

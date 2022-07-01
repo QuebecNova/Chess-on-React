@@ -25,7 +25,7 @@ class Pawn extends Piece {
     ) {
 
     const moves : Array<string> = []
-    let pieceInfront : boolean = false
+    let pieceInfront = false
 
     if (this.color === 'Black') {
         const blackMoves = [
@@ -35,37 +35,53 @@ class Pawn extends Piece {
             //eat figures moves
             alphs.changeAlphPos(from, '-', 1, '-', 1),
             alphs.changeAlphPos(from, '+', 1, '-', 1),
-            //enpassant moves
+            //enpassant helper moves
             alphs.changeAlphPos(from, '-', 1),
             alphs.changeAlphPos(from, '+', 1),
         ]
+
         blackMoves.forEach((move, index) => {
+
+            const pieceOnMove = squareState[move]
+            const opponentPieceOnMove = pieceOnMove && pieceOnMove.color !== this.color
+            const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+            const movePassingValidation = (move[0] && move[1] && parseInt(move[1]) <= 8 && parseInt(move[1]) > 0 && index < 4)
+
+            const moveIsAnyOfForwardMove = index < 2
+            const moveIsTwoFieldsForward = index === 1
+            const moveIsEatMove = index > 3
+            const pieceOnLeftSide = index === 4
+
+            const pawnNotMoved = initialState && !initialState[from]
+
+            const isEnpassantAvailable = 
+                (moveIsEatMove
+                && initialState
+                && pieceOnMove
+                && pieceOnMove.type === 'Pawn'
+                && initialState[pieceOnMove.lastMoves.slice().pop()] 
+                && parseInt(pieceOnMove.lastMoves.slice().pop()[1]) === (parseInt(move[1]) - 2)
+                && rawMakedMoves.slice().pop() === (`P${pieceOnMove.lastMoves.slice().pop()}`) 
+                && opponentPieceOnMove)
             
-            if ((index < 2 && squareState[move]) || (index < 2 && pieceInfront)) {
+            if ((moveIsAnyOfForwardMove && pieceOnMove) || (moveIsAnyOfForwardMove && pieceInfront)) {
                 pieceInfront = true
                 return
             }
 
-            if (index === 1 && initialState && !initialState[from]) return
+            if (moveIsTwoFieldsForward && pawnNotMoved) return
             
             if (index > 1) {
-                if (!squareState[move]) {
+                if (!pieceOnMove) {
                     return
-                } else if (squareState[move].color === 'Black') {
+                } else if (pieceOnMove.color === 'Black') {
                     return
                 }
             }
             
-            if (index > 3
-                && initialState
-                && squareState[move]
-                && squareState[move].type === 'Pawn'
-                && initialState[squareState[move].lastMoves.slice().pop()] 
-                && parseInt(squareState[move].lastMoves.slice().pop()[1]) === (parseInt(move[1]) - 2)
-                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMoves.slice().pop()}`) 
-                && squareState[move].color === 'White') 
+            if (isEnpassantAvailable)
             {
-                if (index === 4) {
+                if (pieceOnLeftSide) {
                     moves.push(blackMoves[2])
                     moves.push('enpassantLeft')
                 } else {
@@ -74,8 +90,8 @@ class Pawn extends Piece {
                 }
             }
 
-            if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-            if (move[0] && move[1] && parseInt(move[1]) <= 8 && parseInt(move[1]) > 0 && index < 4) moves.push(move)
+            if (moveLeadsToCheck) return
+            if (movePassingValidation) moves.push(move)
         })
     } else {
         //same but for white pawns
@@ -87,33 +103,49 @@ class Pawn extends Piece {
             alphs.changeAlphPos(from, '-', 1),
             alphs.changeAlphPos(from, '+', 1),
         ]
+
         whiteMoves.forEach((move, index) => {
+
+            const pieceOnMove = squareState[move]
+            const opponentPieceOnMove = pieceOnMove && pieceOnMove.color !== this.color
+            const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+            const movePassingValidation = (move && move[1] && !move[2] && parseInt(move[1]) < 9 && parseInt(move[1]) > 0 && index < 4)
+
+            const moveIsAnyOfForwardMove = index < 2
+            const moveIsTwoFieldsForward = index === 1
+            const moveIsEatMove = index > 3
+            const pieceOnLeftSide = index === 4
+
+            const pawnNotMoved = initialState && !initialState[from]
+
+            const isEnpassantAvailable = 
+                (moveIsEatMove
+                && initialState
+                && pieceOnMove
+                && pieceOnMove.type === 'Pawn'
+                && initialState[pieceOnMove.lastMoves.slice().pop()]
+                && parseInt(pieceOnMove.lastMoves.slice().pop()[1]) === (parseInt(move[1]) + 2)
+                && rawMakedMoves.slice().pop() === (`P${pieceOnMove.lastMoves.slice().pop()}`) 
+                && opponentPieceOnMove)
             
-            if ((index < 2 && squareState[move]) || (index < 2 && pieceInfront)) {
+            if ((moveIsAnyOfForwardMove && pieceOnMove) || (moveIsAnyOfForwardMove && pieceInfront)) {
                 pieceInfront = true
                 return
             }
 
-            if (index === 1 && initialState && !initialState[from]) return
+            if (moveIsTwoFieldsForward && pawnNotMoved) return
 
             if (index > 1) {
-                if (!squareState[move]) {
+                if (!pieceOnMove) {
                     return
-                } else if (squareState[move].color === 'White') {
+                } else if (pieceOnMove.color === 'White') {
                     return
                 }
             }
 
-            if (index > 3
-                && initialState
-                && squareState[move]
-                && squareState[move].type === 'Pawn'
-                && initialState[squareState[move].lastMoves.slice().pop()]
-                && parseInt(squareState[move].lastMoves.slice().pop()[1]) === (parseInt(move[1]) + 2)
-                && rawMakedMoves.slice().pop() === (`P${squareState[move].lastMoves.slice().pop()}`) 
-                && squareState[move].color === 'Black') 
+            if (isEnpassantAvailable)
             {
-                if (index === 4) {
+                if (pieceOnLeftSide) {
                     moves.push(whiteMoves[2])
                     moves.push('enpassantLeft')
                 } else {
@@ -122,8 +154,8 @@ class Pawn extends Piece {
                 }
             }
 
-            if (movesLeadsToCheck && movesLeadsToCheck[move]) return
-            if (move && move[1] && !move[2] && parseInt(move[1]) < 9 && parseInt(move[1]) > 0 && index < 4) moves.push(move)
+            if (moveLeadsToCheck) return
+            if (movePassingValidation) moves.push(move)
         })
     }
 
