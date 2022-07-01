@@ -77,7 +77,7 @@ export default function Board() : ReactElement {
         }
         
         new ResizeObserver(resizedBoard).observe(chessBoard)
-      }, [window.devicePixelRatio])
+      }, [])
 
     const mated : boolean = useMemo(() => {
         const matedOrStaleMated = isMated(squares, turn)
