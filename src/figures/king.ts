@@ -139,7 +139,7 @@ class King extends Piece {
 
         const rookRightMoved =
             (initialState[rookRight]
-            && squareState[rookLeft]
+            && squareState[rookRight]
             && squareState[rookRight].type === 'Rook' 
             && initialState[rookRight].lastMoves.length !== 0)
 
