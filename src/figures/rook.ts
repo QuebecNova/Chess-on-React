@@ -71,11 +71,11 @@ class Rook extends Piece {
     rawMoves.forEach((move, index) => {
 
         const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
-        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const moveLeadsToCheck = movesLeadsToCheck?.[move]
         const pieceOnMove = squareState[move]
 
-        const sameColorOnMove = pieceOnMove && pieceOnMove.color === this.color
-        const enemyColorOnMove = pieceOnMove && pieceOnMove.color !== this.color
+        const sameColorOnMove = pieceOnMove?.color === this.color
+        const enemyColorOnMove = pieceOnMove?.color !== this.color
 
         const backRowMoves = index < 7
         const frontRowMoves = (index > 6 && index < 14)

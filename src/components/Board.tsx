@@ -181,8 +181,7 @@ export default function Board() : ReactElement {
                 pieceOnField = {...pieceOnField, ...castledFields}
             }
 
-            const IllegalMove = 
-                (squares[dropField] && squares[dropField].color === piece.color) || !activeFields[dropField]
+            const IllegalMove = squares[dropField]?.color === piece.color || !activeFields[dropField]
             const tryingToMoveOnInitialField = piece === squares[dropField]
 
             if (IllegalMove) {

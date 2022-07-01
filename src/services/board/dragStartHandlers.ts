@@ -9,7 +9,7 @@ export function setEnpassant(moves : Array<string>, piece : IPiece, setEnpassant
 }
 
 export function setCastle(moves : Array<string>, piece : IPiece, setCastleAvailable : React.Dispatch<React.SetStateAction<string[]>>) {
-    if (moves.length  && piece.type === 'King') {
+    if (moves.length && piece.type === 'King') {
         const castleOnThisSides : Array<string> = []
         if (moves.includes('castleRight')) castleOnThisSides.push('castleRight')
         if (moves.includes('castleLeft')) castleOnThisSides.push('castleLeft')

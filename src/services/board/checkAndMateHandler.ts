@@ -24,9 +24,8 @@ export function getMovesThatLeadsToCheck (squares : keyableSquares, draggedPiece
 
         const simulateNextOppositeMoves = {...nullSquares}
         for (const field in simulateNextMoveSquares) {
-            if (simulateNextMoveSquares[field] && simulateNextMoveSquares[field].color !== turn) {
-                const moves = simulateNextMoveSquares[field].canMove
-                    (field, simulateNextMoveSquares, null, initialPositions)
+            if (simulateNextOppositeMoves && simulateNextMoveSquares[field] && simulateNextMoveSquares[field].color !== turn) {
+                const moves = simulateNextMoveSquares[field].canMove(field, simulateNextMoveSquares, null, initialPositions)
 
                  moves.forEach(move => {
                     if (move) simulateNextOppositeMoves[move] = simulateNextMoveSquares[field]
@@ -35,11 +34,11 @@ export function getMovesThatLeadsToCheck (squares : keyableSquares, draggedPiece
         }
 
         for (const field in simulateNextMoveSquares) {
-            if (simulateNextMoveSquares[field] 
-                && simulateNextOppositeMoves[field] 
-                && simulateNextMoveSquares[field].type === 'King' 
-                && simulateNextMoveSquares[field].color === turn)
+            if (simulateNextOppositeMoves[field] 
+                && simulateNextMoveSquares[field]?.type === 'King' 
+                && simulateNextMoveSquares[field]?.color === turn) {
                 kingOnCheckAfterThisMoves[move] = simulateNextMoveSquares[field]
+            }
         }
     })
 
@@ -51,14 +50,12 @@ export function isMated(squares : keyableSquares, turn : string) : boolean | str
     //simulating next move for check
     const allLegalMoves = []
     for (const field in squares) {
-        if (squares[field]) {
-            if (squares[field].color === turn) {
-                allLegalMoves.push(squares[field].canMove
-                    (field, squares, getMovesThatLeadsToCheck(squares, squares[field], field, turn), initialPositions))
+        if (squares[field]?.color === turn) {
+            allLegalMoves.push(squares[field].canMove
+                (field, squares, getMovesThatLeadsToCheck(squares, squares[field], field, turn), initialPositions))
                     
-                //checked or not
-                if (squares[field].onCheck) sounds.check.play()
-            }
+            //checked or not
+            if (squares[field].onCheck) sounds.check.play()
         }
     }
 

@@ -43,8 +43,8 @@ class Pawn extends Piece {
         blackMoves.forEach((move, index) => {
 
             const pieceOnMove = squareState[move]
-            const opponentPieceOnMove = pieceOnMove && pieceOnMove.color !== this.color
-            const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+            const opponentPieceOnMove = pieceOnMove?.color !== this.color
+            const moveLeadsToCheck = movesLeadsToCheck?.[move]
             const movePassingValidation = (move[0] && move[1] && parseInt(move[1]) <= 8 && parseInt(move[1]) > 0 && index < 4)
 
             const moveIsAnyOfForwardMove = index < 2
@@ -52,14 +52,12 @@ class Pawn extends Piece {
             const moveIsEatMove = index > 3
             const pieceOnLeftSide = index === 4
 
-            const pawnNotMoved = initialState && !initialState[from]
+            const pawnNotMoved = !initialState?.[from]
 
             const isEnpassantAvailable = 
                 (moveIsEatMove
-                && initialState
-                && pieceOnMove
-                && pieceOnMove.type === 'Pawn'
-                && initialState[pieceOnMove.lastMoves.slice().pop()] 
+                && pieceOnMove?.type === 'Pawn'
+                && initialState?.[pieceOnMove.lastMoves.slice().pop()] 
                 && parseInt(pieceOnMove.lastMoves.slice().pop()[1]) === (parseInt(move[1]) - 2)
                 && rawMakedMoves.slice().pop() === (`P${pieceOnMove.lastMoves.slice().pop()}`) 
                 && opponentPieceOnMove)
@@ -107,8 +105,8 @@ class Pawn extends Piece {
         whiteMoves.forEach((move, index) => {
 
             const pieceOnMove = squareState[move]
-            const opponentPieceOnMove = pieceOnMove && pieceOnMove.color !== this.color
-            const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+            const opponentPieceOnMove = pieceOnMove?.color !== this.color
+            const moveLeadsToCheck = movesLeadsToCheck?.[move]
             const movePassingValidation = (move && move[1] && !move[2] && parseInt(move[1]) < 9 && parseInt(move[1]) > 0 && index < 4)
 
             const moveIsAnyOfForwardMove = index < 2
@@ -116,14 +114,12 @@ class Pawn extends Piece {
             const moveIsEatMove = index > 3
             const pieceOnLeftSide = index === 4
 
-            const pawnNotMoved = initialState && !initialState[from]
+            const pawnNotMoved = !initialState?.[from]
 
             const isEnpassantAvailable = 
                 (moveIsEatMove
-                && initialState
-                && pieceOnMove
-                && pieceOnMove.type === 'Pawn'
-                && initialState[pieceOnMove.lastMoves.slice().pop()]
+                && pieceOnMove?.type === 'Pawn'
+                && initialState?.[pieceOnMove.lastMoves.slice().pop()]
                 && parseInt(pieceOnMove.lastMoves.slice().pop()[1]) === (parseInt(move[1]) + 2)
                 && rawMakedMoves.slice().pop() === (`P${pieceOnMove.lastMoves.slice().pop()}`) 
                 && opponentPieceOnMove)

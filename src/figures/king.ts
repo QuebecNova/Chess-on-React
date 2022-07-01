@@ -27,7 +27,7 @@ class King extends Piece {
     initialState? : keyableSquares
     ) {
     
-    const isKingOnCheck = movesLeadsToCheck && movesLeadsToCheck[from]
+    const isKingOnCheck = movesLeadsToCheck?.[from]
     if (isKingOnCheck) {
         this.onCheck = true
     } else {
@@ -59,13 +59,13 @@ class King extends Piece {
     
     rawMoves.forEach((move, index) => {
 
-        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const moveLeadsToCheck = movesLeadsToCheck?.[move]
         const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9 && index < 11)
         
         const pieceOnMove = squareState[move]
-        const samePieceOnMove = pieceOnMove && pieceOnMove.color === this.color
+        const samePieceOnMove = pieceOnMove?.color === this.color
 
-        const kingOnCheck = movesLeadsToCheck && movesLeadsToCheck[from]
+        const kingOnCheck = movesLeadsToCheck?.[from]
 
         if (samePieceOnMove && pieceOnMove.type !== 'King') return
 
@@ -82,28 +82,24 @@ class King extends Piece {
             //THAT'S SMELLS LIKE A BOLEAN ALGEBRA
             const castlePassingValidationToRight = 
                 (!kingMoved 
-                && squareState[rookRight] 
-                && squareState[rookRight].type === 'Rook' 
-                && initialState[rookRight].type === 'Rook' 
-                && initialState[rookRight].lastMoves.length === 0
+                && squareState[rookRight]?.type === 'Rook' 
+                && initialState[rookRight]?.type === 'Rook' 
+                && initialState[rookRight]?.lastMoves.length === 0
                 && !pieceOnMove
                 && !squareState[rawMoves[2]]
                 && !kingOnCheck
-                && movesLeadsToCheck
-                && !movesLeadsToCheck[rawMoves[2]])
+                && !movesLeadsToCheck?.[rawMoves[2]])
 
             const castlePassingValidationToLeft = 
                 (!kingMoved 
-                && squareState[rookLeft] 
-                && squareState[rookLeft].type === 'Rook'
-                && initialState[rookLeft].type === 'Rook' 
-                && initialState[rookLeft].lastMoves.length === 0
+                && squareState[rookLeft]?.type === 'Rook'
+                && initialState[rookLeft]?.type === 'Rook' 
+                && initialState[rookLeft]?.lastMoves.length === 0
                 && !pieceOnMove
                 && !squareState[rawMoves[6]]
                 && !squareState[rawMoves[11]]
                 && !kingOnCheck
-                && movesLeadsToCheck
-                && !movesLeadsToCheck[rawMoves[6]])
+                && !movesLeadsToCheck?.[rawMoves[6]])
 
             if (castlingToRight && castlePassingValidationToRight) {
                 moves.push(rawMoves[8])
@@ -132,20 +128,13 @@ class King extends Piece {
         || squareState[rawMoves[11]])
 
         const rookLeftMoved = 
-            (initialState[rookLeft]
-            && squareState[rookLeft]
-            && squareState[rookLeft].type === 'Rook' 
-            && initialState[rookLeft].lastMoves.length !== 0)
+            (squareState[rookLeft]?.type === 'Rook'  && initialState[rookLeft]?.lastMoves.length !== 0)
 
         const rookRightMoved =
-            (initialState[rookRight]
-            && squareState[rookRight]
-            && squareState[rookRight].type === 'Rook' 
-            && initialState[rookRight].lastMoves.length !== 0)
+            (squareState[rookRight]?.type === 'Rook' && initialState[rookRight]?.lastMoves.length !== 0)
 
         const somethingBlockingCastleToLeft = 
-            ((movesLeadsToCheck 
-            && movesLeadsToCheck[rawMoves[6]])
+            (movesLeadsToCheck?.[rawMoves[6]]
             || kingOnCheck
             || kingMoved
             || !squareState[rookLeft]
@@ -153,8 +142,7 @@ class King extends Piece {
             || sameColorPieceBlockingCastleToLeft)
 
         const somethingBlockingCastleToRight =
-            ((movesLeadsToCheck 
-            && movesLeadsToCheck[rawMoves[2]])
+            (movesLeadsToCheck?.[rawMoves[2]]
             || kingOnCheck
             || kingMoved
             || !squareState[rookRight]

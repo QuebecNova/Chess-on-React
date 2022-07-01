@@ -40,12 +40,16 @@ const alphs : IAlphs = {
 
         if (operator === '+' && secondOperator === '+') {
             return this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) + secondNum)
+
         } else if (operator === '-' && secondOperator === '+') {
             return this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) + secondNum)
+
         } else if (operator === '+' && secondOperator === '-') {
             return this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) - secondNum)
+
         } else if (operator === '-' && secondOperator === '-') {
             return this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) - secondNum)
+            
         } else if (secondOperator !== '+' && secondOperator !== '-') {
             throw new Error('not a valid operator')
         }

@@ -17,6 +17,7 @@ class Bishop extends Piece {
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares
     ) {
+        
     const moves = []
     
     const rawMoves = [
@@ -64,7 +65,7 @@ class Bishop extends Piece {
 
     rawMoves.forEach((move, index) => {
 
-        const moveLeadsToCheck = movesLeadsToCheck && movesLeadsToCheck[move]
+        const moveLeadsToCheck = movesLeadsToCheck?.[move]
         const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
         const pieceOnMove = squareState[move]
 
