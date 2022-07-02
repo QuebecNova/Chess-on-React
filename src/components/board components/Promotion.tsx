@@ -1,10 +1,10 @@
 import React, { Dispatch, ReactElement, SetStateAction } from 'react'
-import Bishop from '../figures/bishop'
-import Knight from '../figures/knight'
-import Queen from '../figures/queen'
-import Rook from '../figures/rook'
-import IPiece from '../interfaces/IPiece'
-import { keyableSquares } from '../interfaces/keyable'
+import Bishop from '../../figures/bishop'
+import Knight from '../../figures/knight'
+import Queen from '../../figures/queen'
+import Rook from '../../figures/rook'
+import IPiece from '../../interfaces/IPiece'
+import { keyableSquares } from '../../interfaces/keyable'
 
 type Props = {
     promotedField: string

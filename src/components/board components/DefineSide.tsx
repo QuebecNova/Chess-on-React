@@ -1,27 +1,27 @@
-import React, { useState } from 'react'
-import sounds from '../services/misc/sounds'
+import React, { useContext } from 'react'
+import sounds from '../../services/misc/sounds'
+import { boardContext } from '../Board'
 
 type Props = {
-    setVariant: React.Dispatch<React.SetStateAction<string>>
+    setIsSideSet : React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function DefineSide({ setVariant }: Props) {    
+export default function DefineSide({ setIsSideSet } : Props) {
 
-    const [active, setActive] = useState<boolean>(true)
+    const board = useContext(boardContext)
 
     function setSide(color = 'white') : void {
         if (color === 'black') {
-            setVariant('black')
+            board.setVariant('black')
         } else {
-            setVariant('white')
+            board.setVariant('white')
         }
-
+        setIsSideSet(true)
         sounds.newGame.play()
-        setActive(false)
     }
 
   return (
-    <div className={`board__define-side ${active ? 'active' : 'inactive'}`}>
+    <div className={`board__define-side`}>
         <p>Choose your side</p>
         <button className='custom-btn btn-5' onClick={() => setSide('white')}>
             <span>White</span>

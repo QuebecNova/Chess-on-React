@@ -1,7 +1,7 @@
 import Piece from "./piece";
 import piecesImages from "../services/misc/piecesImages";
 import alphs from "../services/math/alphabetPositions";
-import arrayRemove from "../services/arrayRemove";
+import arrayRemove from "../services/math/arrayRemove";
 import { keyableSquares } from "../interfaces/keyable";
 
 class King extends Piece {

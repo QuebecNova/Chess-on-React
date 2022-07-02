@@ -4,6 +4,7 @@ import check from '../../assets/sounds/check.wav'
 import win from '../../assets/sounds/win.wav'
 import lose from '../../assets/sounds/lose.wav'
 import newGame from '../../assets/sounds/newGame.wav'
+import timeExpiring from '../../assets/sounds/timeExpiring.wav'
 import { keyableAudio } from '../../interfaces/keyable'
 import IPiece from '../../interfaces/IPiece'
 
@@ -13,7 +14,8 @@ const sounds : keyableAudio = {
     check: new Audio(check),
     win: new Audio(win),
     lose: new Audio(lose),
-    newGame: new Audio(newGame)
+    newGame: new Audio(newGame),
+    timeExpiring: new Audio(timeExpiring)
 }
 
 export function playSoundWhenMated(turn : string, variant : string) : void {

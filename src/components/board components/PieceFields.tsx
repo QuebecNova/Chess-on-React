@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import even from '../services/math/even'
+import even from '../../services/math/even'
 
 type PieceFieldsProps = {
     squares: object;

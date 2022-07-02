@@ -1,5 +1,79 @@
 /* Layout for phones */
 
+@media screen and (max-width: 1200px) {
+  .wrapper {
+    display: block;
+  }
+
+  .board-wrapper {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: flex-start;
+  }
+
+  .board {
+    margin: 0 auto;
+    width: 590px;
+    height: 590px;
+  }
+
+  img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .board__both-timers {
+    align-self: flex-end;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .board__timer {
+    margin: 10px 12px 10px 5px;
+    width: 300px;
+    height: 100px;
+  }
+
+  .board__timer p, .counter-section span {
+    word-spacing: 0;
+    font-size: 0.9em;
+  }
+
+  .board__define-side, .board__promotion, .board__mated {
+    width: 250px;
+    top: 35%
+  }
+
+  .board__mated p {
+    font-size: 1.2em;
+  }
+
+  input[type="range"] {
+    width: 200px;
+  }
+
+  .board__promotion {
+    width: 200px;
+  }
+
+  .board__promotion p {
+    font-size: 0.6em;
+  }
+
+  .board__played-moves {
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 300px;
+    height: 200px;
+  }
+}
+
+@media screen and (max-width: 920px){
+  .board__played-moves {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 760px) and (min-width: 600px) {
   
     .board {
@@ -18,7 +92,6 @@
     .board {
         width: 490px;
         height: 490px;
-        margin-bottom: 100px;
     }
 
     img {
@@ -45,7 +118,6 @@
     .board {
       width: 315px;
       height: 315px;
-      margin-bottom: 200px;
     }
 
     .board__define-side button {

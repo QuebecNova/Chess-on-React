@@ -1,5 +1,5 @@
-import React from 'react'
-import { useState, useEffect, useRef, useMemo, ReactElement } from 'react'
+import React from 'react';
+import {useState, useEffect, useRef, useMemo, ReactElement, createContext} from 'react'
 
 import { keyableNumbers } from '../interfaces/keyable';
 import Coords from '../interfaces/Coords';
@@ -17,15 +17,24 @@ import touch2Mouse from '../services/misc/touch2mouse'
 
 import setupBoard from '../configs/setupBoard'
 
-import PieceFields from './PieceFields'
-import MatedMessage from './MatedMessage';
-import Promotion from './Promotion';
-import DefineSide from './DefineSide';
+import PieceFields from './board components/PieceFields'
+import PlayedMoves from './board components/PlayedMoves';
+import MatedMessage from './board components/MatedMessage';
+import Promotion from './board components/Promotion';
+import Timer from './timer/Timers';
+import StartingSettings from './board components/StartingSettings';
+import Player from '../services/player';
+import {stopAllTimers, stopAndStartPlayerTime} from '../services/updatePlayerTime';
 
-const makedMoves = []
+const playedMoves = []
 const rawMakedMoves = []
 export { rawMakedMoves }
 const initialPositions = setupBoard()
+
+export const boardContext = createContext(null)
+
+const playerWhite = new Player('White', 60000, false)
+const playerBlack = new Player('Black', 60000, false)
 
 export default function Board() : ReactElement {
 
@@ -43,6 +52,25 @@ export default function Board() : ReactElement {
     const [promotedField, setPromotedField] = useState <string>(null)
     const [variant, setVariant] = useState <string>('notChoosen')
     const [turn, setTurn] = useState <string>('White')
+    const [isSettingsReady, setSettingsReady] = useState <boolean>(false)
+    const [isTimerSet, setIsTimerSet] = useState <boolean>(false)
+    const [timeExpired, setTimeExpired] = useState <boolean>(false)
+
+    const boardContextValue = {
+        variant, 
+        setVariant, 
+        turn, 
+        squares,
+        isSettingsReady,
+        setSettingsReady,
+        timeExpired,
+        setTimeExpired,
+        isTimerSet,
+        setIsTimerSet,
+        playerWhite,
+        playerBlack,
+    }
+
 
     const chessBoardRef = useRef<HTMLDivElement>(null)
 
@@ -89,7 +117,7 @@ export default function Board() : ReactElement {
     }, [squares, turn])
 
     function click(e : any, field : string) : void {
-        if (!e.target.classList.contains('canMoveHere') || variant === 'notChoosen') return
+        if (!e.target.classList.contains('canMoveHere') || !isSettingsReady) return
         if (activeFields[field] || e.nativeEvent.path[1].classList.contains('canMoveHere')) {
             drop(e)
         }
@@ -99,7 +127,7 @@ export default function Board() : ReactElement {
 
         e.preventDefault() 
 
-        if (variant === 'notChoosen') return
+        if (!isSettingsReady) return
         
         if (e.target.src.includes(turn)) setClickedPiece(e.target)
         
@@ -164,12 +192,6 @@ export default function Board() : ReactElement {
                 [dropField]: piece
             }
 
-            const blackPawnOnPromotionField = (dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black')
-            const whitePawnOnPromotionField = (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White')
-            const pawnOnPromotionField = (blackPawnOnPromotionField || whitePawnOnPromotionField)
-
-            if (pawnOnPromotionField && piece.color === turn) setPromotedField(dropField)
-
             if (enpassantAvailable) {
                 const enpassantedFields = checkForEnpassant(squares, dropField, pieceFromThisField, enpassantAvailable)
                 pieceOnField = {...pieceOnField, ...enpassantedFields}
@@ -194,14 +216,22 @@ export default function Board() : ReactElement {
                 return 
             }
 
+            const blackPawnOnPromotionField = (dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black')
+            const whitePawnOnPromotionField = (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White')
+            const pawnOnPromotionField = (blackPawnOnPromotionField || whitePawnOnPromotionField)
+
+            if (pawnOnPromotionField && piece.color === turn) setPromotedField(dropField)
+
             setSquares({...squares, ...pieceOnField})
+            const currentPlayer = turn === 'White' ? playerWhite : playerBlack
+
+            stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
             playTakedPieceSound(squares[dropField], empassanted)
 
             //last moves, all played moves here!
-            makedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)
+            playedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)
             rawMakedMoves.push(`${piece.type.slice(0, 1)}${pieceFromThisField}`)
             if (piece.lastMoves) piece.lastMoves.push(pieceFromThisField)
-            console.log(makedMoves); 
             //
 
             resetAll(draggedPiece)
@@ -223,37 +253,46 @@ export default function Board() : ReactElement {
         sounds.newGame.play()
         setSquares(initialPositions)
         setStaleMate(false)
+        setTimeExpired(false)
+        setIsTimerSet(false)
+        playerBlack.timer = 60000
+        playerWhite.timer = 60000
+        stopAllTimers([playerWhite, playerBlack])
         setTurn('White')
         setVariant(variant === 'white' ? 'black' : 'white')
     }
 
     return (
-        <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)}>
-            <DefineSide setVariant={setVariant}/>
-            <PieceFields
-                squares={squares} 
-                activeFields={activeFields}
-                variant={variant}
-                click={click}
-                dragStart={dragStart} 
-                dragMove={dragMove} 
-                drop={drop} 
-                touch2Mouse={touch2Mouse}
-            />
-            <Promotion 
-                promotedField={promotedField} 
-                setPromotedField={setPromotedField} 
-                turn={turn} 
-                squares={squares} 
-                setSquares={setSquares}
-            />
-            <MatedMessage 
-                turn={turn} 
-                restartGame={restartGame} 
-                mated={mated} 
-                isStaleMate={isStaleMate} 
-                variant={variant}
-            />
-        </div>
+        <boardContext.Provider value={boardContextValue}>
+            <div className='board-wrapper'>
+                <StartingSettings/>
+                <Timer/>
+                <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)}>
+                    <PieceFields
+                        squares={squares} 
+                        activeFields={activeFields}
+                        variant={variant}
+                        click={click}
+                        dragStart={dragStart} 
+                        dragMove={dragMove} 
+                        drop={drop} 
+                        touch2Mouse={touch2Mouse}
+                    />
+                </div>
+                <Promotion 
+                    promotedField={promotedField} 
+                    setPromotedField={setPromotedField} 
+                    turn={turn} 
+                    squares={squares} 
+                    setSquares={setSquares}
+                />
+                <MatedMessage 
+                    restartGame={restartGame} 
+                    mated={mated} 
+                    isStaleMate={isStaleMate}
+                />
+                <PlayedMoves playedMoves={playedMoves}/>
+            </div>
+        </boardContext.Provider>
     )
 }

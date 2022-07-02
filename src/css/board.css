@@ -1,4 +1,11 @@
+.board-wrapper {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    width: 100%;
+}
+
 .board {
+    grid-column: 3;
     display: grid;
     width: 700px;
     height: 700px;
