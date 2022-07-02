@@ -17,9 +17,13 @@ Now we have:
 
   7.On start you can choose side to play on!
 
-  8.When you end game you can restart it starting from opposite side!
+  8.Timer!
 
-  9.Phones-friendly
+  9.Played moves!
+
+  10.When you end game you can restart it starting from opposite side!
+
+  11.Phones-friendly
 
 
 Live: https://hamchess.netlify.app/
