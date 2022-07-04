@@ -41,3 +41,7 @@
 .join-game input:focus {
     outline: 2px solid rgb(98, 190, 177);
 }
+
+.shareID__wrapper {
+    text-align: center;
+}

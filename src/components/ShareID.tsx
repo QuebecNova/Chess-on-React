@@ -16,9 +16,9 @@ export default function ShareID({ roomID }: Props) {
   })
 
   return (
-    <div className='shareURL__wrapper'>
+    <div className='shareID__wrapper'>
         <p>{roomID}</p>
-        <p>Copy this URL and share it to your friend!</p>
+        <p>Copy this ID and share it to your friend!</p>
     </div>
   )
 }

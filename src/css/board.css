@@ -45,7 +45,7 @@
     background-color: rgb(16, 88, 76);
 }
 
-.board__mated, .board__promotion, .board__define-side {
+.board__mated, .board__promotion, .board__define-side, .board__accept-restart {
     position: absolute;
     display: flex;
     justify-content: center;

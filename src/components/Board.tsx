@@ -23,10 +23,13 @@ import MatedMessage from './board components/MatedMessage';
 import Promotion from './board components/Promotion';
 import Timer from './timer/Timers';
 import StartingSettings from './board components/StartingSettings';
-import Player from '../services/player';
 import {stopAllTimers, stopAndStartPlayerTime} from '../services/updatePlayerTime';
 
+import { playerWhite, playerBlack } from './board components/DefineSide';
+
 import socket from '../connection/socket';
+import AcceptRestart from './board components/AcceptRestart';
+import useCurrentWidth from '../hooks/useCurrentWidth';
 
 const playedMoves = []
 const rawMakedMoves = []
@@ -35,11 +38,8 @@ const initialPositions = setupBoard()
 
 export const boardContext = createContext(null)
 
-const playerWhite = new Player('White', 60000, false)
-const playerBlack = new Player('Black', 60000, false)
-
 export default function Board() : ReactElement {
-
+    
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
@@ -57,7 +57,10 @@ export default function Board() : ReactElement {
     const [isSettingsReady, setSettingsReady] = useState <boolean>(false)
     const [isTimerSet, setIsTimerSet] = useState <boolean>(false)
     const [timeExpired, setTimeExpired] = useState <boolean>(false)
+    const [opponnentWantsRestart, setOpponentWantsRestart] = useState <boolean>(false)
 
+    const currentWindowWidth = useCurrentWidth()
+    
     const boardContextValue = {
         variant, 
         setVariant, 
@@ -71,8 +74,11 @@ export default function Board() : ReactElement {
         setIsTimerSet,
         playerWhite,
         playerBlack,
+        opponnentWantsRestart,
+        setOpponentWantsRestart,
+        restartGame
     }
-
+    
     const chessBoardRef = useRef<HTMLDivElement>(null)
 
     //changing usable sizes of the board related on it size in browser
@@ -105,18 +111,23 @@ export default function Board() : ReactElement {
         }
         
         new ResizeObserver(resizedBoard).observe(chessBoard)
-    }, [])
+    }, [currentWindowWidth])
 
-    
     const mated : boolean = useMemo(() => {
         const matedOrStaleMated = isMated(squares, turn)
         
+        if (matedOrStaleMated) stopAllTimers([playerWhite, playerBlack])
+
         if (typeof matedOrStaleMated === 'string') {
             setStaleMate(true)
         } else {
             return matedOrStaleMated
         }
     }, [squares, turn])
+    
+    socket.on('player-restarted-game', () => {
+        setOpponentWantsRestart(true)
+    })
     
     socket.on('piece-on-field', (pieceOnFieldData) => {
         const pieceOnField = {}
@@ -130,6 +141,9 @@ export default function Board() : ReactElement {
         }
         
         setSquares({...squares, ...pieceOnField})
+        setTurn(turn === 'White' ? 'Black' : 'White')
+        const currentPlayer = turn === 'White' ? playerWhite : playerBlack
+        stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
     })
 
     function click(e : any, field : string) : void {
@@ -142,17 +156,21 @@ export default function Board() : ReactElement {
     function dragStart(e : any) : void {
 
         e.preventDefault() 
-
+        
         if (!isSettingsReady) return
+       
+        if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
+        
+        if (playerBlack.isYou && !e.target.src.includes(playerBlack.color)) return
+        if (playerWhite.isYou && !e.target.src.includes(playerWhite.color)) return
         
         if (e.target.src.includes(turn)) setClickedPiece(e.target)
-        
-        if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
         
         if (e.target !== draggedPiece && e.target.src.includes(turn)) setDraggedPiece(e.target);
         
         if (!e.target.src.includes(turn)) return
-        
+
+
         const x = e.clientX
         const y = e.clientY
 
@@ -299,9 +317,19 @@ export default function Board() : ReactElement {
         setIsTimerSet(false)
         playerBlack.timer = 60000
         playerWhite.timer = 60000
-        stopAllTimers([playerWhite, playerBlack])
+
+        if (playerBlack.isYou) {
+            playerBlack.isYou = false
+            playerWhite.isYou = true
+        } else if (playerWhite.isYou) {
+            playerWhite.isYou = false
+            playerBlack.isYou = true
+        }
+
         setTurn('White')
         setVariant(variant === 'white' ? 'black' : 'white')
+        console.log(playerBlack, playerWhite);
+        
     }
 
     return (
@@ -333,6 +361,7 @@ export default function Board() : ReactElement {
                     mated={mated} 
                     isStaleMate={isStaleMate}
                 />
+                <AcceptRestart/>
                 <PlayedMoves playedMoves={playedMoves}/>
             </div>
         </boardContext.Provider>

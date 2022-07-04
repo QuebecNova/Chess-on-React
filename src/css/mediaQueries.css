@@ -1,10 +1,6 @@
 /* Layout for phones */
 
 @media screen and (max-width: 1200px) {
-  .wrapper {
-    display: block;
-  }
-
   .board-wrapper {
     display: flex;
     flex-flow: row wrap;
@@ -39,7 +35,7 @@
     font-size: 0.9em;
   }
 
-  .board__define-side, .board__promotion, .board__mated {
+  .board__define-side, .board__promotion, .board__mated, .board__accept-restart {
     width: 250px;
     top: 35%
   }
