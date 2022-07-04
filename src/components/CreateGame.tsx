@@ -14,6 +14,10 @@ export default function CreateGame() {
 
     const [newRoomCreated, setNewRoomCreated] = useState(false)
 
+    function setOffline() {
+        app.setInGame(true)
+    }
+
     function displayID() {
         socket.emit('new-game-ID', socket.id, ID)
         setNewRoomCreated(true)
@@ -51,6 +55,11 @@ export default function CreateGame() {
             /><span>{error}</span>
             <button className='custom-btn btn-5 create-game__button-join' onClick={join}>
                 <span>Join!</span>
+            </button>
+        </div>
+        <div className='offline-game'>
+            <button className='custom-btn btn-5' onClick={setOffline}>
+                <span>Offline-mode</span>
             </button>
         </div>
     </div>
