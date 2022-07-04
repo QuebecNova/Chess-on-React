@@ -1,7 +1,7 @@
 import React from 'react';
 import {useState, useEffect, useRef, useMemo, ReactElement, createContext} from 'react'
 
-import { isKeyableString, keyableNumbers, keyableString } from '../interfaces/keyable';
+import { isKeyableString, keyableNumbers } from '../interfaces/keyable';
 import Coords from '../interfaces/Coords';
 
 import { getMovesThatLeadsToCheck, isMated } from '../services/board/checkAndMateHandler';
