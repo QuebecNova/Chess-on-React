@@ -5,6 +5,7 @@
 @import 'fonts.css';
 @import 'button.css';
 @import 'playedMoves.css';
+@import 'newGame.css';
 @import 'mediaQueries.css';
 
 * {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {useState, useEffect, useRef, useMemo, ReactElement, createContext} from 'react'
 
-import { keyableNumbers } from '../interfaces/keyable';
+import { isKeyableString, keyableNumbers, keyableString } from '../interfaces/keyable';
 import Coords from '../interfaces/Coords';
 
 import { getMovesThatLeadsToCheck, isMated } from '../services/board/checkAndMateHandler';
@@ -25,6 +25,8 @@ import Timer from './timer/Timers';
 import StartingSettings from './board components/StartingSettings';
 import Player from '../services/player';
 import {stopAllTimers, stopAndStartPlayerTime} from '../services/updatePlayerTime';
+
+import socket from '../connection/socket';
 
 const playedMoves = []
 const rawMakedMoves = []
@@ -71,7 +73,6 @@ export default function Board() : ReactElement {
         playerBlack,
     }
 
-
     const chessBoardRef = useRef<HTMLDivElement>(null)
 
     //changing usable sizes of the board related on it size in browser
@@ -104,17 +105,32 @@ export default function Board() : ReactElement {
         }
         
         new ResizeObserver(resizedBoard).observe(chessBoard)
-      }, [])
+    }, [])
 
+    
     const mated : boolean = useMemo(() => {
         const matedOrStaleMated = isMated(squares, turn)
-
+        
         if (typeof matedOrStaleMated === 'string') {
             setStaleMate(true)
         } else {
-             return matedOrStaleMated
+            return matedOrStaleMated
         }
     }, [squares, turn])
+    
+    socket.on('piece-on-field', (pieceOnFieldData) => {
+        const pieceOnField = {}
+
+        for (const [key, value] of Object.entries(pieceOnFieldData)) {
+            if (value && isKeyableString(value)) {
+                pieceOnField[key] = squares[value.from]
+            } else {
+                pieceOnField[key] = null
+            }
+        }
+        
+        setSquares({...squares, ...pieceOnField})
+    })
 
     function click(e : any, field : string) : void {
         if (!e.target.classList.contains('canMoveHere') || !isSettingsReady) return
@@ -186,11 +202,14 @@ export default function Board() : ReactElement {
             const dropField = alphs.posOut[dropCoords.row].toString()  + dropCoords.col.toString() 
             const piece = squares[pieceFromThisField]
             let empassanted = false
+            let castledRookInitialField = null
 
             let pieceOnField = {
                 [pieceFromThisField]: null,
                 [dropField]: piece
             }
+
+            const pieceOnFieldForServer = {}
 
             if (enpassantAvailable) {
                 const enpassantedFields = checkForEnpassant(squares, dropField, pieceFromThisField, enpassantAvailable)
@@ -200,7 +219,8 @@ export default function Board() : ReactElement {
 
             if (castleAvailable.length) {
                 const castledFields = checkForCastle(squares, dropField, pieceFromThisField, castleAvailable)
-                pieceOnField = {...pieceOnField, ...castledFields}
+                pieceOnField = {...pieceOnField, ...castledFields.modifiedPieceOnField}
+                castledRookInitialField = castledFields.rookInitialPieceField
             }
 
             const IllegalMove = squares[dropField]?.color === piece.color || !activeFields[dropField]
@@ -221,12 +241,34 @@ export default function Board() : ReactElement {
             const pawnOnPromotionField = (blackPawnOnPromotionField || whitePawnOnPromotionField)
 
             if (pawnOnPromotionField && piece.color === turn) setPromotedField(dropField)
-
+            
             setSquares({...squares, ...pieceOnField})
             const currentPlayer = turn === 'White' ? playerWhite : playerBlack
 
             stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
             playTakedPieceSound(squares[dropField], empassanted)
+
+            for (const [key, value] of Object.entries(pieceOnField)) {
+                if (value) {
+                    if (castleAvailable) {
+                        if (value.type === 'Rook') {
+                            pieceOnFieldForServer[key] = {
+                                type: value.type,
+                                from: castledRookInitialField
+                            }
+                            continue
+                        }
+                    }
+                    pieceOnFieldForServer[key] = {
+                        type: value.type,
+                        from: pieceFromThisField
+                    }
+                } else {
+                    pieceOnFieldForServer[key] = null
+                }
+            }
+
+            socket.emit('move-played', pieceOnFieldForServer)
 
             //last moves, all played moves here!
             playedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)

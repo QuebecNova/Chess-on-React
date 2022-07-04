@@ -23,3 +23,7 @@ export interface keyableSVGElement {
 export interface keyableAudio {
     [key: string] : HTMLAudioElement
 }
+
+export function isKeyableString(value : any) : value is keyableString {
+    return true
+}

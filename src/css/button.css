@@ -89,3 +89,18 @@
 .board__define-side button:nth-child(3) {
     margin-top: 5px
 }
+
+.create-game__button {
+    width: 200px;
+    height: 80px;
+}
+
+.create-game__button span {
+    font-size: 1.5em;
+}
+
+.join-game button {
+    margin-top: 10px;
+    width: 150px;
+    height: 55px;
+}

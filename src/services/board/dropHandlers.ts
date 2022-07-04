@@ -2,7 +2,6 @@ import { keyableSquares } from '../../interfaces/keyable';
 import IPiece from '../../interfaces/IPiece'
 import alphs from "../math/alphabetPositions"
 
-
 export function checkForCastle(squares : keyableSquares, dropField : string, from : string, castleAvailable : string[]) {
 
     if (!castleAvailable) return
@@ -10,6 +9,8 @@ export function checkForCastle(squares : keyableSquares, dropField : string, fro
     const modifiedPieceOnField = {
         [from]: null
     }
+
+    let rookInitialPieceField = ''
 
     const kingMovedLeft = (alphs.changeAlphPos(from, '-', 2) === dropField)
     const kingMovedRight = (alphs.changeAlphPos(from, '+', 2) === dropField)
@@ -26,14 +27,16 @@ export function checkForCastle(squares : keyableSquares, dropField : string, fro
     if (castledRookLeft) {
         modifiedPieceOnField[rookLeft] = null
         modifiedPieceOnField[castledRookLeft] = squares[rookLeft]
+        rookInitialPieceField = rookLeft
     }
 
     if (castledRookRight) {
         modifiedPieceOnField[rookRight] = null
         modifiedPieceOnField[castledRookRight] = squares[rookRight]
+        rookInitialPieceField = rookRight
     }
 
-    return modifiedPieceOnField
+    return {modifiedPieceOnField, rookInitialPieceField}
 }
 
 export function checkForEnpassant
