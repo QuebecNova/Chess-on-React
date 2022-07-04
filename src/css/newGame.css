@@ -1,4 +1,6 @@
-.new-game {
+.new-game__wrapper {
+    min-width: 50vw;
+    height: 80vh;
     display: flex;
     flex-flow: column;
     justify-content: center;
@@ -7,11 +9,12 @@
 }
 
 .create-game {
-    width: 50vw;
+    width: 100%;
     text-align: center;
     padding-bottom: 50px;
     margin-bottom: 50px;
     border-bottom: 4px solid rgb(2, 17, 15);
+    margin-right: 0
 }
 
 .join-game {
