@@ -38,7 +38,11 @@ const initialPositions = setupBoard()
 
 export const boardContext = createContext(null)
 
-export default function Board() : ReactElement {
+type Props = {
+    offlineMode : boolean
+}
+
+export default function Board({offlineMode} : Props) : ReactElement {
     
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState(getSquares(null))
@@ -161,8 +165,8 @@ export default function Board() : ReactElement {
        
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
         
-        if (playerBlack.isYou && !e.target.src.includes(playerBlack.color)) return
-        if (playerWhite.isYou && !e.target.src.includes(playerWhite.color)) return
+        if (playerBlack.isYou && !e.target.src.includes(playerBlack.color) && !offlineMode) return
+        if (playerWhite.isYou && !e.target.src.includes(playerWhite.color) && !offlineMode) return
         
         if (e.target.src.includes(turn)) setClickedPiece(e.target)
         

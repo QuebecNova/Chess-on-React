@@ -8,6 +8,7 @@ export const AppContext = createContext(null)
 function App() : ReactElement {
 
   const [inGame, setInGame] = useState(false)
+  const [offlineMode, setOfflineMode] = useState(false)
 
   const contextValue = {
     setInGame,
@@ -19,7 +20,7 @@ function App() : ReactElement {
     <AppContext.Provider value={contextValue}>
       <div className="wrapper">
         <Header/>
-        <CreateGame/>
+        <CreateGame setOfflineMode={setOfflineMode}/>
       </div>
     </AppContext.Provider>
   );
@@ -27,7 +28,7 @@ function App() : ReactElement {
   if (inGame) return (
     <div className="wrapper">
       <Header/>
-      <Board/>
+      <Board offlineMode={offlineMode}/>
     </div>
   );
 }

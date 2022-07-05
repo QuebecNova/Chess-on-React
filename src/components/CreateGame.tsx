@@ -6,7 +6,11 @@ import { AppContext } from '../App'
 
 const ID = uuidv4()
 
-export default function CreateGame() {
+type Props = {
+    setOfflineMode: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function CreateGame({setOfflineMode} : Props) {
 
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState('')
@@ -16,6 +20,7 @@ export default function CreateGame() {
 
     function setOffline() {
         app.setInGame(true)
+        setOfflineMode(true)
     }
 
     function displayID() {
