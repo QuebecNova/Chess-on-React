@@ -23,7 +23,7 @@ export default function MatedMessage(props: MatedMessageProps) : ReactElement {
     const [waitingForAccept, setWaitingForAccept] = useState(false)
     
     function restart() {
-      socket.emit('restart-game', socket.id)
+      socket.emit('restart-game')
       setWaitingForAccept(true)
     }
     

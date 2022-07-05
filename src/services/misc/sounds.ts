@@ -29,12 +29,13 @@ export function playSoundWhenMated(turn : string, variant : string) : void {
     }
 }
 
-export function playTakedPieceSound(takedPiece : IPiece, empassanted : boolean) {
+export function playPlacedPieceSound(takedPiece? : IPiece, empassanted? : boolean) {
     if (takedPiece || empassanted) {
         sounds.takePiece.play()
-    } else {
-        sounds.placePiece.play()
-    }
+        return
+    } else
+    
+    sounds.placePiece.play()
 }
 
 export default sounds

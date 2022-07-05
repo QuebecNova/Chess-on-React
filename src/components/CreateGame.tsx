@@ -24,18 +24,21 @@ export default function CreateGame({setOfflineMode} : Props) {
     }
 
     function displayID() {
-        socket.emit('new-game-ID', socket.id, ID)
+        socket.emit('new-game-ID', ID)
         setNewRoomCreated(true)
     }
 
-    function join() {
-        socket.on('room-is-full', msg => {
+    async function join() {
+        socket.on('room-error', msg => {
             setError(msg)
             return
         })
         socket.emit('connect-to-game', inputValue)
-        app.setInGame(true)
     }
+
+    socket.on('room-valid', () => {
+        app.setInGame(true)
+    })
     
   if (newRoomCreated) {
     return <ShareID roomID={ID}/>

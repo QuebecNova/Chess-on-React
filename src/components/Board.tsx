@@ -11,7 +11,7 @@ import { checkForCastle, checkForEnpassant } from '../services/board/dropHandler
 import getFieldCoordinates from '../services/board/getFieldCoordinates';
 import getSquares from "../services/board/getSquares";
 
-import sounds, { playTakedPieceSound } from '../services/misc/sounds'
+import sounds, { playPlacedPieceSound } from '../services/misc/sounds'
 import alphs from '../services/math/alphabetPositions'
 import touch2Mouse from '../services/misc/touch2mouse'
 
@@ -144,6 +144,7 @@ export default function Board({offlineMode} : Props) : ReactElement {
             }
         }
         
+        playPlacedPieceSound()
         setSquares({...squares, ...pieceOnField})
         setTurn(turn === 'White' ? 'Black' : 'White')
         const currentPlayer = turn === 'White' ? playerWhite : playerBlack
@@ -268,7 +269,7 @@ export default function Board({offlineMode} : Props) : ReactElement {
             const currentPlayer = turn === 'White' ? playerWhite : playerBlack
 
             stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
-            playTakedPieceSound(squares[dropField], empassanted)
+            playPlacedPieceSound(squares[dropField], empassanted)
 
             for (const [key, value] of Object.entries(pieceOnField)) {
                 if (value) {
