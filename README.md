@@ -23,7 +23,11 @@ Now we have:
 
   10.When you end game you can restart it starting from opposite side!
 
-  11.Phones-friendly
+  11.Multiplayer!
+
+  12.Phones-friendly
 
 
 Live: https://hamchess.netlify.app/
+
+Backend:https://github.com/QuebecNova/Chess-On-React-Backend
