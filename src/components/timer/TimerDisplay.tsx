@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import getReturnValues from '../../services/getRetturnValues'
+import getReturnValues from '../../services/getReturnValues'
 import sounds from '../../services/misc/sounds'
 import Player from '../../services/player'
 import { boardContext } from '../Board'

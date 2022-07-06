@@ -2,6 +2,7 @@ import React, { createContext, ReactElement, useState } from "react";
 import Header from "./components/Header";
 import Board from "./components/Board"
 import CreateGame from "./components/CreateGame";
+import Chat from "./components/board components/Chat";
 
 export const AppContext = createContext(null)
 

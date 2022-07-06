@@ -6,6 +6,7 @@
 @import 'button.css';
 @import 'playedMoves.css';
 @import 'newGame.css';
+@import 'chat.css';
 @import 'mediaQueries.css';
 
 * {

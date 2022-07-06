@@ -7,28 +7,23 @@
     background-color: rgba(2, 37, 32, 0.9);
     border: 4px solid rgb(77, 54, 13);
     border-radius: 2px;
-    grid-column: 4;
-    margin-top: 30%;
+    grid-column: 4 / 6;
+    grid-row: 1 / 3;
     margin-left: 20px;
     max-width: 300px;
-    max-height: 400px;
+    height: 300px;
     overflow-y: scroll;
-}
-
-.board__played-moves p:first-of-type {
-    margin-top: 50px;
 }
 
 .board__played-moves p {
     font-size: 1em;
 }
 
-.board__played-moves h2 {
+.board__played-moves-header {
     width: 100%;
     border-bottom: 3px solid rgb(2, 17, 15);
     background-color: rgb(2, 20, 9);
-    min-height: 35px;
-    padding-top: 10px;
+    min-height: 37px;
     text-align: center;
     font-size: 1.2em;
 }

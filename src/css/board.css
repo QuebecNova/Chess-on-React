@@ -6,9 +6,10 @@
 
 .board {
     grid-column: 3;
-    display: grid;
+    grid-row: 1 / 9;
     width: 700px;
     height: 700px;
+    display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     background-color: rgb(77, 54, 13);
