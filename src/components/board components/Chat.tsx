@@ -18,7 +18,7 @@ export default function Chat() {
 
     function handleKeyDown(e : React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
-            console.log(inputValue)
+            sendMessage()
         }
     }
 
@@ -26,6 +26,7 @@ export default function Chat() {
         socket.emit('send-message', inputValue)
         const yourMsg = 'You: ' + inputValue 
         setMessages([...messages, yourMsg])
+        setInputValue('')
     }
 
     function displayMessages() : JSX.Element[] {
