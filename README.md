@@ -25,7 +25,9 @@ Now we have:
 
   11.Multiplayer!
 
-  12.Phones-friendly
+  12.Chat!
+
+  13.Phones-friendly
 
 
 Live: https://hamchess.netlify.app/
