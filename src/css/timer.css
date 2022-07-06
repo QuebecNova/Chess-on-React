@@ -13,12 +13,22 @@
     height: 100px;
 }
 
-.board__both-timers {
-    grid-column: 2;
-    grid-row: 1 / 9;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.white-top {
+    grid-row: 1;
+}
+
+
+.white-bottom {
+    grid-row: 8;
+}
+
+
+.black-top {
+    grid-row: 1;
+}
+
+.black-bottom {
+    grid-row: 8;
 }
 
 .counter {

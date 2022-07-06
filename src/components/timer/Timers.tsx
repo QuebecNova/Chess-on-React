@@ -8,25 +8,25 @@ export default function Timer() {
   
   if (board.variant === 'white' || board.variant === 'notChoosen') { 
     return (
-      <div className='board__both-timers'>
-        <div className='board__timer black'>
+      <>
+        <div className='board__timer black-top'>
             <TimerDisplay player={board.playerBlack}/>
         </div>
-        <div className='board__timer white'>
+        <div className='board__timer white-bottom'>
             <TimerDisplay player={board.playerWhite}/>    
         </div>
-      </div>
+      </>
     ) 
   } else {
     return (
-      <div className='board__both-timers'>
-        <div className='board__timer white'>
+      <>
+        <div className='board__timer white-top'>
             <TimerDisplay player={board.playerWhite}/>    
         </div>
-        <div className='board__timer black'>
+        <div className='board__timer black-bottom'>
             <TimerDisplay player={board.playerBlack}/>
         </div>
-      </div>
+      </>
     ) 
   }
 }
