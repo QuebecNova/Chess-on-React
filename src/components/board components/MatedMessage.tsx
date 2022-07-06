@@ -1,4 +1,5 @@
 import React, { ReactElement, useContext, useState } from 'react'
+import settings from '../../configs/settings';
 import socket from '../../connection/socket';
 import { playSoundWhenMated } from '../../services/misc/sounds'
 import { boardContext } from '../Board';
@@ -19,10 +20,11 @@ export default function MatedMessage(props: MatedMessageProps) : ReactElement {
     } = props
   
     const board = useContext(boardContext)
-    
+
     const [waitingForAccept, setWaitingForAccept] = useState(false)
     
     function restart() {
+      if (settings.offlineMode) return
       socket.emit('restart-game')
       setWaitingForAccept(true)
     }

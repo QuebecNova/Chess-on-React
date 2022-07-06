@@ -1,7 +1,8 @@
-import { keyableString } from "../interfaces/keyable"
+import { keyableStringOrBoolean } from './../interfaces/keyable';
 
-const settings: keyableString = {
-    choosenVariant: 'white'
+const settings: keyableStringOrBoolean = {
+    choosenVariant: 'white',
+    offlineMode: false
 }
 
 export default settings

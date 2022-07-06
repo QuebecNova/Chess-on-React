@@ -12,6 +12,7 @@ function App() : ReactElement {
 
   const contextValue = {
     setInGame,
+    offlineMode,
   }
 
   console.log('Render');
@@ -26,10 +27,12 @@ function App() : ReactElement {
   );
 
   if (inGame) return (
-    <div className="wrapper">
-      <Header/>
-      <Board offlineMode={offlineMode}/>
-    </div>
+    <AppContext.Provider value={contextValue}>
+      <div className="wrapper">
+        <Header/>
+        <Board/>
+      </div>
+    </AppContext.Provider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {useState, useEffect, useRef, useMemo, ReactElement, createContext} from 'react'
 
 import { isKeyableString, keyableNumbers } from '../interfaces/keyable';
@@ -31,6 +31,7 @@ import Timer from './timer/Timers';
 import useCurrentWidth from '../hooks/useCurrentWidth';
 
 import socket from '../connection/socket';
+import settings from '../configs/settings';
 
 const playedMoves = []
 const rawMakedMoves = []
@@ -39,11 +40,7 @@ const initialPositions = setupBoard()
 
 export const boardContext = createContext(null)
 
-type Props = {
-    offlineMode : boolean
-}
-
-export default function Board({offlineMode} : Props) : ReactElement {
+export default function Board() : ReactElement {
     
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState(getSquares(null))
@@ -167,8 +164,8 @@ export default function Board({offlineMode} : Props) : ReactElement {
        
         if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
         
-        if (playerBlack.isYou && !e.target.src.includes(playerBlack.color) && !offlineMode) return
-        if (playerWhite.isYou && !e.target.src.includes(playerWhite.color) && !offlineMode) return
+        if (playerBlack.isYou && !e.target.src.includes(playerBlack.color) && !settings.offlineMode) return
+        if (playerWhite.isYou && !e.target.src.includes(playerWhite.color) && !settings.offlineMode) return
         
         if (e.target.src.includes(turn)) setClickedPiece(e.target)
         
@@ -292,7 +289,7 @@ export default function Board({offlineMode} : Props) : ReactElement {
                 }
             }
 
-            socket.emit('move-played', pieceOnFieldForServer)
+            if (!settings.offlineMode) socket.emit('move-played', pieceOnFieldForServer)
 
             //last moves, all played moves here!
             playedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)

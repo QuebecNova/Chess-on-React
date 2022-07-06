@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {v4 as uuidv4} from 'uuid'
+import settings from '../../configs/settings'
 import socket from '../../connection/socket'
 import scrollToBottom from '../../services/misc/scrollToBottom'
 const src = require('../../assets/images/sendButton.png')
@@ -10,11 +11,12 @@ export default function Chat() {
     const [messages, setMessages] = useState <Array<string>>([])
 
     const msgRef = useRef()
-
     useEffect(() => {
         if (!msgRef.current) return
         scrollToBottom(msgRef.current)
     }, [messages.length])
+
+    if (settings.offlineMode) return
 
     function handleKeyDown(e : React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {

@@ -3,6 +3,7 @@ import socket from '../connection/socket'
 import ShareID from './ShareID'
 import { v4 as uuidv4 } from 'uuid'
 import { AppContext } from '../App'
+import settings from '../configs/settings'
 
 const ID = uuidv4()
 
@@ -21,6 +22,7 @@ export default function CreateGame({setOfflineMode} : Props) {
     function setOffline() {
         app.setInGame(true)
         setOfflineMode(true)
+        settings.offlineMode = true
     }
 
     function displayID() {
