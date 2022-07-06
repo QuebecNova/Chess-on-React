@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import scrollToBottom from '../../services/misc/scrollToBottom'
 
 type Props = {
     playedMoves: string[]
@@ -32,13 +33,12 @@ export default function PlayedMoves({playedMoves}: Props) {
     
   return (
     <div className='board__played-moves'>
-        <h2>Played Moves</h2>
-        {displayPlayedMoves()}
+        <div className='board__played-moves-header'>
+            <p>Played Moves</p>
+        </div>
+        <div className='board__played-moves-content'>
+            {displayPlayedMoves()}
+        </div>
     </div>
   )
-}
-
-function scrollToBottom(lastPlayedMove : HTMLDivElement | null) : void {
-    if (!lastPlayedMove) return
-    lastPlayedMove.scrollIntoView(false)
 }

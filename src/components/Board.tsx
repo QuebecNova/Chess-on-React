@@ -11,9 +11,10 @@ import { checkForCastle, checkForEnpassant } from '../services/board/dropHandler
 import getFieldCoordinates from '../services/board/getFieldCoordinates';
 import getSquares from "../services/board/getSquares";
 
-import sounds, { playPlacedPieceSound } from '../services/misc/sounds'
 import alphs from '../services/math/alphabetPositions'
+import sounds, { playPlacedPieceSound } from '../services/misc/sounds'
 import touch2Mouse from '../services/misc/touch2mouse'
+import {stopAllTimers, stopAndStartPlayerTime} from '../services/updatePlayerTime';
 
 import setupBoard from '../configs/setupBoard'
 
@@ -21,15 +22,15 @@ import PieceFields from './board components/PieceFields'
 import PlayedMoves from './board components/PlayedMoves';
 import MatedMessage from './board components/MatedMessage';
 import Promotion from './board components/Promotion';
-import Timer from './timer/Timers';
 import StartingSettings from './board components/StartingSettings';
-import {stopAllTimers, stopAndStartPlayerTime} from '../services/updatePlayerTime';
-
 import { playerWhite, playerBlack } from './board components/DefineSide';
+import Chat from './board components/Chat';
+import AcceptRestart from './board components/AcceptRestart';
+import Timer from './timer/Timers';
+
+import useCurrentWidth from '../hooks/useCurrentWidth';
 
 import socket from '../connection/socket';
-import AcceptRestart from './board components/AcceptRestart';
-import useCurrentWidth from '../hooks/useCurrentWidth';
 
 const playedMoves = []
 const rawMakedMoves = []
@@ -368,6 +369,7 @@ export default function Board({offlineMode} : Props) : ReactElement {
                 />
                 <AcceptRestart/>
                 <PlayedMoves playedMoves={playedMoves}/>
+                <Chat/>
             </div>
         </boardContext.Provider>
     )

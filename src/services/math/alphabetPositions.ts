@@ -24,35 +24,39 @@ const alphs : IAlphs = {
     },
 
     changeAlphPos(field, operator, num, secondOperator = '', secondNum = 0) {
-        //here we taking field like 'e4' and using passed operators 'increment or decrement' first letter (e)
+        //here we taking field like 'e4' and using passed operators 'increment or decrement' to first letter (e) and second number (4)
         //yea, letters based notation of board complicated and we can use 0-63 notation, but bad boys don't following easy ways
         if (!field || !operator || !num) throw new Error ('missing argument(s)')
 
+        let modifiedField : string
+
         if (operator === '+' && !secondOperator) {
-            return this.posOut[this.posIn[field[0]] + num] + field[1]
+            modifiedField = this.posOut[this.posIn[field[0]] + num] + field[1]
         } else if (operator === '-' && !secondOperator) {
-            return this.posOut[this.posIn[field[0]] - num] + field[1]
+            modifiedField = this.posOut[this.posIn[field[0]] - num] + field[1]
         } else if (operator !== '+' && operator !== '-') {
             throw new Error('not a valid operator')
         }
 
-        if (!secondOperator || !secondNum) return
+        if (!secondOperator || !secondNum) return modifiedField
 
         if (operator === '+' && secondOperator === '+') {
-            return this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) + secondNum)
+            modifiedField = this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) + secondNum)
 
         } else if (operator === '-' && secondOperator === '+') {
-            return this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) + secondNum)
+            modifiedField = this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) + secondNum)
 
         } else if (operator === '+' && secondOperator === '-') {
-            return this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) - secondNum)
+            modifiedField = this.posOut[this.posIn[field[0]] + num] + (parseInt(field[1]) - secondNum)
 
         } else if (operator === '-' && secondOperator === '-') {
-            return this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) - secondNum)
+            modifiedField = this.posOut[this.posIn[field[0]] - num] + (parseInt(field[1]) - secondNum)
             
         } else if (secondOperator !== '+' && secondOperator !== '-') {
             throw new Error('not a valid operator')
         }
+
+        return modifiedField
     }
 }
 
