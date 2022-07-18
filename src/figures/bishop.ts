@@ -16,11 +16,11 @@ class Bishop extends Piece {
     from : string, 
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares
-    ) {
+    ) : string[] {
         
-    const moves = []
+    const moves : string[] = []
     
-    const rawMoves = [
+    const rawMoves : string[] = [
         //NW diagonal 0-6
         alphs.changeAlphPos(from, '+', 1, '+', 1),
         alphs.changeAlphPos(from, '+', 2, '+', 2),

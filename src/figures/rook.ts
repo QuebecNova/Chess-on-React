@@ -12,17 +12,17 @@ class Rook extends Piece {
     )
   }
 
-  lastMoves = []
+  lastMoves : string[] = []
   
   canMove(
     from : string, 
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares
-    ) {
+    ) : string[] {
 
-    const moves = []
+    const moves : string[] = []
     
-    const rawMoves = [
+    const rawMoves : string[] = [
         // rows 0-13
         // 0-6 left
         alphs.changeAlphPos(from, '-', 1),

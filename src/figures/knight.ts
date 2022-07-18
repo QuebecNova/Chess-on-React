@@ -16,10 +16,10 @@ class Knight extends Piece {
     from : string, 
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares
-    ) {
-    const moves : Array<string> = []
+    ) : string[] {
+    const moves : string[] = []
     
-    const rawMoves = [
+    const rawMoves : string[] = [
         alphs.changeAlphPos(from, '+', 1, '+', 2),
         alphs.changeAlphPos(from, '-', 1, '+', 2),
         alphs.changeAlphPos(from, '+', 1, '-', 2),

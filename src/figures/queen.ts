@@ -17,22 +17,20 @@ class Queen extends Piece {
     from : string, 
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares
-    ) {
-    const moves = []
-
-    console.log();
-
+    ) : string[] {
+    const moves : string[] = []
+    
     const QueenExtendsBishop = new Bishop(this.color)
     const QueenExtendsRook = new Rook(this.color)
     
     const diagonalRawMoves = QueenExtendsBishop.canMove(from, squareState, movesLeadsToCheck)
     const linearRawMoves = QueenExtendsRook.canMove(from, squareState, movesLeadsToCheck)
 
-    const rawMoves = [...diagonalRawMoves, ...linearRawMoves]
+    const rawMoves : string[] = [...diagonalRawMoves, ...linearRawMoves]
 
     rawMoves.forEach(move => {
       
-      const movePassingValidation = move && !move[2] && move[1] > 0 && move[1] < 9
+      const movePassingValidation = move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9
       const moveLeadsToCheck = movesLeadsToCheck?.[move]
       const pieceOnMove = squareState[move]
       const sameColorPieceOnMove = pieceOnMove?.color === this.color

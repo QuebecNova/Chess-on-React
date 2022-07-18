@@ -6,7 +6,7 @@ import { keyableSquares } from "../interfaces/keyable";
 
 class King extends Piece {
     
-  lastMoves : Array<string>
+  lastMoves : string[]
   onCheck : boolean
 
   constructor(color : string) {
@@ -25,7 +25,7 @@ class King extends Piece {
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares, 
     initialState? : keyableSquares
-    ) {
+    ) : string[] {
     
     const isKingOnCheck = movesLeadsToCheck?.[from]
     if (isKingOnCheck) {
@@ -40,7 +40,7 @@ class King extends Piece {
     const rookRight = alphs.changeAlphPos(from, '+', 3)
     const rookLeft = alphs.changeAlphPos(from, '-', 4)
     
-    const rawMoves = [
+    const rawMoves : string[] = [
         //circular moves starting from kingpos[1] + 1
         from[0] + (parseInt(from[1]) + 1),
         alphs.changeAlphPos(from, '+', 1, '+', 1),
@@ -128,7 +128,7 @@ class King extends Piece {
         || squareState[rawMoves[11]])
 
         const rookLeftMoved = 
-            (squareState[rookLeft]?.type === 'Rook'  && initialState[rookLeft]?.lastMoves.length !== 0)
+            (squareState[rookLeft]?.type === 'Rook' && initialState[rookLeft]?.lastMoves.length !== 0)
 
         const rookRightMoved =
             (squareState[rookRight]?.type === 'Rook' && initialState[rookRight]?.lastMoves.length !== 0)

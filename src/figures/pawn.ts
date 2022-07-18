@@ -6,7 +6,7 @@ import { keyableSquares } from "../interfaces/keyable";
 
 class Pawn extends Piece {
 
-  lastMoves : Array<string>
+  lastMoves : string[]
 
   constructor(color : string) {
     super(
@@ -22,9 +22,9 @@ class Pawn extends Piece {
     squareState : keyableSquares, 
     movesLeadsToCheck : keyableSquares, 
     initialState? : keyableSquares
-    ) {
+    ) : string[] {
 
-    const moves : Array<string> = []
+    const moves : string[] = []
     let pieceInfront = false
 
     if (this.color === 'Black') {
