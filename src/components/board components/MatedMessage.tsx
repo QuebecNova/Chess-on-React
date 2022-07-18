@@ -24,7 +24,10 @@ export default function MatedMessage(props: MatedMessageProps) : ReactElement {
     const [waitingForAccept, setWaitingForAccept] = useState(false)
     
     function restart() {
-      if (settings.offlineMode) return
+      if (settings.offlineMode) {
+        restartGame()
+        return
+      }
       socket.emit('restart-game')
       setWaitingForAccept(true)
     }
@@ -49,7 +52,7 @@ export default function MatedMessage(props: MatedMessageProps) : ReactElement {
         <p>{typeOfMessage}</p> 
         <p>{message}</p>
         <button className="custom-btn btn-5" onClick={restart}>
-            <span>Send rematch</span>
+            <span>{settings.offlineMode ? 'Restart' : 'Send rematch'}</span>
         </button>
     </div>
   )
