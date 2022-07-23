@@ -3,6 +3,7 @@ import {v4 as uuidv4} from 'uuid'
 import settings from '../../configs/settings'
 import socket from '../../connection/socket'
 import scrollToBottom from '../../services/misc/scrollToBottom'
+import Input from './../UI/input/Input';
 const src = require('../../assets/images/sendButton.png')
 
 export default function Chat() {
@@ -55,9 +56,8 @@ export default function Chat() {
             {displayMessages()}
         </div>
         <div className='board__chat-input-wrapper'>
-            <label htmlFor='idInput'></label>
-            <input 
-                id='idInput'
+            <Input
+                id='chatInput'
                 type='text' 
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}

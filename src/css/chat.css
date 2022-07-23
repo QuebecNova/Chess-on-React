@@ -59,7 +59,7 @@
     font-size: 1em;
 }
 
-.board__chat-input-wrapper input {
+#chatInput {
     width: 85%;
     margin-left: 10px;
     margin-right: 3px;

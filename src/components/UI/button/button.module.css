@@ -1,0 +1,72 @@
+.btn {
+    width: 130px;
+    height: 40px;
+    padding: 0px;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    outline: none;
+    background-color: rgb(1, 10, 4);
+    color: #fff;
+    line-height: 42px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    touch-action: none;
+    -webkit-touch-callout:none;
+	-webkit-user-select:none;
+	-khtml-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.btn span {
+    color: rgb(197, 191, 124);
+    font-size: 1.3em;
+    font-family: 'fira_sansitalic';
+}
+  
+.btn:hover {
+    background: rgb(228, 230, 210);
+    color: #000;
+     box-shadow:
+     -1px -1px 20px 0px #fff9,
+     -1px -1px 5px 0px #fff9,
+     7px 7px 20px 0px #0002,
+     4px 4px 5px 0px #0001;
+}
+
+.btn:hover span {
+    color: rgb(0, 0, 0);
+}
+
+.btn:before,
+.btn:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #000;
+    transition:400ms ease all;
+}
+
+.btn:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+
+.btn:hover:before,
+.btn:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}

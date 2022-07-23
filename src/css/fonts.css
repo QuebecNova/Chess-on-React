@@ -7,9 +7,6 @@
 
 }
 
-
-
-
 @font-face {
     font-family: 'fira_sansitalic';
     src: url('../assets/fonts/firasans-italic-webfont.woff2') format('woff2'),
@@ -19,9 +16,6 @@
 
 }
 
-
-
-
 @font-face {
     font-family: 'fira_sansmedium';
     src: url('../assets/fonts/firasans-medium-webfont.woff2') format('woff2'),
@@ -30,9 +24,6 @@
     font-style: normal;
 
 }
-
-
-
 
 @font-face {
     font-family: 'kaushan_scriptregular';

@@ -1,4 +1,6 @@
 import React from 'react'
+import RangeInput from '../UI/input/RangeInput';
+import Button from './../UI/button/Button';
 
 type Props = {
     rangeValue: string,
@@ -15,20 +17,19 @@ export default function InputRange({rangeValue, setRangeValue, setTimer}: Props)
   return (
     <div className={`board__define-side active`}>
         <p>Set timer</p>
-        <p>
-            {rangeValue}
-            <span> minutes</span>
-        </p>
-        <input
-            type="range" 
+        <RangeInput
+            type="range"
+            label
+            id='timerRange'
+            labelText={`${rangeValue} minutes`}
             min={1} 
             max={180} 
             value={rangeValue} 
             onChange={handleChangeValue}
         />
-        <button className='custom-btn btn-5' onClick={() => setTimer()}>
-            <span>Ok!</span>
-        </button>
+        <Button onClick={() => setTimer()}>
+            Ok!
+        </Button>
     </div>
   )
 }

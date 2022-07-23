@@ -80,6 +80,7 @@
 }
 
 .board__promotion-pieceBlock {
+    display: inline-block;
     background-color: rgba(16, 88, 76);
 }
 

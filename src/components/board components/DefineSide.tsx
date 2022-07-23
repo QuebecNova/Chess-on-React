@@ -4,6 +4,7 @@ import Player from '../../services/player'
 import socket from '../../connection/socket'
 import { boardContext } from '../Board'
 import settings from '../../configs/settings'
+import Button from '../UI/button/Button'
 
 type Props = {
     setIsSideSet : React.Dispatch<React.SetStateAction<boolean>>
@@ -46,14 +47,14 @@ export default function DefineSide({ setIsSideSet } : Props) {
   return (
     <div className={`board__define-side`}>
         <p>Choose your side</p>
-        <button className='custom-btn btn-5' onClick={() => setSide('white')}>
-            <span>White</span>
-        </button>
-        <button className='custom-btn btn-5' onClick={() => setSide('black')}>
-            <span>Black</span>
-        </button>
+        <Button onClick={() => setSide('white')}>
+            White
+        </Button>
+        <Button onClick={() => setSide('black')}>
+            Black
+        </Button>
     </div>
   )
 }
 
-export {playerWhite, playerBlack}
+export {playerBlack, playerWhite}

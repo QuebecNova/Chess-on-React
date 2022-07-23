@@ -50,18 +50,18 @@ export default function Promotion(props: Props) : ReactElement {
     <div className={`board__promotion ${promotedField ? 'active' : 'inactive'}`}>
         <p>Choose one type of piece</p>
         <div className='board__promotion-pieces-wrapper'>
-            <button className='board__promotion-pieceBlock' onClick={() => transformPiece(queen)}>
+            <div className='board__promotion-pieceBlock' onClick={() => transformPiece(queen)}>
                 <img src={queen.img.toString()} alt='Queen'/>
-            </button>
-            <button className='board__promotion-pieceBlock' onClick={() => transformPiece(knight)}>
+            </div>
+            <div className='board__promotion-pieceBlock' onClick={() => transformPiece(knight)}>
                 <img src={knight.img.toString()} alt='Knight'/>
-            </button>
-            <button className='board__promotion-pieceBlock' onClick={() => transformPiece(bishop)}>
+            </div>
+            <div className='board__promotion-pieceBlock' onClick={() => transformPiece(bishop)}>
                 <img src={bishop.img.toString()} alt='Bishop'/>
-            </button>
-            <button className='board__promotion-pieceBlock' onClick={() => transformPiece(rook)}>
+            </div>
+            <div className='board__promotion-pieceBlock' onClick={() => transformPiece(rook)}>
                 <img src={rook.img.toString()} alt='Rook'/>
-            </button>
+            </div>
         </div>
     </div>
   )

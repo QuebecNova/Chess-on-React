@@ -3,6 +3,7 @@ import settings from '../../configs/settings';
 import socket from '../../connection/socket';
 import { playSoundWhenMated } from '../../services/misc/sounds'
 import { boardContext } from '../Board';
+import Button from '../UI/button/Button';
 import Waiting from './Waiting';
 
 type MatedMessageProps = {
@@ -51,9 +52,9 @@ export default function MatedMessage(props: MatedMessageProps) : ReactElement {
     <div className={`board__mated ${mated || isStaleMate || board.timeExpired ? 'active' : 'inactive'}`}>
         <p>{typeOfMessage}</p> 
         <p>{message}</p>
-        <button className="custom-btn btn-5" onClick={restart}>
-            <span>{settings.offlineMode ? 'Restart' : 'Send rematch'}</span>
-        </button>
+        <Button onClick={restart}>
+            {settings.offlineMode ? 'Restart' : 'Send rematch'}
+        </Button>
     </div>
   )
 }

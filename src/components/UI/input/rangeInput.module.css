@@ -1,0 +1,12 @@
+.rangeInput {
+    margin: 0px 20px;
+    width: 300px;
+    height: 8px;
+    border: 1px solid black;
+    border-radius: 20px;
+}
+
+.rangeInput__label {
+    margin-bottom: 7px;
+    font-size: 1.2em;
+}

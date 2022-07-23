@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import socket from '../../connection/socket'
 import { boardContext } from '../Board'
+import Button from './../UI/button/Button';
 
 export default function AcceptRestart() {
 
@@ -19,12 +20,12 @@ export default function AcceptRestart() {
   if (board.opponnentWantsRestart) return (
     <div className={`board__accept-restart`}>
         <p>Opponent wants a restart</p>
-        <button className='custom-btn btn-5' onClick={() => accept()}>
-            <span>Accept</span>
-        </button>
-        <button className='custom-btn btn-5' onClick={() => reject()}>
-            <span>Reject</span>
-        </button>
+        <Button onClick={() => accept()}>
+            Accept
+        </Button>
+        <Button onClick={() => reject()}>
+            Reject
+        </Button>
     </div>
   )
 }

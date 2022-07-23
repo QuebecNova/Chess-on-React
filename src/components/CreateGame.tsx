@@ -4,8 +4,10 @@ import ShareID from './ShareID'
 import { v4 as uuidv4 } from 'uuid'
 import { AppContext } from '../App'
 import settings from '../configs/settings'
+import Button from './UI/button/Button'
+import Input from './UI/input/Input'
 
-const ID = uuidv4()
+const RoomID = uuidv4()
 
 type Props = {
     setOfflineMode: React.Dispatch<React.SetStateAction<boolean>>
@@ -26,7 +28,7 @@ export default function CreateGame({setOfflineMode} : Props) {
     }
 
     function displayID() {
-        socket.emit('new-game-ID', ID)
+        socket.emit('new-game-ID', RoomID)
         setNewRoomCreated(true)
     }
 
@@ -43,34 +45,37 @@ export default function CreateGame({setOfflineMode} : Props) {
     })
     
   if (newRoomCreated) {
-    return <ShareID roomID={ID}/>
+    return <ShareID roomID={RoomID}/>
   }
   
   return (
     <div className='new-game__wrapper'>
         <div className='create-game'>
             <p>Create a new Game!</p>
-            <button className='custom-btn btn-5 create-game__button' onClick={displayID}>
-                <span>New Game</span>
-            </button>
+            <Button className='create-game__button' onClick={displayID}>
+                New Game
+            </Button>
         </div>
         <div className='join-game'>
             <p>Join created game!</p>
-            <label htmlFor='idInput'>Pass ID:</label>
-            <input 
+            <Input
                 id='idInput'
-                type='text' 
+                label
+                labelText='Pass ID:'
+                placeholder='game id'
+                type='text'
                 value={inputValue} 
                 onChange={(e) => setInputValue(e.target.value)}
-            /><span>{error}</span>
-            <button className='custom-btn btn-5 create-game__button-join' onClick={join}>
-                <span>Join!</span>
-            </button>
+            />
+            <span>{error}</span>
+            <Button className='create-game__button-join' onClick={join}>
+                Join!
+            </Button>
         </div>
         <div className='offline-game'>
-            <button className='custom-btn btn-5' onClick={setOffline}>
-                <span>Offline-mode</span>
-            </button>
+            <Button onClick={setOffline}>
+                Offline-mode
+            </Button>
         </div>
     </div>
   )
