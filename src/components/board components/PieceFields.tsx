@@ -1,10 +1,9 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useContext } from 'react'
 import even from '../../services/math/even'
+import { boardContext } from '../Board';
 
 type PieceFieldsProps = {
-    squares: object;
     activeFields: object;
-    variant: string;
     click: (e : any, field : string) => void;
     dragStart: (e : any) => void;
     dragMove: (e : any) => void;
@@ -14,9 +13,7 @@ type PieceFieldsProps = {
 
 export default function PieceFields(props : PieceFieldsProps) : ReactElement {
     const {
-        squares,
         activeFields,
-        variant,
         click,
         dragStart,
         dragMove,
@@ -24,30 +21,31 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
         touch2Mouse
     } = props
 
+    const app = useContext(boardContext)
+
     const board = []
-        
     let index = 0
     let row = 1
     
-    for (const field in squares) {
+    for (const field in app.squares) {
         let isActive = '';
         if (activeFields[field]) {
             if (activeFields[field] === 'pieceCanMoveHere') isActive = 'canMoveHere'
             if (activeFields[field] === 'currentPiece') isActive = 'current-piece'
         }
 
-        if (squares[field]) {
+        if (app.squares[field]) {
             board.push(
                 <div id={field} className={`${even.defineColor(index, row)} ${isActive}`} key={index} onClick={(e) => click(e, field)}>
                     <img 
-                        src={squares[field].img}
+                        src={app.squares[field].img.toString()}
                         onMouseDown={e => dragStart(e)}
                         onMouseMove={e => dragMove(e)} 
                         onMouseUp={e => drop(e)}
                         onTouchStart={e => touch2Mouse(e)} 
                         onTouchMove={e => touch2Mouse(e)}
                         onTouchEnd={e => touch2Mouse(e)}
-                        alt={squares[field].type}
+                        alt={app.squares[field].type}
                     />
                 </div>
             )
@@ -64,7 +62,7 @@ export default function PieceFields(props : PieceFieldsProps) : ReactElement {
 
     return (
         <>
-            {variant === 'black' ? board.reverse() : board}
+            {app.variant === 'black' ? board.reverse() : board}
         </>
     )
 }

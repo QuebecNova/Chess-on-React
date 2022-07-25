@@ -1,30 +1,26 @@
-import React, { Dispatch, ReactElement, SetStateAction } from 'react'
+import React, { Dispatch, ReactElement, SetStateAction, useContext } from 'react'
 import Bishop from '../../figures/bishop'
 import Knight from '../../figures/knight'
 import Queen from '../../figures/queen'
 import Rook from '../../figures/rook'
 import IPiece from '../../interfaces/IPiece'
-import { keyableSquares } from '../../interfaces/keyable'
+import { boardContext } from '../Board'
 
 type Props = {
     promotedField: string
     setPromotedField: Dispatch<SetStateAction<string>>
-    turn: string
-    squares: keyableSquares
-    setSquares: Dispatch<SetStateAction<keyableSquares>>
 }
 
 export default function Promotion(props: Props) : ReactElement {
 
     const {
         promotedField, 
-        setPromotedField, 
-        turn, 
-        squares, 
-        setSquares,
+        setPromotedField,
     } = props
 
-    const turnReversed = turn === 'Black' ? 'White' : 'Black'
+    const app = useContext(boardContext)
+
+    const turnReversed = app.turn === 'Black' ? 'White' : 'Black'
 
     const queen = new Queen(turnReversed)
     const knight = new Knight(turnReversed)
@@ -32,13 +28,13 @@ export default function Promotion(props: Props) : ReactElement {
     const rook = new Rook(turnReversed)
 
     function transformPiece(piece : IPiece) : void {
-        squares[promotedField] = piece
+        app.squares[promotedField] = piece
         
         const pieceOnField = {
             [promotedField]: piece
         }
 
-        setSquares(squares => ({
+        app.setSquares(squares => ({
             ...squares,
             ...pieceOnField,
         }))

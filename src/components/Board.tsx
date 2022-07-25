@@ -1,10 +1,10 @@
 import React from 'react';
-import {useState, useEffect, useRef, useMemo, ReactElement, createContext} from 'react'
+import {useState, useRef, ReactElement, createContext} from 'react'
 
-import { isKeyableString, keyableNumbers } from '../interfaces/keyable';
+import { isKeyableString } from '../interfaces/keyable';
 import Coords from '../interfaces/Coords';
 
-import { getMovesThatLeadsToCheck, isMated } from '../services/board/checkAndMateHandler';
+import { getMovesThatLeadsToCheck } from '../services/board/checkAndMateHandler';
 import { addActives, removeActives } from '../services/board/setActives';
 import { setCastle, setEnpassant } from '../services/board/dragStartHandlers';
 import { checkForCastle, checkForEnpassant } from '../services/board/dropHandlers';
@@ -14,7 +14,7 @@ import getSquares from "../services/board/getSquares";
 import alphs from '../services/math/alphabetPositions'
 import sounds, { playPlacedPieceSound } from '../services/misc/sounds'
 import touch2Mouse from '../services/misc/touch2mouse'
-import {stopAllTimers, stopAndStartPlayerTime} from '../services/updatePlayerTime';
+import {stopAndStartPlayerTime} from '../services/updatePlayerTime';
 
 import setupBoard from '../configs/setupBoard'
 
@@ -28,16 +28,15 @@ import Chat from './board components/Chat';
 import AcceptRestart from './board components/AcceptRestart';
 import Timer from './timer/Timers';
 
-import useCurrentWidth from '../hooks/useCurrentWidth';
-
 import socket from '../connection/socket';
 import settings from '../configs/settings';
+import { useChessBoardOffsets } from '../hooks/useOffsets';
+import { useMated } from './../hooks/useMated';
 
 const playedMoves = []
-const rawMakedMoves = []
-export { rawMakedMoves }
 const initialPositions = setupBoard()
 
+export const rawMakedMoves = []
 export const boardContext = createContext(null)
 
 export default function Board() : ReactElement {
@@ -46,11 +45,7 @@ export default function Board() : ReactElement {
     const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
     const [clickedPiece, setClickedPiece] = useState <HTMLImageElement>(null)
-    const [isStaleMate, setStaleMate] = useState <boolean>(false)
     const [draggedPieceCoords, setDraggedPieceCoords] = useState <Coords>({col: 0, row: 0})
-    const [chessBoardOffsets, setChessBoardOffsets] = useState <keyableNumbers>({left: 0, top: 0})
-    const [fieldOffsets, setFieldOffsets] = useState <keyableNumbers>({x: 43.75, y: 43.75})
-    const [fieldSizes, setFieldSizes] = useState <Array<number>>([])
     const [castleAvailable, setCastleAvailable] = useState <Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState <string>(null)
     const [promotedField, setPromotedField] = useState <string>(null)
@@ -61,13 +56,12 @@ export default function Board() : ReactElement {
     const [timeExpired, setTimeExpired] = useState <boolean>(false)
     const [opponnentWantsRestart, setOpponentWantsRestart] = useState <boolean>(false)
 
-    const currentWindowWidth = useCurrentWidth()
-    
     const boardContextValue = {
         variant, 
         setVariant, 
         turn, 
         squares,
+        setSquares,
         isSettingsReady,
         setSettingsReady,
         timeExpired,
@@ -82,50 +76,8 @@ export default function Board() : ReactElement {
     }
     
     const chessBoardRef = useRef<HTMLDivElement>(null)
-
-    //changing usable sizes of the board related on it size in browser
-    useEffect(() => {
-    
-        let chessBoard = chessBoardRef.current
-    
-        function addUpRowsAndCols(chessBoard : HTMLDivElement) : void {
-
-          setChessBoardOffsets({left: chessBoard.offsetLeft, top: chessBoard.offsetTop})
-
-          const boardWidth  = chessBoard.clientWidth
-          const fieldWidth = boardWidth / 8
-
-          setFieldOffsets({x: fieldWidth / 2.1, y: fieldWidth / 1.9})
-        
-          let fieldStartsOn = 0;
-          const fieldStartsOnArr : Array<number> = [];
-          
-          for (let i = 0; i < 9; i++) {
-            fieldStartsOn = fieldWidth * i;
-            fieldStartsOnArr.push(fieldStartsOn)
-          }        
-          setFieldSizes([...fieldStartsOnArr])
-        }
-    
-        function resizedBoard() {
-          chessBoard = chessBoardRef.current;
-          addUpRowsAndCols(chessBoard)
-        }
-        
-        new ResizeObserver(resizedBoard).observe(chessBoard)
-    }, [currentWindowWidth])
-
-    const mated : boolean = useMemo(() => {
-        const matedOrStaleMated = isMated(squares, turn)
-        
-        if (matedOrStaleMated) stopAllTimers([playerWhite, playerBlack])
-
-        if (typeof matedOrStaleMated === 'string') {
-            setStaleMate(true)
-        } else {
-            return matedOrStaleMated
-        }
-    }, [squares, turn])
+    const [chessBoardOffsets, fieldOffsets, fieldSizes] = useChessBoardOffsets(chessBoardRef)
+    const [mated, isStaleMate] = useMated(squares, turn)
     
     socket.on('player-restarted-game', () => {
         setOpponentWantsRestart(true)
@@ -224,13 +176,13 @@ export default function Board() : ReactElement {
             const piece = squares[pieceFromThisField]
             let empassanted = false
             let castledRookInitialField = null
+            
+            const pieceOnFieldForServer = {}
 
             let pieceOnField = {
                 [pieceFromThisField]: null,
                 [dropField]: piece
             }
-
-            const pieceOnFieldForServer = {}
 
             if (enpassantAvailable) {
                 const enpassantedFields = checkForEnpassant(squares, dropField, pieceFromThisField, enpassantAvailable)
@@ -264,8 +216,8 @@ export default function Board() : ReactElement {
             if (pawnOnPromotionField && piece.color === turn) setPromotedField(dropField)
             
             setSquares({...squares, ...pieceOnField})
-            const currentPlayer = turn === 'White' ? playerWhite : playerBlack
 
+            const currentPlayer = turn === 'White' ? playerWhite : playerBlack
             stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
             playPlacedPieceSound(squares[dropField], empassanted)
 
@@ -315,7 +267,6 @@ export default function Board() : ReactElement {
     function restartGame() : void {
         sounds.newGame.play()
         setSquares(initialPositions)
-        setStaleMate(false)
         setTimeExpired(false)
         setIsTimerSet(false)
         playerBlack.timer = 60000
@@ -331,8 +282,8 @@ export default function Board() : ReactElement {
 
         setTurn('White')
         setVariant(variant === 'white' ? 'black' : 'white')
+        playedMoves.length = 0
         console.log(playerBlack, playerWhite);
-        
     }
 
     return (
@@ -342,9 +293,7 @@ export default function Board() : ReactElement {
                 <Timer/>
                 <div className='board' ref={chessBoardRef} onMouseMove={e => dragMove(e)}>
                     <PieceFields
-                        squares={squares} 
                         activeFields={activeFields}
-                        variant={variant}
                         click={click}
                         dragStart={dragStart} 
                         dragMove={dragMove} 
@@ -354,10 +303,7 @@ export default function Board() : ReactElement {
                 </div>
                 <Promotion 
                     promotedField={promotedField} 
-                    setPromotedField={setPromotedField} 
-                    turn={turn} 
-                    squares={squares} 
-                    setSquares={setSquares}
+                    setPromotedField={setPromotedField}
                 />
                 <MatedMessage 
                     restartGame={restartGame} 
