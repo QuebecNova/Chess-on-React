@@ -8,6 +8,10 @@ export interface keyableSquares {
     [key: string]: IPiece | null
 }
 
+export interface keyablePieceOnField {
+    [key: string]: IPiece | null
+}
+
 export interface keyableStringOrBoolean {
     [key: string]: boolean | string
 }

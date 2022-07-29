@@ -2,6 +2,8 @@ import { keyableSquares } from "../../interfaces/keyable";
 
 export default function getSquares(value : null) : keyableSquares {
 
+    //creating square state
+
     const squares : keyableSquares = {}
 
     const rows = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']

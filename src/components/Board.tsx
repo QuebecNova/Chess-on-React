@@ -1,13 +1,16 @@
 import React from 'react';
 import {useState, useRef, ReactElement, createContext} from 'react'
 
-import { isKeyableString } from '../interfaces/keyable';
 import Coords from '../interfaces/Coords';
+import { keyablePieceOnField } from './../interfaces/keyable';
 
 import { getMovesThatLeadsToCheck } from '../services/board/checkAndMateHandler';
 import { addActives, removeActives } from '../services/board/setActives';
 import { setCastle, setEnpassant } from '../services/board/dragStartHandlers';
 import { checkForCastle, checkForEnpassant } from '../services/board/dropHandlers';
+import { isDragStartIllegal } from '../services/board/dragNDropLegals';
+import { getPieceOnFieldForServer } from './../services/board/getPieceForServer';
+import { parsePieceOnField } from '../services/board/parsePieceOnField';
 import getFieldCoordinates from '../services/board/getFieldCoordinates';
 import getSquares from "../services/board/getSquares";
 
@@ -41,6 +44,7 @@ export const boardContext = createContext(null)
 
 export default function Board() : ReactElement {
     
+    //this is main board state (store if you prefer)
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState <HTMLImageElement>(null)
@@ -55,7 +59,9 @@ export default function Board() : ReactElement {
     const [isTimerSet, setIsTimerSet] = useState <boolean>(false)
     const [timeExpired, setTimeExpired] = useState <boolean>(false)
     const [opponnentWantsRestart, setOpponentWantsRestart] = useState <boolean>(false)
+    //
 
+    //value for useContext
     const boardContextValue = {
         variant, 
         setVariant, 
@@ -74,66 +80,68 @@ export default function Board() : ReactElement {
         setOpponentWantsRestart,
         restartGame
     }
-    
+    //
+
+    //getting offsets for correct drag-n-drop functionality
+    //this helps to handle different screen sizes and when it changes
     const chessBoardRef = useRef<HTMLDivElement>(null)
     const [chessBoardOffsets, fieldOffsets, fieldSizes] = useChessBoardOffsets(chessBoardRef)
+    //
+
+    //mated or stalemated states for count win/draw
     const [mated, isStaleMate] = useMated(squares, turn)
     
+    //listening on event, when another player send you restart game
     socket.on('player-restarted-game', () => {
         setOpponentWantsRestart(true)
     })
-    
-    socket.on('piece-on-field', (pieceOnFieldData) => {
-        const pieceOnField = {}
+    //
 
-        for (const [key, value] of Object.entries(pieceOnFieldData)) {
-            if (value && isKeyableString(value)) {
-                pieceOnField[key] = squares[value.from]
-            } else {
-                pieceOnField[key] = null
-            }
-        }
-        
-        playPlacedPieceSound()
+    /* when another player sends to server move-played event
+       this events fires, and we parse raw played move data to
+       valid data, play sounds, change turn and start/stop players timers */
+    socket.on('piece-on-field', (pieceOnFieldData : keyablePieceOnField) => {
+        const pieceOnField = parsePieceOnField(pieceOnFieldData, squares)
         setSquares({...squares, ...pieceOnField})
+
+        playPlacedPieceSound()
         setTurn(turn === 'White' ? 'Black' : 'White')
+        
         const currentPlayer = turn === 'White' ? playerWhite : playerBlack
         stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
     })
+    //
 
+    //click handler for possibility to place piece on click
     function click(e : any, field : string) : void {
         if (!e.target.classList.contains('canMoveHere') || !isSettingsReady) return
         if (activeFields[field] || e.nativeEvent.path[1].classList.contains('canMoveHere')) {
             drop(e)
         }
     }
+    //
 
+    //drag start function for taking pieces
     function dragStart(e : any) : void {
 
         e.preventDefault() 
-        
-        if (!isSettingsReady) return
-       
-        if (e.target.classList.contains('whiteField') || e.target.classList.contains('blackField')) return
-        
-        if (playerBlack.isYou && !e.target.src.includes(playerBlack.color) && !settings.offlineMode) return
-        if (playerWhite.isYou && !e.target.src.includes(playerWhite.color) && !settings.offlineMode) return
-        
+
+        if (isDragStartIllegal(e, isSettingsReady, playerWhite, playerBlack)) return
+
         if (e.target.src.includes(turn)) setClickedPiece(e.target)
-        
         if (e.target !== draggedPiece && e.target.src.includes(turn)) setDraggedPiece(e.target);
-        
         if (!e.target.src.includes(turn)) return
 
-
-        const x = e.clientX
-        const y = e.clientY
+        //mouse coordinates
+        const x : number = e.clientX
+        const y : number = e.clientY
 
         const coords = {x: e.clientX, y: e.clientY}
         
         const localDraggedPieceCoords = getFieldCoordinates(coords, chessBoardOffsets, fieldSizes, variant)
         setDraggedPieceCoords(localDraggedPieceCoords)
 
+        //getting all legal moves and display that on board
         const pieceField = alphs.posOut[localDraggedPieceCoords.row].toString() + localDraggedPieceCoords.col.toString()
         const piece = squares[pieceField]
         const moves = piece.canMove
@@ -143,46 +151,55 @@ export default function Board() : ReactElement {
         setCastle(moves, piece, setCastleAvailable)
         addActives(moves, pieceField, setActiveFields)
         
+        //moving static piece image to cursor (field offsets needed to center piece on cursor)
         e.target.style.position = 'absolute'
         e.target.style.left = `${x - fieldOffsets.x}px`
         e.target.style.top = `${y - fieldOffsets.y}px`
     }
-    
+    //
+
+    //drag move function for moving taked pieces
     function dragMove(e : any) : void {
         if (!draggedPiece) return
         if (!draggedPiece.src.includes(turn)) return
 
+        //mouse coordinates (field offsets included)
         const x = e.clientX - fieldOffsets.x
         const y = e.clientY - fieldOffsets.y
     
+        //moving static piece image to cursor when move it
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
         draggedPiece.style.top = `${y}px`
     }
-    
+    //
+
+    //drag start function for drop taked pieces
     function drop(e : any) : void {
         
         if (!draggedPiece && !clickedPiece) return
-        
         if (draggedPiece && !draggedPiece.src.includes(turn)) return
 
         const coords = {x: e.clientX, y: e.clientY}
 
         const dropCoords = getFieldCoordinates(coords, chessBoardOffsets, fieldSizes, variant)
         
+        //start this calculations only when dropfield is valid (not aside board)
+        //if dropfield not valid => call resetAll()
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
+            //getting piece data
             const pieceFromThisField = alphs.posOut[draggedPieceCoords.row].toString() + draggedPieceCoords.col.toString() 
             const dropField = alphs.posOut[dropCoords.row].toString()  + dropCoords.col.toString() 
             const piece = squares[pieceFromThisField]
-            let empassanted = false
-            let castledRookInitialField = null
             
-            const pieceOnFieldForServer = {}
-
             let pieceOnField = {
                 [pieceFromThisField]: null,
                 [dropField]: piece
             }
+            
+            //empassant and castle dataset
+            let empassanted = false
+            let castledRookInitialField : string | null = null
 
             if (enpassantAvailable) {
                 const enpassantedFields = checkForEnpassant(squares, dropField, pieceFromThisField, enpassantAvailable)
@@ -195,7 +212,10 @@ export default function Board() : ReactElement {
                 pieceOnField = {...pieceOnField, ...castledFields.modifiedPieceOnField}
                 castledRookInitialField = castledFields.rookInitialPieceField
             }
+            //
 
+            //checking if move illegal (ex: trying to move same colors pieces on eachother)
+            //if true => return
             const IllegalMove = squares[dropField]?.color === piece.color || !activeFields[dropField]
             const tryingToMoveOnInitialField = piece === squares[dropField]
 
@@ -208,54 +228,47 @@ export default function Board() : ReactElement {
                 resetAll(draggedPiece)
                 return 
             }
+            //
 
+            //handling promotions for pawns
             const blackPawnOnPromotionField = (dropField[1] === '1' && piece.type === 'Pawn' && piece.color === 'Black')
             const whitePawnOnPromotionField = (dropField[1] === '8' && piece.type === 'Pawn' && piece.color === 'White')
             const pawnOnPromotionField = (blackPawnOnPromotionField || whitePawnOnPromotionField)
 
             if (pawnOnPromotionField && piece.color === turn) setPromotedField(dropField)
-            
+            //
+
+            //finally, setting squares data with placed piece
             setSquares({...squares, ...pieceOnField})
 
             const currentPlayer = turn === 'White' ? playerWhite : playerBlack
             stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
             playPlacedPieceSound(squares[dropField], empassanted)
+            //
 
-            for (const [key, value] of Object.entries(pieceOnField)) {
-                if (value) {
-                    if (castleAvailable) {
-                        if (value.type === 'Rook') {
-                            pieceOnFieldForServer[key] = {
-                                type: value.type,
-                                from: castledRookInitialField
-                            }
-                            continue
-                        }
-                    }
-                    pieceOnFieldForServer[key] = {
-                        type: value.type,
-                        from: pieceFromThisField
-                    }
-                } else {
-                    pieceOnFieldForServer[key] = null
-                }
-            }
-
+            //sending moved piece data to server if not in offline mode
+            const pieceOnFieldForServer = 
+                getPieceOnFieldForServer(pieceOnField, castleAvailable, castledRookInitialField, pieceFromThisField)
+            
             if (!settings.offlineMode) socket.emit('move-played', pieceOnFieldForServer)
+            //
 
-            //last moves, all played moves here!
+            //setting last played moves
             playedMoves.push(`${piece.color} ${piece.type} ${pieceFromThisField} to ${dropField}`)
             rawMakedMoves.push(`${piece.type.slice(0, 1)}${pieceFromThisField}`)
             if (piece.lastMoves) piece.lastMoves.push(pieceFromThisField)
             //
 
+            //resetting board and piece states and changing turn
             resetAll(draggedPiece)
             setTurn(turn === 'White' ? 'Black' : 'White')
         } else {
             resetAll(draggedPiece)
         }
     }
+    //
 
+    //reset board and piece states
     function resetAll(draggedPiece : HTMLImageElement) {
         if (draggedPiece) draggedPiece.setAttribute('style', '');
         setEnpassantAvailable(null)
@@ -263,7 +276,9 @@ export default function Board() : ReactElement {
         setClickedPiece(null)  
         removeActives(activeFields, setActiveFields)
     }
+    //
 
+    //restart game with changing players colors that they play
     function restartGame() : void {
         sounds.newGame.play()
         setSquares(initialPositions)
@@ -271,7 +286,9 @@ export default function Board() : ReactElement {
         setIsTimerSet(false)
         playerBlack.timer = 60000
         playerWhite.timer = 60000
+        playedMoves.length = 0
 
+        //changing players colors
         if (playerBlack.isYou) {
             playerBlack.isYou = false
             playerWhite.isYou = true
@@ -279,13 +296,12 @@ export default function Board() : ReactElement {
             playerWhite.isYou = false
             playerBlack.isYou = true
         }
-
         setTurn('White')
         setVariant(variant === 'white' ? 'black' : 'white')
-        playedMoves.length = 0
-        console.log(playerBlack, playerWhite);
+        //
     }
-
+    //
+    
     return (
         <boardContext.Provider value={boardContextValue}>
             <div className='board-wrapper'>
