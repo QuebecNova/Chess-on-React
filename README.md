@@ -1,7 +1,6 @@
-Rewriting my old chess engine to React
+# My chess engine on React
 
-
-Now we have: 
+## Now we have: 
   
   1.All pieces follows their movement rules
 
@@ -30,6 +29,6 @@ Now we have:
   13.Phones-friendly
 
 
-Live: https://hamchess.netlify.app/
+## Live: https://hamchess.netlify.app/
 
-Backend:https://github.com/QuebecNova/Chess-On-React-Backend
+## Backend:https://github.com/QuebecNova/Chess-On-React-Backend
