@@ -31,4 +31,6 @@
 
 ## Live: https://hamchess.netlify.app/
 
-## Backend:https://github.com/QuebecNova/Chess-On-React-Backend
+## Backend: https://github.com/QuebecNova/Chess-On-React-Backend
+
+### Open to contribute!
