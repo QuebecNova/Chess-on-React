@@ -14,13 +14,13 @@
 
   6.Even stalemate
 
-  7.On start you can choose side to play on!
+  7.On start you can choose side to play on
 
   8.Timer
 
   9.Played moves
 
-  10.When you end game you can restart it starting from opposite side!
+  10.When you end game you can restart it starting from opposite side
 
   11.Multiplayer
   
