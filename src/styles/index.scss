@@ -8,6 +8,7 @@
 @import 'newGame.scss';
 @import 'chat.scss';
 @import 'mediaQueries.scss';
+@import 'variable.scss';
 
 * {
     margin: 0;
@@ -18,11 +19,11 @@ html,
 body {
     font-size: 21px;
     font-family: 'fira_sansmedium';
-    color: rgb(170, 163, 91);
+    color: #757575;
     letter-spacing: 0.4px;
     overflow: hidden;
 }
 
 body {
-    background-color: rgb(5, 47, 40);
+    background-color: #1F1F1F;
 }
