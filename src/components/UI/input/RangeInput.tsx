@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react'
-import classes from './rangeInput.module.css'
+import classes from './rangeInput.module.scss'
 
 type Props = {
     type: string

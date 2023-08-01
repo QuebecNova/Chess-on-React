@@ -1,5 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react'
-import classes from './input.module.css'
+import classes from './input.module.scss'
 
 type Props = {
     type: string
