@@ -5,7 +5,7 @@
 }
 
 .board__define-side button span {
-    color: white;
+    color: rgb(202, 113, 113);
 }
 
 .board__define-side button:nth-child(3) {
