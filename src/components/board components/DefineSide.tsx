@@ -1,24 +1,23 @@
 import React, { useContext } from 'react'
-import sounds from '../../services/misc/sounds'
-import Player from '../../services/player'
-import socket from '../../connection/socket'
+import sounds from '../../helpers/misc/sounds'
+import Player from '../../helpers/player'
+import socket from '../../services/socket'
 import { boardContext } from '../Board'
 import settings from '../../configs/settings'
 import Button from '../UI/button/Button'
 
 type Props = {
-    setIsSideSet : React.Dispatch<React.SetStateAction<boolean>>
+    setIsSideSet: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 let playerWhite = new Player('White', 60000, false, false)
 let playerBlack = new Player('Black', 60000, false, false)
 
-export default function DefineSide({ setIsSideSet } : Props) {
-
+export default function DefineSide({ setIsSideSet }: Props) {
     const board = useContext(boardContext)
 
     if (!settings.offlineMode) {
-        socket.on('player-choosen-color', color => {
+        socket.on('player-choosen-color', (color) => {
             if (color === 'white') {
                 playerBlack = new Player('Black', 60000, false, true)
             } else {
@@ -30,7 +29,7 @@ export default function DefineSide({ setIsSideSet } : Props) {
         })
     }
 
-    function setSide(color = 'white') : void {
+    function setSide(color = 'white'): void {
         if (color === 'black') {
             board.setVariant(color)
             if (!settings.offlineMode) socket.emit('choosen-side', color)
@@ -44,17 +43,13 @@ export default function DefineSide({ setIsSideSet } : Props) {
         sounds.newGame.play()
     }
 
-  return (
-    <div className={`board__define-side`}>
-        <p>Choose your side</p>
-        <Button onClick={() => setSide('white')}>
-            White
-        </Button>
-        <Button onClick={() => setSide('black')}>
-            Black
-        </Button>
-    </div>
-  )
+    return (
+        <div className={`board__define-side`}>
+            <p>Choose your side</p>
+            <Button onClick={() => setSide('white')}>White</Button>
+            <Button onClick={() => setSide('black')}>Black</Button>
+        </div>
+    )
 }
 
-export {playerBlack, playerWhite}
+export { playerBlack, playerWhite }

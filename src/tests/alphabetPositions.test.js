@@ -1,5 +1,5 @@
-import { cleanup } from '@testing-library/react';
-import alphs from '../services/math/alphabetPositions'
+import { cleanup } from '@testing-library/react'
+import alphs from '../helpers/math/alphabetPositions'
 
 afterEach(cleanup)
 
@@ -8,12 +8,12 @@ describe('alphs', () => {
         expect(alphs.posIn['a']).toBe(1)
         expect(alphs.posIn['c']).toBe(3)
     })
-    
+
     it('posOut returning field column from number', () => {
         expect(alphs.posOut[1]).toBe('a')
         expect(alphs.posOut[3]).toBe('c')
     })
-    
+
     it('changeAlphPos modifying field position', () => {
         const initialPos = 'b4'
         expect(alphs.changeAlphPos(initialPos, '+', 1)).toBe('c4')

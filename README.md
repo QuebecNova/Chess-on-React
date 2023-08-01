@@ -1,33 +1,32 @@
 # My chess engine on React
 
-## Now we have: 
-  
-  1.All pieces follows their movement rules
+## Now we have:
 
-  2.Castling
+1.All pieces follows their movement rules
 
-  3.Enpassant
+2.Castling
 
-  4.Promotion
+3.Enpassant
 
-  5.Check and mate
+4.Promotion
 
-  6.Even stalemate
+5.Check and mate
 
-  7.On start you can choose side to play on
+6.Even stalemate
 
-  8.Timer
+7.On start you can choose side to play on
 
-  9.Played moves
+8.Timer
 
-  10.When you end game you can restart it starting from opposite side
+9.Played moves
 
-  11.Multiplayer
-  
-  12.Chat
+10.When you end game you can restart it starting from opposite side
 
-  13.Phones-friendly
+11.Multiplayer
 
+12.Chat
+
+13.Phones-friendly
 
 ## Live: https://hamchess.netlify.app/
 

@@ -1,0 +1,31 @@
+.new-game__wrapper {
+    min-width: 50vw;
+    height: 80vh;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.create-game {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 50px;
+    margin-bottom: 50px;
+    border-bottom: 4px solid rgb(2, 17, 15);
+    margin-right: 0;
+}
+
+.join-game {
+    margin-bottom: 100px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.shareID__wrapper {
+    text-align: center;
+}

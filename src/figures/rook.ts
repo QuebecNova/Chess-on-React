@@ -1,137 +1,138 @@
-import Piece from "./piece";
-import piecesImages from "../services/misc/piecesImages";
-import alphs from "../services/math/alphabetPositions";
-import { keyableSquares } from "../interfaces/keyable";
+import Piece from './piece'
+import piecesImages from '../helpers/misc/piecesImages'
+import alphs from '../helpers/math/alphabetPositions'
+import { keyableSquares } from '../types/keyable'
 
 class Rook extends Piece {
-  constructor(color : string) {
-    super(
-      color,
-      color === "Black" ? piecesImages.BlackRook : piecesImages.WhiteRook,
-      "Rook"
-    )
-  }
+    constructor(color: string) {
+        super(
+            color,
+            color === 'Black' ? piecesImages.BlackRook : piecesImages.WhiteRook,
+            'Rook'
+        )
+    }
 
-  lastMoves : string[] = []
-  
-  canMove(
-    from : string, 
-    squareState : keyableSquares, 
-    movesLeadsToCheck : keyableSquares
-    ) : string[] {
+    lastMoves: string[] = []
 
-    const moves : string[] = []
-    
-    const rawMoves : string[] = [
-        // rows 0-13
-        // 0-6 left
-        alphs.changeAlphPos(from, '-', 1),
-        alphs.changeAlphPos(from, '-', 2),
-        alphs.changeAlphPos(from, '-', 3),
-        alphs.changeAlphPos(from, '-', 4),
-        alphs.changeAlphPos(from, '-', 5),
-        alphs.changeAlphPos(from, '-', 6),
-        alphs.changeAlphPos(from, '-', 7),
-        
-        // 7-13 right
-        alphs.changeAlphPos(from, '+', 1),
-        alphs.changeAlphPos(from, '+', 2),
-        alphs.changeAlphPos(from, '+', 3),
-        alphs.changeAlphPos(from, '+', 4),
-        alphs.changeAlphPos(from, '+', 5),
-        alphs.changeAlphPos(from, '+', 6),
-        alphs.changeAlphPos(from, '+', 7),
+    canMove(
+        from: string,
+        squareState: keyableSquares,
+        movesLeadsToCheck: keyableSquares
+    ): string[] {
+        const moves: string[] = []
 
-        // cols 14-27
-        // 14-20 back
-        from[0] + (parseInt(from[1]) - 1),
-        from[0] + (parseInt(from[1]) - 2),
-        from[0] + (parseInt(from[1]) - 3),
-        from[0] + (parseInt(from[1]) - 4),
-        from[0] + (parseInt(from[1]) - 5),
-        from[0] + (parseInt(from[1]) - 6),
-        from[0] + (parseInt(from[1]) - 7),
+        const rawMoves: string[] = [
+            // rows 0-13
+            // 0-6 left
+            alphs.changeAlphPos(from, '-', 1),
+            alphs.changeAlphPos(from, '-', 2),
+            alphs.changeAlphPos(from, '-', 3),
+            alphs.changeAlphPos(from, '-', 4),
+            alphs.changeAlphPos(from, '-', 5),
+            alphs.changeAlphPos(from, '-', 6),
+            alphs.changeAlphPos(from, '-', 7),
 
-        // 20-27 front
-        from[0] + (parseInt(from[1]) + 1),
-        from[0] + (parseInt(from[1]) + 2),
-        from[0] + (parseInt(from[1]) + 3),
-        from[0] + (parseInt(from[1]) + 4),
-        from[0] + (parseInt(from[1]) + 5),
-        from[0] + (parseInt(from[1]) + 6),
-        from[0] + (parseInt(from[1]) + 7),
-    ]
+            // 7-13 right
+            alphs.changeAlphPos(from, '+', 1),
+            alphs.changeAlphPos(from, '+', 2),
+            alphs.changeAlphPos(from, '+', 3),
+            alphs.changeAlphPos(from, '+', 4),
+            alphs.changeAlphPos(from, '+', 5),
+            alphs.changeAlphPos(from, '+', 6),
+            alphs.changeAlphPos(from, '+', 7),
 
-    let pieceInbackCol = false
-    let pieceInfrontCol = false
+            // cols 14-27
+            // 14-20 back
+            from[0] + (parseInt(from[1]) - 1),
+            from[0] + (parseInt(from[1]) - 2),
+            from[0] + (parseInt(from[1]) - 3),
+            from[0] + (parseInt(from[1]) - 4),
+            from[0] + (parseInt(from[1]) - 5),
+            from[0] + (parseInt(from[1]) - 6),
+            from[0] + (parseInt(from[1]) - 7),
 
-    let pieceInbackRow = false
-    let pieceInfrontRow = false
+            // 20-27 front
+            from[0] + (parseInt(from[1]) + 1),
+            from[0] + (parseInt(from[1]) + 2),
+            from[0] + (parseInt(from[1]) + 3),
+            from[0] + (parseInt(from[1]) + 4),
+            from[0] + (parseInt(from[1]) + 5),
+            from[0] + (parseInt(from[1]) + 6),
+            from[0] + (parseInt(from[1]) + 7),
+        ]
 
-    rawMoves.forEach((move, index) => {
+        let pieceInbackCol = false
+        let pieceInfrontCol = false
 
-        const movePassingValidation = (move && !move[2] && parseInt(move[1]) > 0 && parseInt(move[1]) < 9)
-        const moveLeadsToCheck = movesLeadsToCheck?.[move]
-        const pieceOnMove = squareState[move]
+        let pieceInbackRow = false
+        let pieceInfrontRow = false
 
-        const sameColorOnMove = pieceOnMove?.color === this.color
-        const enemyColorOnMove = pieceOnMove?.color !== this.color
+        rawMoves.forEach((move, index) => {
+            const movePassingValidation =
+                move &&
+                !move[2] &&
+                parseInt(move[1]) > 0 &&
+                parseInt(move[1]) < 9
+            const moveLeadsToCheck = movesLeadsToCheck?.[move]
+            const pieceOnMove = squareState[move]
 
-        const backRowMoves = index < 7
-        const frontRowMoves = (index > 6 && index < 14)
-        const backColMoves = (index > 13 && index < 21)
-        const frontColMoves = index > 20
+            const sameColorOnMove = pieceOnMove?.color === this.color
+            const enemyColorOnMove = pieceOnMove?.color !== this.color
 
-        if (backRowMoves && pieceInbackRow) return
-        if (frontRowMoves && pieceInfrontRow) return
-        if (backColMoves && pieceInbackCol) return
-        if (frontColMoves && pieceInfrontCol) return
+            const backRowMoves = index < 7
+            const frontRowMoves = index > 6 && index < 14
+            const backColMoves = index > 13 && index < 21
+            const frontColMoves = index > 20
 
-        if (pieceOnMove) {
+            if (backRowMoves && pieceInbackRow) return
+            if (frontRowMoves && pieceInfrontRow) return
+            if (backColMoves && pieceInbackCol) return
+            if (frontColMoves && pieceInfrontCol) return
 
-            if (backRowMoves) {
-                if (sameColorOnMove) {
-                    pieceInbackRow = true
-                    return
-                } else if (enemyColorOnMove) {
-                    pieceInbackRow = true
+            if (pieceOnMove) {
+                if (backRowMoves) {
+                    if (sameColorOnMove) {
+                        pieceInbackRow = true
+                        return
+                    } else if (enemyColorOnMove) {
+                        pieceInbackRow = true
+                    }
+                }
+
+                if (frontRowMoves) {
+                    if (sameColorOnMove) {
+                        pieceInfrontRow = true
+                        return
+                    } else if (enemyColorOnMove) {
+                        pieceInfrontRow = true
+                    }
+                }
+
+                if (backColMoves) {
+                    if (sameColorOnMove) {
+                        pieceInbackCol = true
+                        return
+                    } else if (enemyColorOnMove) {
+                        pieceInbackCol = true
+                    }
+                }
+
+                if (frontColMoves) {
+                    if (sameColorOnMove) {
+                        pieceInfrontCol = true
+                        return
+                    } else if (enemyColorOnMove) {
+                        pieceInfrontCol = true
+                    }
                 }
             }
 
-            if (frontRowMoves) {
-                if (sameColorOnMove) {
-                    pieceInfrontRow = true
-                    return
-                } else if (enemyColorOnMove) {
-                    pieceInfrontRow = true
-                }
-            }
+            if (moveLeadsToCheck) return
+            if (movePassingValidation) moves.push(move)
+        })
 
-            if (backColMoves) {
-                if (sameColorOnMove) {
-                    pieceInbackCol = true
-                    return
-                } else if (enemyColorOnMove) {
-                    pieceInbackCol = true
-                }
-            }
-
-            if (frontColMoves) {
-                if (sameColorOnMove) {
-                    pieceInfrontCol = true
-                    return
-                } else if (enemyColorOnMove) {
-                    pieceInfrontCol = true
-                }
-            }
-        }
-
-        if (moveLeadsToCheck) return
-        if (movePassingValidation) moves.push(move)
-    })
-
-    return moves
-  }
+        return moves
+    }
 }
 
-export default Rook;
+export default Rook

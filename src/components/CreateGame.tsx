@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import socket from '../connection/socket'
+import socket from '../services/socket'
 import ShareID from './ShareID'
 import { v4 as uuidv4 } from 'uuid'
 import { AppContext } from '../App'
@@ -13,8 +13,7 @@ type Props = {
     setOfflineMode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function CreateGame({setOfflineMode} : Props) {
-
+export default function CreateGame({ setOfflineMode }: Props) {
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState('')
     const app = useContext(AppContext)
@@ -33,7 +32,7 @@ export default function CreateGame({setOfflineMode} : Props) {
     }
 
     async function join() {
-        socket.on('room-error', msg => {
+        socket.on('room-error', (msg) => {
             setError(msg)
             return
         })
@@ -43,40 +42,38 @@ export default function CreateGame({setOfflineMode} : Props) {
     socket.on('room-valid', () => {
         app.setInGame(true)
     })
-    
-  if (newRoomCreated) {
-    return <ShareID roomID={RoomID}/>
-  }
-  
-  return (
-    <div className='new-game__wrapper'>
-        <div className='create-game'>
-            <p>Create a new Game!</p>
-            <Button className='create-game__button' onClick={displayID}>
-                New Game
-            </Button>
+
+    if (newRoomCreated) {
+        return <ShareID roomID={RoomID} />
+    }
+
+    return (
+        <div className="new-game__wrapper">
+            <div className="create-game">
+                <p>Create a new Game!</p>
+                <Button className="create-game__button" onClick={displayID}>
+                    New Game
+                </Button>
+            </div>
+            <div className="join-game">
+                <p>Join created game!</p>
+                <Input
+                    id="idInput"
+                    label
+                    labelText="Pass ID:"
+                    placeholder="game id"
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                />
+                <span>{error}</span>
+                <Button className="create-game__button-join" onClick={join}>
+                    Join!
+                </Button>
+            </div>
+            <div className="offline-game">
+                <Button onClick={setOffline}>Offline-mode</Button>
+            </div>
         </div>
-        <div className='join-game'>
-            <p>Join created game!</p>
-            <Input
-                id='idInput'
-                label
-                labelText='Pass ID:'
-                placeholder='game id'
-                type='text'
-                value={inputValue} 
-                onChange={(e) => setInputValue(e.target.value)}
-            />
-            <span>{error}</span>
-            <Button className='create-game__button-join' onClick={join}>
-                Join!
-            </Button>
-        </div>
-        <div className='offline-game'>
-            <Button onClick={setOffline}>
-                Offline-mode
-            </Button>
-        </div>
-    </div>
-  )
+    )
 }

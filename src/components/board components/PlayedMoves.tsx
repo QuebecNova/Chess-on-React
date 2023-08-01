@@ -1,13 +1,12 @@
 import React, { useRef, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import scrollToBottom from '../../services/misc/scrollToBottom'
+import scrollToBottom from '../../helpers/misc/scrollToBottom'
 
 type Props = {
     playedMoves: string[]
 }
 
-export default function PlayedMoves({playedMoves}: Props) {
-
+export default function PlayedMoves({ playedMoves }: Props) {
     const lastPlayedMove = useRef<null | HTMLDivElement>()
     const orderedMoves = []
 
@@ -15,8 +14,8 @@ export default function PlayedMoves({playedMoves}: Props) {
         if (!lastPlayedMove.current) return
         scrollToBottom(lastPlayedMove.current)
     }, [playedMoves.length])
-    
-    function displayPlayedMoves() : string[] {
+
+    function displayPlayedMoves(): string[] {
         if (!playedMoves.length) return
 
         playedMoves.forEach((move, index) => {
@@ -30,15 +29,15 @@ export default function PlayedMoves({playedMoves}: Props) {
 
         return orderedMoves
     }
-    
-  return (
-    <div className='board__played-moves'>
-        <div className='board__played-moves-header'>
-            <p>Played Moves</p>
+
+    return (
+        <div className="board__played-moves">
+            <div className="board__played-moves-header">
+                <p>Played Moves</p>
+            </div>
+            <div className="board__played-moves-content">
+                {displayPlayedMoves()}
+            </div>
         </div>
-        <div className='board__played-moves-content'>
-            {displayPlayedMoves()}
-        </div>
-    </div>
-  )
+    )
 }
