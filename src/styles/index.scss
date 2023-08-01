@@ -1,13 +1,13 @@
-@import 'outer.css';
-@import 'board.css';
-@import 'timer.css';
-@import 'pieces.css';
-@import 'fonts.css';
-@import 'button.css';
-@import 'playedMoves.css';
-@import 'newGame.css';
-@import 'chat.css';
-@import 'mediaQueries.css';
+@import 'outer.scss';
+@import 'board.scss';
+@import 'timer.scss';
+@import 'pieces.scss';
+@import 'fonts.scss';
+@import 'button.scss';
+@import 'playedMoves.scss';
+@import 'newGame.scss';
+@import 'chat.scss';
+@import 'mediaQueries.scss';
 
 * {
     margin: 0;

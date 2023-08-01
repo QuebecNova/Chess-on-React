@@ -28,11 +28,11 @@ function App(): ReactElement {
 
     if (inGame)
         return (
-            <AppContext.Provider value={contextValue}>
-                <div className="wrapper">
-                    <Header />
-                    <Board />
-                </div>
+        <AppContext.Provider value={contextValue}>
+        <div className="wrapper">
+                <Header />
+                <Board />
+            </div>
             </AppContext.Provider>
         )
 }
