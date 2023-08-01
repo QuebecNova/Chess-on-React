@@ -1,5 +1,5 @@
 import React from 'react'
-import socket from '../../connection/socket'
+import socket from '../../services/socket'
 
 type Props = {
     waitingForAccept: boolean
@@ -9,8 +9,11 @@ type Props = {
 
 let once = false
 
-export default function Waiting({waitingForAccept, setWaitingForAccept, restartGame}: Props) {
-
+export default function Waiting({
+    waitingForAccept,
+    setWaitingForAccept,
+    restartGame,
+}: Props) {
     socket.on('player-accepted-restart', () => {
         if (once) return
         once = true
@@ -18,9 +21,10 @@ export default function Waiting({waitingForAccept, setWaitingForAccept, restartG
         restartGame()
     })
 
-  if (waitingForAccept) return (
-    <div className={`board__mated`}> 
-        <p>Waiting for accept...</p>
-    </div>
-  )
+    if (waitingForAccept)
+        return (
+            <div className={`board__mated`}>
+                <p>Waiting for accept...</p>
+            </div>
+        )
 }

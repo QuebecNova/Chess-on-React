@@ -1,17 +1,17 @@
-import { keyableSquares } from './../interfaces/keyable';
-import Rook from "../figures/rook";
-import King from "../figures/king";
-import Knight from "../figures/knight";
-import Pawn from "../figures/pawn";
-import Queen from "../figures/queen";
-import Bishop from "../figures/bishop";
-import getSquares from "../services/board/getSquares";
+import { keyableSquares } from '../types/keyable'
+import Rook from '../figures/rook'
+import King from '../figures/king'
+import Knight from '../figures/knight'
+import Pawn from '../figures/pawn'
+import Queen from '../figures/queen'
+import Bishop from '../figures/bishop'
+import getSquares from '../helpers/board/getSquares'
 
 const nullSquares = getSquares(null)
 
-export default function setupBoard() : keyableSquares {
+export default function setupBoard(): keyableSquares {
     const squares = nullSquares
-    
+
     squares.a8 = new Rook('Black')
     squares.b8 = new Knight('Black')
     squares.c8 = new Bishop('Black')
