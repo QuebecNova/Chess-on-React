@@ -14,7 +14,7 @@ function App(): ReactElement {
         offlineMode,
     }
 
-    console.log('Render!!!')
+    console.log('Render')
 
     if (!inGame)
         return (
