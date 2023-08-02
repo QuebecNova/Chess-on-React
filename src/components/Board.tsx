@@ -139,8 +139,12 @@ export default function Board() {
         if (isDragStartIllegal(e, isSettingsReady, playerWhite, playerBlack))
             return
 
-        if (e.target.parentNode.dataset.color.includes(turn)) setClickedPiece(e.target)
-        if (e.target !== draggedPiece && e.target.parentNode.dataset.color.includes(turn))
+        if (e.target.parentNode.dataset.color.includes(turn))
+            setClickedPiece(e.target)
+        if (
+            e.target !== draggedPiece &&
+            e.target.parentNode.dataset.color.includes(turn)
+        )
             setDraggedPiece(e.target)
         if (!e.target.parentNode.dataset.color.includes(turn)) return
 
@@ -200,7 +204,11 @@ export default function Board() {
     //drag start function for drop taked pieces
     function drop(e: any): void {
         if (!draggedPiece && !clickedPiece) return
-        if (draggedPiece && !draggedPiece.parentNode.dataset.color.includes(turn)) return
+        if (
+            draggedPiece &&
+            !draggedPiece.parentNode.dataset.color.includes(turn)
+        )
+            return
 
         const coords = { x: e.clientX, y: e.clientY }
 

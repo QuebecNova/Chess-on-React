@@ -8,15 +8,18 @@ import timeExpiring from '../../assets/sounds/timeExpiring.wav'
 import { keyableAudio } from '../../types/keyable'
 import IPiece from '../../types/IPiece'
 
-const sounds: keyableAudio = typeof Audio === 'undefined' ? {} : {
-    placePiece: new Audio(placedPieceSound),
-    takePiece: new Audio(takePiece),
-    check: new Audio(check),
-    win: new Audio(win),
-    lose: new Audio(lose),
-    newGame: new Audio(newGame),
-    timeExpiring: new Audio(timeExpiring),
-}
+const sounds: keyableAudio =
+    typeof Audio === 'undefined'
+        ? {}
+        : {
+              placePiece: new Audio(placedPieceSound),
+              takePiece: new Audio(takePiece),
+              check: new Audio(check),
+              win: new Audio(win),
+              lose: new Audio(lose),
+              newGame: new Audio(newGame),
+              timeExpiring: new Audio(timeExpiring),
+          }
 
 export function playSoundWhenMated(turn: string, variant: string): void {
     if (typeof Audio === 'undefined') return
