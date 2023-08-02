@@ -2,10 +2,10 @@ import React, { useContext, useState } from 'react'
 import socket from '../services/socket'
 import ShareID from './ShareID'
 import { v4 as uuidv4 } from 'uuid'
-import { AppContext } from '../App'
 import settings from '../configs/settings'
 import Button from './UI/button/Button'
 import Input from './UI/input/Input'
+import { AppContext } from '../pages'
 
 const RoomID = uuidv4()
 

@@ -22,6 +22,9 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
     let row = 1
 
     for (const field in app.squares) {
+        const Svg = app.squares[field]?.img || <img/>
+        console.log(app.squares)
+        
         let isActive = ''
         if (activeFields[field]) {
             if (activeFields[field] === 'pieceCanMoveHere')
@@ -38,16 +41,14 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
                     key={index}
                     onClick={(e) => click(e, field)}
                 >
-                    <img
-                        src={app.squares[field].img.toString()}
-                        onMouseDown={(e) => dragStart(e)}
+                    <Svg onMouseDown={(e) => dragStart(e)}
                         onMouseMove={(e) => dragMove(e)}
                         onMouseUp={(e) => drop(e)}
                         onTouchStart={(e) => touch2Mouse(e)}
                         onTouchMove={(e) => touch2Mouse(e)}
                         onTouchEnd={(e) => touch2Mouse(e)}
-                        alt={app.squares[field].type}
-                    />
+                        alt={app.squares[field].type + app.squares[field].color}
+                        data-color={app.squares[field].color}/>
                 </div>
             )
         } else {

@@ -8,7 +8,7 @@ import timeExpiring from '../../assets/sounds/timeExpiring.wav'
 import { keyableAudio } from '../../types/keyable'
 import IPiece from '../../types/IPiece'
 
-const sounds: keyableAudio = {
+const sounds: keyableAudio = typeof Audio === 'undefined' ? {} : {
     placePiece: new Audio(placedPieceSound),
     takePiece: new Audio(takePiece),
     check: new Audio(check),
@@ -19,6 +19,7 @@ const sounds: keyableAudio = {
 }
 
 export function playSoundWhenMated(turn: string, variant: string): void {
+    if (typeof Audio === 'undefined') return
     if (variant === 'white') {
         if (turn === 'Black') sounds.win.play()
         if (turn === 'White') sounds.lose.play()
@@ -32,6 +33,7 @@ export function playPlacedPieceSound(
     takedPiece?: IPiece,
     empassanted?: boolean
 ) {
+    if (typeof Audio === 'undefined') return
     if (takedPiece || empassanted) {
         sounds.takePiece.play()
         return

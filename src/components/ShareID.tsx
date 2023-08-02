@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import { AppContext } from '../App'
 import socket from '../services/socket'
+import { AppContext } from '../pages'
 
 type Props = {
     roomID: string

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 
-export default function Header(): ReactElement {
+export default function Header() {
     return (
         <header>
             <h1> HAMCHESS </h1>

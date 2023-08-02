@@ -45,7 +45,7 @@ const initialPositions = setupBoard()
 export const rawMakedMoves = []
 export const boardContext = createContext(null)
 
-export default function Board(): ReactElement {
+export default function Board() {
     //this is main board state (store if you prefer)
     const [squares, setSquares] = useState(initialPositions)
     const [activeFields, setActiveFields] = useState(getSquares(null))
@@ -139,10 +139,10 @@ export default function Board(): ReactElement {
         if (isDragStartIllegal(e, isSettingsReady, playerWhite, playerBlack))
             return
 
-        if (e.target.src.includes(turn)) setClickedPiece(e.target)
-        if (e.target !== draggedPiece && e.target.src.includes(turn))
+        if (e.target.parentNode.dataset.color.includes(turn)) setClickedPiece(e.target)
+        if (e.target !== draggedPiece && e.target.parentNode.dataset.color.includes(turn))
             setDraggedPiece(e.target)
-        if (!e.target.src.includes(turn)) return
+        if (!e.target.parentNode.dataset.color.includes(turn)) return
 
         //mouse coordinates
         const x: number = e.clientX
@@ -184,7 +184,7 @@ export default function Board(): ReactElement {
     //drag move function for moving taked pieces
     function dragMove(e: any): void {
         if (!draggedPiece) return
-        if (!draggedPiece.src.includes(turn)) return
+        if (!draggedPiece.parentNode.dataset.color.includes(turn)) return
 
         //mouse coordinates (field offsets included)
         const x = e.clientX - fieldOffsets.x
@@ -200,7 +200,7 @@ export default function Board(): ReactElement {
     //drag start function for drop taked pieces
     function drop(e: any): void {
         if (!draggedPiece && !clickedPiece) return
-        if (draggedPiece && !draggedPiece.src.includes(turn)) return
+        if (draggedPiece && !draggedPiece.parentNode.dataset.color.includes(turn)) return
 
         const coords = { x: e.clientX, y: e.clientY }
 

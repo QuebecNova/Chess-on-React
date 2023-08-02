@@ -17,13 +17,13 @@ export function isDragStartIllegal(
 
     if (
         playerBlack.isYou &&
-        !e.target.src.includes(playerBlack.color) &&
+        !e.target.parentNode.dataset.color.includes(playerBlack.color) &&
         !settings.offlineMode
     )
         return true
     if (
         playerWhite.isYou &&
-        !e.target.src.includes(playerWhite.color) &&
+        !e.target.parentNode.dataset.color.includes(playerWhite.color) &&
         !settings.offlineMode
     )
         return true
