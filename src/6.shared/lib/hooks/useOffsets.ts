@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
+import { KeyableNumbers } from 'src/6.shared/model/types/Keyable'
 import useCurrentWidth from './useCurrentWidth'
-import { KeyableNumbers } from 'src/6.shared/model/Keyable'
 
 //changing usable sizes of the board related on it size in browser
 export function useChessBoardOffsets(
@@ -30,9 +30,12 @@ export function useChessBoardOffsets(
 
             const boardWidth = chessBoard.clientWidth
             const currentFieldWidth = boardWidth / 8
-            
+
             setFieldWidth(currentFieldWidth)
-            setFieldOffsets({ x: currentFieldWidth / 2.1, y: currentFieldWidth / 1.9 })
+            setFieldOffsets({
+                x: currentFieldWidth / 2.1,
+                y: currentFieldWidth / 1.9,
+            })
 
             let fieldStartsOn = 0
             const fieldStartsOnArr: Array<number> = []

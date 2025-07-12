@@ -1,6 +1,7 @@
-import React, { ReactElement, useContext } from 'react'
+import { ReactElement, useContext } from 'react'
 import { boardContext } from 'src/3.widgets/ui/Board'
 import defineColor from 'src/6.shared/lib/helpers/board/defineColor'
+import { Colors, FieldStates } from 'src/6.shared/model/constants/board'
 
 type PieceFieldsProps = {
     activeFields: object
@@ -26,10 +27,10 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
 
         let isActive = ''
         if (activeFields[field]) {
-            if (activeFields[field] === 'pieceCanMoveHere')
-                isActive = 'canMoveHere'
-            if (activeFields[field] === 'currentPiece')
-                isActive = 'current-piece'
+            if (activeFields[field] === FieldStates.PieceCanMoveHere)
+                isActive = FieldStates.PieceCanMoveHere
+            if (activeFields[field] === FieldStates.CurrentPiece)
+                isActive = FieldStates.CurrentPiece
         }
 
         if (app.squares[field]) {
@@ -68,5 +69,5 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
         }
     }
 
-    return <>{app.variant === 'black' ? board.reverse() : board}</>
+    return <>{app.variant === Colors.Black ? board.reverse() : board}</>
 }

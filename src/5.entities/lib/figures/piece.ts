@@ -1,5 +1,5 @@
-import IPiece from "src/5.entities/model/IPiece"
-import { KeyableSquares } from "src/5.entities/model/Keyable"
+import IPiece from 'src/5.entities/model/types/IPiece'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 
 export default class Piece implements IPiece {
     readonly color: string

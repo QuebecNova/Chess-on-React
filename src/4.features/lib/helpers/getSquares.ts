@@ -1,4 +1,4 @@
-import { KeyableSquares } from "src/5.entities/model/Keyable"
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 
 export default function getSquares(value: null): KeyableSquares {
     //creating square state

@@ -1,7 +1,8 @@
-import { KeyableStringOrBoolean } from "../model/Keyable"
+import { Colors } from '../model/constants/board'
+import { KeyableStringOrBoolean } from '../model/types/Keyable'
 
 const settings: KeyableStringOrBoolean = {
-    choosenVariant: 'white',
+    choosenVariant: Colors.White,
     offlineMode: false,
 }
 

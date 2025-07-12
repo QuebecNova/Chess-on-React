@@ -1,5 +1,6 @@
 import { cleanup } from '@testing-library/react'
 import alphs from '../lib/helpers/math/alphabetPositions'
+import { Operators } from '../model/constants/board'
 
 afterEach(cleanup)
 
@@ -16,10 +17,36 @@ describe('alphs', () => {
 
     it('changeAlphPos modifying field position', () => {
         const initialPos = 'b4'
-        expect(alphs.changeAlphPos(initialPos, '+', 1)).toBe('c4')
-        expect(alphs.changeAlphPos(initialPos, '-', 1)).toBe('a4')
-        expect(alphs.changeAlphPos(initialPos, '+', 4, '-', 2)).toBe('f2')
-        expect(alphs.changeAlphPos(initialPos, '-', 1, '-', 3)).toBe('a1')
-        expect(alphs.changeAlphPos(initialPos, '-', 3, '+', 2)).toBe(NaN)
+        expect(alphs.changeAlphPos(initialPos, Operators.Forward, 1)).toBe('c4')
+        expect(alphs.changeAlphPos(initialPos, Operators.Backward, 1)).toBe(
+            'a4'
+        )
+        expect(
+            alphs.changeAlphPos(
+                initialPos,
+                Operators.Forward,
+                4,
+                Operators.Backward,
+                2
+            )
+        ).toBe('f2')
+        expect(
+            alphs.changeAlphPos(
+                initialPos,
+                Operators.Backward,
+                1,
+                Operators.Backward,
+                3
+            )
+        ).toBe('a1')
+        expect(
+            alphs.changeAlphPos(
+                initialPos,
+                Operators.Backward,
+                3,
+                Operators.Forward,
+                2
+            )
+        ).toBe(NaN)
     })
 })

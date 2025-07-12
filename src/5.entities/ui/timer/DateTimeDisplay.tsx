@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function DateTimeDisplay({ value, type }) {
     return (
         <div className="counter-section">

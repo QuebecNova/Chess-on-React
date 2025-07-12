@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import scrollToBottom from 'src/6.shared/lib/helpers/misc/scrollToBottom'
 import { v4 as uuidv4 } from 'uuid'
 

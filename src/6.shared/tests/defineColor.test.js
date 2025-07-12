@@ -1,5 +1,6 @@
 import { cleanup } from '@testing-library/react'
 import defineColor from 'src/6.shared/lib/helpers/board/defineColor'
+import { Fields } from '../model/constants/board'
 
 afterEach(cleanup)
 
@@ -11,14 +12,14 @@ describe('define color of square on board', () => {
         let row = 1
 
         // first field in first row in board is white field
-        expect(defineColor(index, row)).toBe('whiteField')
+        expect(defineColor(index, row)).toBe(Fields.WhiteField)
 
         // first field in second row in board is black field
         row = 2
-        expect(defineColor(index, row)).toBe('blackField')
+        expect(defineColor(index, row)).toBe(Fields.BlackField)
 
         index = 1
         // second field in second row in board is white field
-        expect(defineColor(index, row)).toBe('whiteField')
+        expect(defineColor(index, row)).toBe(Fields.WhiteField)
     })
 })

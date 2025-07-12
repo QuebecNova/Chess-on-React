@@ -1,4 +1,5 @@
-import IAlphs from "src/5.entities/model/IAlphs"
+import IAlphs from 'src/5.entities/model/types/IAlphs'
+import { Operators } from 'src/6.shared/model/constants/board'
 
 const alphs: IAlphs = {
     posIn: {
@@ -23,41 +24,66 @@ const alphs: IAlphs = {
         8: 'h',
     },
 
-    changeAlphPos(field, operator, num, secondOperator = '', secondNum = 0) {
+    changeAlphPos(
+        field,
+        letterOperator,
+        num,
+        numericOperator = '',
+        secondNum = 0
+    ) {
         //here we taking field like 'e4' and using passed operators 'increment or decrement' to first letter (e) and second number (4)
-        //yea, letters based notation of board complicated and we can use 0-63 notation, but bad boys don't following easy ways
-        if (!field || !operator || !num) throw new Error('missing argument(s)')
+        //yea, letters based notation of board complicated and we can use 0-63 notation, but bad boys ain't going the easy ways
+        if (!field || !letterOperator || !num)
+            throw new Error('missing argument(s)')
 
         let modifiedField: string
 
-        if (operator === '+' && !secondOperator) {
+        if (letterOperator === Operators.Forward && !numericOperator) {
             modifiedField = this.posOut[this.posIn[field[0]] + num] + field[1]
-        } else if (operator === '-' && !secondOperator) {
+        } else if (letterOperator === Operators.Backward && !numericOperator) {
             modifiedField = this.posOut[this.posIn[field[0]] - num] + field[1]
-        } else if (operator !== '+' && operator !== '-') {
-            throw new Error('not a valid operator')
+        } else if (
+            letterOperator !== Operators.Forward &&
+            letterOperator !== Operators.Backward
+        ) {
+            throw new Error('not a valid letter operator')
         }
 
-        if (!secondOperator || !secondNum) return modifiedField
+        if (!numericOperator || !secondNum) return modifiedField
 
-        if (operator === '+' && secondOperator === '+') {
+        if (
+            letterOperator === Operators.Forward &&
+            numericOperator === Operators.Forward
+        ) {
             modifiedField =
                 this.posOut[this.posIn[field[0]] + num] +
                 (parseInt(field[1]) + secondNum)
-        } else if (operator === '-' && secondOperator === '+') {
+        } else if (
+            letterOperator === Operators.Backward &&
+            numericOperator === Operators.Forward
+        ) {
             modifiedField =
                 this.posOut[this.posIn[field[0]] - num] +
                 (parseInt(field[1]) + secondNum)
-        } else if (operator === '+' && secondOperator === '-') {
+        } else if (
+            letterOperator === Operators.Forward &&
+            numericOperator === Operators.Backward
+        ) {
             modifiedField =
                 this.posOut[this.posIn[field[0]] + num] +
                 (parseInt(field[1]) - secondNum)
-        } else if (operator === '-' && secondOperator === '-') {
+        } else if (
+            letterOperator === Operators.Backward &&
+            numericOperator === Operators.Backward
+        ) {
             modifiedField =
                 this.posOut[this.posIn[field[0]] - num] +
                 (parseInt(field[1]) - secondNum)
-        } else if (secondOperator !== '+' && secondOperator !== '-') {
-            throw new Error('not a valid operator')
+        } else if (
+            numericOperator !== Operators.Forward &&
+            numericOperator !== Operators.Backward
+        ) {
+            throw new Error('not a valid numberic operator')
         }
 
         return modifiedField

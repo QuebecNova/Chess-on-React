@@ -1,16 +1,17 @@
-import Piece from './piece'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
-import piecesImages from 'src/6.shared/lib/helpers/misc/piecesImages'
+import { Colors, Operators, Pieces } from 'src/6.shared/model/constants/board'
+import piecesImages from 'src/6.shared/model/constants/piecesImages'
+import Piece from './piece'
 
 class Bishop extends Piece {
     constructor(color: string) {
         super(
             color,
-            color === 'Black'
+            color === Colors.Black
                 ? piecesImages.BlackBishop
                 : piecesImages.WhiteBishop,
-            'Bishop'
+            Pieces.Bishop
         )
     }
 
@@ -23,40 +24,208 @@ class Bishop extends Piece {
 
         const rawMoves: string[] = [
             //NW diagonal 0-6
-            alphs.changeAlphPos(from, '+', 1, '+', 1),
-            alphs.changeAlphPos(from, '+', 2, '+', 2),
-            alphs.changeAlphPos(from, '+', 3, '+', 3),
-            alphs.changeAlphPos(from, '+', 4, '+', 4),
-            alphs.changeAlphPos(from, '+', 5, '+', 5),
-            alphs.changeAlphPos(from, '+', 6, '+', 6),
-            alphs.changeAlphPos(from, '+', 7, '+', 7),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Forward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                2,
+                Operators.Forward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                3,
+                Operators.Forward,
+                3
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                4,
+                Operators.Forward,
+                4
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                5,
+                Operators.Forward,
+                5
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                6,
+                Operators.Forward,
+                6
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                7,
+                Operators.Forward,
+                7
+            ),
 
             //SE diagonal 7-13
-            alphs.changeAlphPos(from, '-', 1, '-', 1),
-            alphs.changeAlphPos(from, '-', 2, '-', 2),
-            alphs.changeAlphPos(from, '-', 3, '-', 3),
-            alphs.changeAlphPos(from, '-', 4, '-', 4),
-            alphs.changeAlphPos(from, '-', 5, '-', 5),
-            alphs.changeAlphPos(from, '-', 6, '-', 6),
-            alphs.changeAlphPos(from, '-', 7, '-', 7),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Backward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                2,
+                Operators.Backward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                3,
+                Operators.Backward,
+                3
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                4,
+                Operators.Backward,
+                4
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                5,
+                Operators.Backward,
+                5
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                6,
+                Operators.Backward,
+                6
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                7,
+                Operators.Backward,
+                7
+            ),
 
             //NE diagonal 14-20
-            alphs.changeAlphPos(from, '-', 1, '+', 1),
-            alphs.changeAlphPos(from, '-', 2, '+', 2),
-            alphs.changeAlphPos(from, '-', 3, '+', 3),
-            alphs.changeAlphPos(from, '-', 4, '+', 4),
-            alphs.changeAlphPos(from, '-', 5, '+', 5),
-            alphs.changeAlphPos(from, '-', 6, '+', 6),
-            alphs.changeAlphPos(from, '-', 7, '+', 7),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Forward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                2,
+                Operators.Forward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                3,
+                Operators.Forward,
+                3
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                4,
+                Operators.Forward,
+                4
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                5,
+                Operators.Forward,
+                5
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                6,
+                Operators.Forward,
+                6
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                7,
+                Operators.Forward,
+                7
+            ),
 
             //SW diagonal 14-27
-            alphs.changeAlphPos(from, '+', 1, '-', 1),
-            alphs.changeAlphPos(from, '+', 2, '-', 2),
-            alphs.changeAlphPos(from, '+', 3, '-', 3),
-            alphs.changeAlphPos(from, '+', 4, '-', 4),
-            alphs.changeAlphPos(from, '+', 5, '-', 5),
-            alphs.changeAlphPos(from, '+', 6, '-', 6),
-            alphs.changeAlphPos(from, '+', 7, '-', 7),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Backward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                2,
+                Operators.Backward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                3,
+                Operators.Backward,
+                3
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                4,
+                Operators.Backward,
+                4
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                5,
+                Operators.Backward,
+                5
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                6,
+                Operators.Backward,
+                6
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                7,
+                Operators.Backward,
+                7
+            ),
         ]
 
         let NWDiagonalHavePiece = false

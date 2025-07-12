@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import { createContext, useState } from 'react'
 import Board from 'src/3.widgets/ui/Board'
 import Header from 'src/3.widgets/ui/Header'
 import CreateGame from 'src/4.features/ui/gameState/CreateGame'
@@ -16,17 +16,17 @@ export default function LandingPage() {
 
     return (
         <AppContext.Provider value={contextValue}>
-                {inGame ?
-                    <div className="wrapper">
-                        <Header />
-                        <Board />
-                    </div>
-                    :
-                    <div className="wrapper">
-                        <Header />
-                        <CreateGame setOfflineMode={setOfflineMode} />
-                    </div>
-                }
+            {inGame ? (
+                <div className="wrapper">
+                    <Header />
+                    <Board />
+                </div>
+            ) : (
+                <div className="wrapper">
+                    <Header />
+                    <CreateGame setOfflineMode={setOfflineMode} />
+                </div>
+            )}
         </AppContext.Provider>
     )
 }

@@ -1,11 +1,12 @@
-import React, { useContext } from 'react'
-import { boardContext } from './Board'
+import { useContext } from 'react'
 import Timer from 'src/4.features/ui/timer/TimerDisplay'
+import { Colors } from 'src/6.shared/model/constants/board'
+import { boardContext } from './Board'
 
 export default function Timers() {
     const board = useContext(boardContext)
 
-    if (board.variant === 'white' || board.variant === 'notChoosen') {
+    if (board.variant === Colors.White || board.variant === 'notChoosen') {
         return (
             <>
                 <div className="board__timer black-top">

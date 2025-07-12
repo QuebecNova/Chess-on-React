@@ -1,41 +1,55 @@
 'use client'
-import React, { useEffect } from 'react'
-import { useState, useRef, ReactElement, createContext } from 'react'
+import { createContext, useEffect, useRef, useState } from 'react'
 
-import Coords from 'src/5.entities/model/Coords'
-import { KeyablePieceOnField } from 'src/5.entities/model/Keyable'
+import Coords from 'src/5.entities/model/types/Coords'
+import { KeyablePieceOnField } from 'src/5.entities/model/types/Keyable'
 
-import { getMovesThatLeadsToCheck } from 'src/6.shared/lib/helpers/board/checkAndMateHandler'
-import { addActives, removeActives } from 'src/4.features/lib/helpers/setActives'
-import { setCastle, setEnpassant } from 'src/6.shared/lib/helpers/board/dragStartHandlers'
-import { checkForCastle, checkForEnpassant } from 'src/6.shared/lib/helpers/board/dropHandlers'
-import { isDragStartIllegal } from 'src/6.shared/lib/helpers/board/dragNDropLegals'
-import { getPieceOnFieldForServer } from 'src/4.features/lib/helpers/getPieceForServer' 
-import { parsePieceOnField } from 'src/4.features/lib/helpers/parsePieceOnField' 
-import getFieldCoordinates from 'src/6.shared/lib/helpers/board/getFieldCoordinates'
+import { getPieceOnFieldForServer } from 'src/4.features/lib/helpers/getPieceForServer'
 import getSquares from 'src/4.features/lib/helpers/getSquares'
+import { parsePieceOnField } from 'src/4.features/lib/helpers/parsePieceOnField'
+import {
+    addActives,
+    removeActives,
+} from 'src/4.features/lib/helpers/setActives'
+import { getMovesThatLeadsToCheck } from 'src/6.shared/lib/helpers/board/checkAndMateHandler'
+import { isDragStartIllegal } from 'src/6.shared/lib/helpers/board/dragNDropLegals'
+import {
+    setCastle,
+    setEnpassant,
+} from 'src/6.shared/lib/helpers/board/dragStartHandlers'
+import {
+    checkForCastle,
+    checkForEnpassant,
+} from 'src/6.shared/lib/helpers/board/dropHandlers'
+import getFieldCoordinates from 'src/6.shared/lib/helpers/board/getFieldCoordinates'
 
 import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
-import sounds, { playPlacedPieceSound } from 'src/6.shared/lib/helpers/misc/sounds' 
-import touch2Mouse from 'src/6.shared/lib/helpers/misc/touch2mouse' 
+import sounds, {
+    playPlacedPieceSound,
+} from 'src/6.shared/lib/helpers/misc/playSounds'
+import touch2Mouse from 'src/6.shared/lib/helpers/misc/touch2mouse'
 import { stopAndStartPlayerTime } from 'src/6.shared/lib/helpers/updatePlayerTime'
 
 import setupBoard from 'src/3.widgets/config/setupBoard'
 
-import PieceFields from 'src/5.entities/ui/PieceFields'
-import PlayedMoves from 'src/4.features/ui/gameState/PlayedMoves'
-import MatedMessage from 'src/4.features/ui/gameState/MatedMessage'
 import Promotion from 'src/4.features/ui/board/Promotion'
-import StartingSettings from 'src/4.features/ui/gameState/StartingSettings'
-import { playerWhite, playerBlack } from 'src/4.features/ui/gameState/DefineSide'
-import Chat from 'src/4.features/ui/gameState/Chat'
 import AcceptRestart from 'src/4.features/ui/gameState/AcceptRestart'
+import Chat from 'src/4.features/ui/gameState/Chat'
+import {
+    playerBlack,
+    playerWhite,
+} from 'src/4.features/ui/gameState/DefineSide'
+import MatedMessage from 'src/4.features/ui/gameState/MatedMessage'
+import PlayedMoves from 'src/4.features/ui/gameState/PlayedMoves'
+import StartingSettings from 'src/4.features/ui/gameState/StartingSettings'
+import PieceFields from 'src/5.entities/ui/PieceFields'
 import Timers from './Timers'
 
+import { useMated } from 'src/4.features/lib/hooks/useMated'
 import socket from 'src/6.shared/api/socket'
 import settings from 'src/6.shared/config/settings'
-import { useChessBoardOffsets } from 'src/6.shared/lib/hooks/useOffsets' 
-import { useMated } from 'src/4.features/lib/hooks/useMated'
+import { useChessBoardOffsets } from 'src/6.shared/lib/hooks/useOffsets'
+import { Colors, FieldStates, Pieces } from 'src/6.shared/model/constants/board'
 
 const playedMoves = []
 const initialPositions = setupBoard()
@@ -57,7 +71,7 @@ export default function Board() {
     const [enpassantAvailable, setEnpassantAvailable] = useState<string>(null)
     const [promotedField, setPromotedField] = useState<string>(null)
     const [variant, setVariant] = useState<string>('notChoosen')
-    const [turn, setTurn] = useState<string>('White')
+    const [turn, setTurn] = useState<string>(Colors.White)
     const [isSettingsReady, setSettingsReady] = useState<boolean>(false)
     const [isTimerSet, setIsTimerSet] = useState<boolean>(false)
     const [timeExpired, setTimeExpired] = useState<boolean>(false)
@@ -96,9 +110,7 @@ export default function Board() {
     //mated or stalemated states for count win/draw
     const [mated, isStaleMate] = useMated(squares, turn)
 
-    useEffect(() => {
-        
-    })
+    useEffect(() => {})
     //listening on event, when another player send you request for restart a game
     socket.on('player-restarted-game', () => {
         setOpponentWantsRestart(true)
@@ -113,20 +125,25 @@ export default function Board() {
         setSquares({ ...squares, ...pieceOnField })
 
         playPlacedPieceSound()
-        setTurn(turn === 'White' ? 'Black' : 'White')
+        setTurn(turn === Colors.White ? Colors.Black : Colors.White)
 
-        const currentPlayer = turn === 'White' ? playerWhite : playerBlack
+        const currentPlayer = turn === Colors.White ? playerWhite : playerBlack
         stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
     })
     //
 
     //click handler for possibility to place piece on click
     function click(e: any, field: string): void {
-        if (!e.target.classList.contains('canMoveHere') || !isSettingsReady)
+        if (
+            !e.target.classList.contains(FieldStates.PieceCanMoveHere) ||
+            !isSettingsReady
+        )
             return
         if (
             activeFields[field] ||
-            e.nativeEvent.path[1].classList.contains('canMoveHere')
+            e.nativeEvent.path[1].classList.contains(
+                FieldStates.PieceCanMoveHere
+            )
         ) {
             drop(e)
         }
@@ -140,12 +157,8 @@ export default function Board() {
         if (isDragStartIllegal(e, isSettingsReady, playerWhite, playerBlack))
             return
 
-        if (e.target.dataset.color.includes(turn))
-            setClickedPiece(e.target)
-        if (
-            e.target !== draggedPiece &&
-            e.target.dataset.color.includes(turn)
-        )
+        if (e.target.dataset.color.includes(turn)) setClickedPiece(e.target)
+        if (e.target !== draggedPiece && e.target.dataset.color.includes(turn))
             setDraggedPiece(e.target)
         if (!e.target.dataset.color.includes(turn)) return
 
@@ -289,12 +302,12 @@ export default function Board() {
             //handling promotions for pawns
             const blackPawnOnPromotionField =
                 dropField[1] === '1' &&
-                piece.type === 'Pawn' &&
-                piece.color === 'Black'
+                piece.type === Pieces.Pawn &&
+                piece.color === Colors.Black
             const whitePawnOnPromotionField =
                 dropField[1] === '8' &&
-                piece.type === 'Pawn' &&
-                piece.color === 'White'
+                piece.type === Pieces.Pawn &&
+                piece.color === Colors.White
             const pawnOnPromotionField =
                 blackPawnOnPromotionField || whitePawnOnPromotionField
 
@@ -305,12 +318,12 @@ export default function Board() {
             //finally, setting squares data with placed piece
             setSquares({ ...squares, ...pieceOnField })
 
-            const currentPlayer = turn === 'White' ? playerWhite : playerBlack
+            const currentPlayer =
+                turn === Colors.White ? playerWhite : playerBlack
             stopAndStartPlayerTime(currentPlayer, [playerWhite, playerBlack])
             playPlacedPieceSound(squares[dropField], empassanted)
             //
 
-            
             //sending moved piece data to server if not in offline mode
             if (!settings.offlineMode) {
                 const pieceOnFieldForServer = getPieceOnFieldForServer(
@@ -319,7 +332,7 @@ export default function Board() {
                     castledRookInitialField,
                     pieceFromThisField
                 )
-                
+
                 socket.emit('move-played', pieceOnFieldForServer)
                 console.log(pieceOnFieldForServer)
             }
@@ -335,7 +348,7 @@ export default function Board() {
 
             //resetting board and piece states and changing turn
             resetAll(draggedPiece)
-            setTurn(turn === 'White' ? 'Black' : 'White')
+            setTurn(turn === Colors.White ? Colors.Black : Colors.White)
         } else {
             resetAll(draggedPiece)
         }
@@ -370,8 +383,8 @@ export default function Board() {
             playerWhite.isYou = false
             playerBlack.isYou = true
         }
-        setTurn('White')
-        setVariant(variant === 'white' ? 'black' : 'white')
+        setTurn(Colors.White)
+        setVariant(variant === Colors.White ? Colors.Black : Colors.White)
         //
     }
     //

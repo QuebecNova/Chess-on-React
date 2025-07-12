@@ -1,16 +1,17 @@
-import Piece from './piece'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
-import piecesImages from 'src/6.shared/lib/helpers/misc/piecesImages'
+import { Colors, Operators, Pieces } from 'src/6.shared/model/constants/board'
+import piecesImages from 'src/6.shared/model/constants/piecesImages'
+import Piece from './piece'
 
 class Knight extends Piece {
     constructor(color: string) {
         super(
             color,
-            color === 'Black'
+            color === Colors.Black
                 ? piecesImages.BlackKnight
                 : piecesImages.WhiteKnight,
-            'Knight'
+            Pieces.Knight
         )
     }
 
@@ -22,14 +23,62 @@ class Knight extends Piece {
         const moves: string[] = []
 
         const rawMoves: string[] = [
-            alphs.changeAlphPos(from, '+', 1, '+', 2),
-            alphs.changeAlphPos(from, '-', 1, '+', 2),
-            alphs.changeAlphPos(from, '+', 1, '-', 2),
-            alphs.changeAlphPos(from, '-', 1, '-', 2),
-            alphs.changeAlphPos(from, '+', 2, '+', 1),
-            alphs.changeAlphPos(from, '+', 2, '-', 1),
-            alphs.changeAlphPos(from, '-', 2, '+', 1),
-            alphs.changeAlphPos(from, '-', 2, '-', 1),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Forward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Forward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Backward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Backward,
+                2
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                2,
+                Operators.Forward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                2,
+                Operators.Backward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                2,
+                Operators.Forward,
+                1
+            ),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                2,
+                Operators.Backward,
+                1
+            ),
         ]
 
         rawMoves.forEach((move) => {

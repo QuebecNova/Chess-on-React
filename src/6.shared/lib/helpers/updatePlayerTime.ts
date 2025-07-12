@@ -1,15 +1,16 @@
+import { Colors } from 'src/6.shared/model/constants/board'
 import Player from './player'
 
 export function stopAndStartPlayerTime(
     currentPlayer: Player,
     players: Player[]
 ): void {
-    if (currentPlayer.color === 'White') {
+    if (currentPlayer.color === Colors.White) {
         players[1].isPlaying = true
         currentPlayer.isPlaying = false
     }
 
-    if (currentPlayer.color === 'Black') {
+    if (currentPlayer.color === Colors.Black) {
         players[0].isPlaying = true
         currentPlayer.isPlaying = false
     }

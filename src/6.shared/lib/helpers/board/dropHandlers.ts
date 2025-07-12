@@ -1,6 +1,11 @@
-import IPiece from "src/5.entities/model/IPiece"
-import { KeyableSquares } from "src/5.entities/model/Keyable"
-import alphs from "src/6.shared/lib/helpers/math/alphabetPositions"
+import IPiece from 'src/5.entities/model/types/IPiece'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
+import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
+import {
+    Colors,
+    Directions,
+    Operators,
+} from 'src/6.shared/model/constants/board'
 
 export function checkForCastle(
     squares: KeyableSquares,
@@ -16,18 +21,28 @@ export function checkForCastle(
 
     let rookInitialPieceField = ''
 
-    const kingMovedLeft = alphs.changeAlphPos(from, '-', 2) === dropField
-    const kingMovedRight = alphs.changeAlphPos(from, '+', 2) === dropField
+    const kingMovedLeft =
+        alphs.changeAlphPos(from, Operators.Backward, 2) === dropField
+    const kingMovedRight =
+        alphs.changeAlphPos(from, Operators.Forward, 2) === dropField
     let castledRookLeft: string
     let castledRookRight: string
-    const rookLeft: string = alphs.changeAlphPos(from, '-', 4)
-    const rookRight: string = alphs.changeAlphPos(from, '+', 3)
+    const rookLeft: string = alphs.changeAlphPos(from, Operators.Backward, 4)
+    const rookRight: string = alphs.changeAlphPos(from, Operators.Forward, 3)
 
     castleAvailable.forEach((castle) => {
-        if (castle.includes('Left') && kingMovedLeft)
-            castledRookLeft = alphs.changeAlphPos(rookLeft, '+', 3)
-        if (castle.includes('Right') && kingMovedRight)
-            castledRookRight = alphs.changeAlphPos(rookRight, '-', 2)
+        if (castle.includes(Directions.Left) && kingMovedLeft)
+            castledRookLeft = alphs.changeAlphPos(
+                rookLeft,
+                Operators.Forward,
+                3
+            )
+        if (castle.includes(Directions.Right) && kingMovedRight)
+            castledRookRight = alphs.changeAlphPos(
+                rookRight,
+                Operators.Backward,
+                2
+            )
     })
 
     if (castledRookLeft) {
@@ -60,19 +75,59 @@ export function checkForEnpassant(
     const piece: IPiece = squares[from]
 
     let enpassantedField: string
-    if (piece.color === 'White' && enpassantAvailable.includes('Left'))
-        enpassantedField = alphs.changeAlphPos(from, '-', 1)
-    if (piece.color === 'White' && enpassantAvailable.includes('Right'))
-        enpassantedField = alphs.changeAlphPos(from, '+', 1)
-    if (piece.color === 'Black' && enpassantAvailable.includes('Left'))
-        enpassantedField = alphs.changeAlphPos(from, '-', 1)
-    if (piece.color === 'Black' && enpassantAvailable.includes('Right'))
-        enpassantedField = alphs.changeAlphPos(from, '+', 1)
     if (
-        dropField === alphs.changeAlphPos(from, '+', 1, '+', 1) ||
-        dropField === alphs.changeAlphPos(from, '+', 1, '-', 1) ||
-        dropField === alphs.changeAlphPos(from, '-', 1, '-', 1) ||
-        dropField === alphs.changeAlphPos(from, '-', 1, '+', 1)
+        piece.color === Colors.White &&
+        enpassantAvailable.includes(Directions.Left)
+    )
+        enpassantedField = alphs.changeAlphPos(from, Operators.Backward, 1)
+    if (
+        piece.color === Colors.White &&
+        enpassantAvailable.includes(Directions.Right)
+    )
+        enpassantedField = alphs.changeAlphPos(from, Operators.Forward, 1)
+    if (
+        piece.color === Colors.Black &&
+        enpassantAvailable.includes(Directions.Left)
+    )
+        enpassantedField = alphs.changeAlphPos(from, Operators.Backward, 1)
+    if (
+        piece.color === Colors.Black &&
+        enpassantAvailable.includes(Directions.Right)
+    )
+        enpassantedField = alphs.changeAlphPos(from, Operators.Forward, 1)
+    if (
+        dropField ===
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Forward,
+                1
+            ) ||
+        dropField ===
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Backward,
+                1
+            ) ||
+        dropField ===
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Backward,
+                1
+            ) ||
+        dropField ===
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Forward,
+                1
+            )
     ) {
         modifiedPieceOnField[enpassantedField] = null
     }

@@ -1,6 +1,8 @@
-import { KeyablePieceOnField, KeyableSquares } from "src/5.entities/model/Keyable"
-import { isKeyableString } from "src/6.shared/model/Keyable"
-
+import {
+    KeyablePieceOnField,
+    KeyableSquares,
+} from 'src/5.entities/model/types/Keyable'
+import { isKeyableString } from 'src/6.shared/model/types/Keyable'
 
 export function parsePieceOnField(
     pieceData: KeyablePieceOnField,

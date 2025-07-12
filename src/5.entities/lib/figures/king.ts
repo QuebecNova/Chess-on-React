@@ -1,8 +1,14 @@
-import Piece from './piece'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
 import arrayRemove from 'src/6.shared/lib/helpers/math/arrayRemove'
-import piecesImages from 'src/6.shared/lib/helpers/misc/piecesImages'
+import {
+    Colors,
+    Moves,
+    Operators,
+    Pieces,
+} from 'src/6.shared/model/constants/board'
+import piecesImages from 'src/6.shared/model/constants/piecesImages'
+import Piece from './piece'
 
 class King extends Piece {
     lastMoves: string[]
@@ -11,8 +17,10 @@ class King extends Piece {
     constructor(color: string) {
         super(
             color,
-            color === 'Black' ? piecesImages.BlackKing : piecesImages.WhiteKing,
-            'King'
+            color === Colors.Black
+                ? piecesImages.BlackKing
+                : piecesImages.WhiteKing,
+            Pieces.King
         )
         this.lastMoves = []
         this.onCheck = false
@@ -34,24 +42,48 @@ class King extends Piece {
         let moves = []
 
         //rooks here
-        const rookRight = alphs.changeAlphPos(from, '+', 3)
-        const rookLeft = alphs.changeAlphPos(from, '-', 4)
+        const rookRight = alphs.changeAlphPos(from, Operators.Forward, 3)
+        const rookLeft = alphs.changeAlphPos(from, Operators.Backward, 4)
 
         const rawMoves: string[] = [
             //circular moves starting from kingpos[1] + 1
             from[0] + (parseInt(from[1]) + 1),
-            alphs.changeAlphPos(from, '+', 1, '+', 1),
-            alphs.changeAlphPos(from, '+', 1),
-            alphs.changeAlphPos(from, '+', 1, '-', 1),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Forward,
+                1
+            ),
+            alphs.changeAlphPos(from, Operators.Forward, 1),
+            alphs.changeAlphPos(
+                from,
+                Operators.Forward,
+                1,
+                Operators.Backward,
+                1
+            ),
             from[0] + (parseInt(from[1]) - 1),
-            alphs.changeAlphPos(from, '-', 1, '-', 1),
-            alphs.changeAlphPos(from, '-', 1),
-            alphs.changeAlphPos(from, '-', 1, '+', 1),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Backward,
+                1
+            ),
+            alphs.changeAlphPos(from, Operators.Backward, 1),
+            alphs.changeAlphPos(
+                from,
+                Operators.Backward,
+                1,
+                Operators.Forward,
+                1
+            ),
             //castling
-            alphs.changeAlphPos(from, '+', 2),
-            alphs.changeAlphPos(from, '-', 2),
+            alphs.changeAlphPos(from, Operators.Forward, 2),
+            alphs.changeAlphPos(from, Operators.Backward, 2),
             from,
-            alphs.changeAlphPos(from, '-', 3),
+            alphs.changeAlphPos(from, Operators.Backward, 3),
         ]
 
         rawMoves.forEach((move, index) => {
@@ -68,7 +100,7 @@ class King extends Piece {
 
             const kingOnCheck = movesLeadsToCheck?.[from]
 
-            if (samePieceOnMove && pieceOnMove.type !== 'King') return
+            if (samePieceOnMove && pieceOnMove.type !== Pieces.King) return
 
             //castle logic
             const kingMoved = this.lastMoves.length > 0
@@ -82,8 +114,8 @@ class King extends Piece {
                 //THAT'S SMELLS LIKE A BOLEAN ALGEBRA
                 const castlePassingValidationToRight =
                     !kingMoved &&
-                    squareState[rookRight]?.type === 'Rook' &&
-                    initialState[rookRight]?.type === 'Rook' &&
+                    squareState[rookRight]?.type === Pieces.Rook &&
+                    initialState[rookRight]?.type === Pieces.Rook &&
                     initialState[rookRight]?.lastMoves.length === 0 &&
                     !pieceOnMove &&
                     !squareState[rawMoves[2]] &&
@@ -92,8 +124,8 @@ class King extends Piece {
 
                 const castlePassingValidationToLeft =
                     !kingMoved &&
-                    squareState[rookLeft]?.type === 'Rook' &&
-                    initialState[rookLeft]?.type === 'Rook' &&
+                    squareState[rookLeft]?.type === Pieces.Rook &&
+                    initialState[rookLeft]?.type === Pieces.Rook &&
                     initialState[rookLeft]?.lastMoves.length === 0 &&
                     !pieceOnMove &&
                     !squareState[rawMoves[6]] &&
@@ -103,13 +135,13 @@ class King extends Piece {
 
                 if (castlingToRight && castlePassingValidationToRight) {
                     moves.push(rawMoves[8])
-                    moves.push('castleRight')
+                    moves.push(Moves.CastleRight)
                     return
                 }
 
                 if (castlingToLeft && castlePassingValidationToLeft) {
                     moves.push(rawMoves[9])
-                    moves.push('castleLeft')
+                    moves.push(Moves.CastleLeft)
                     return
                 }
             }
@@ -128,11 +160,11 @@ class King extends Piece {
                 squareState[rawMoves[11]]
 
             const rookLeftMoved =
-                squareState[rookLeft]?.type === 'Rook' &&
+                squareState[rookLeft]?.type === Pieces.Rook &&
                 initialState[rookLeft]?.lastMoves.length !== 0
 
             const rookRightMoved =
-                squareState[rookRight]?.type === 'Rook' &&
+                squareState[rookRight]?.type === Pieces.Rook &&
                 initialState[rookRight]?.lastMoves.length !== 0
 
             const somethingBlockingCastleToLeft =

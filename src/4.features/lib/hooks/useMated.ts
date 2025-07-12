@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react'
-import { playerBlack, playerWhite } from 'src/4.features/ui/gameState/DefineSide'
-import { stopAllTimers } from 'src/6.shared/lib/helpers/updatePlayerTime'
+import {
+    playerBlack,
+    playerWhite,
+} from 'src/4.features/ui/gameState/DefineSide'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 import { isMated } from 'src/6.shared/lib/helpers/board/checkAndMateHandler'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
+import { stopAllTimers } from 'src/6.shared/lib/helpers/updatePlayerTime'
 
 export function useMated(
     squares: KeyableSquares,

@@ -1,7 +1,13 @@
 import { rawMakedMoves } from 'src/3.widgets/ui/Board'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
-import piecesImages from 'src/6.shared/lib/helpers/misc/piecesImages'
+import {
+    Colors,
+    Moves,
+    Operators,
+    Pieces,
+} from 'src/6.shared/model/constants/board'
+import piecesImages from 'src/6.shared/model/constants/piecesImages'
 import Piece from './piece'
 
 class Pawn extends Piece {
@@ -10,8 +16,10 @@ class Pawn extends Piece {
     constructor(color: string) {
         super(
             color,
-            color === 'Black' ? piecesImages.BlackPawn : piecesImages.WhitePawn,
-            'Pawn'
+            color === Colors.Black
+                ? piecesImages.BlackPawn
+                : piecesImages.WhitePawn,
+            Pieces.Pawn
         )
         this.lastMoves = []
     }
@@ -25,17 +33,29 @@ class Pawn extends Piece {
         const moves: string[] = []
         let pieceInfront = false
 
-        if (this.color === 'Black') {
+        if (this.color === Colors.Black) {
             const blackMoves = [
                 //basic moves
                 from[0] + (parseInt(from[1]) - 1),
                 from[0] + (parseInt(from[1]) - 2),
                 //eat figures moves
-                alphs.changeAlphPos(from, '-', 1, '-', 1),
-                alphs.changeAlphPos(from, '+', 1, '-', 1),
+                alphs.changeAlphPos(
+                    from,
+                    Operators.Backward,
+                    1,
+                    Operators.Backward,
+                    1
+                ),
+                alphs.changeAlphPos(
+                    from,
+                    Operators.Forward,
+                    1,
+                    Operators.Backward,
+                    1
+                ),
                 //enpassant helper moves
-                alphs.changeAlphPos(from, '-', 1),
-                alphs.changeAlphPos(from, '+', 1),
+                alphs.changeAlphPos(from, Operators.Backward, 1),
+                alphs.changeAlphPos(from, Operators.Forward, 1),
             ]
 
             blackMoves.forEach((move, index) => {
@@ -58,7 +78,7 @@ class Pawn extends Piece {
 
                 const isEnpassantAvailable =
                     moveIsEatMove &&
-                    pieceOnMove?.type === 'Pawn' &&
+                    pieceOnMove?.type === Pieces.Pawn &&
                     initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
                     parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
                         parseInt(move[1]) - 2 &&
@@ -79,7 +99,7 @@ class Pawn extends Piece {
                 if (index > 1) {
                     if (!pieceOnMove) {
                         return
-                    } else if (pieceOnMove.color === 'Black') {
+                    } else if (pieceOnMove.color === Colors.Black) {
                         return
                     }
                 }
@@ -87,10 +107,10 @@ class Pawn extends Piece {
                 if (isEnpassantAvailable) {
                     if (pieceOnLeftSide) {
                         moves.push(blackMoves[2])
-                        moves.push('enpassantLeft')
+                        moves.push(Moves.EnpassantLeft)
                     } else {
                         moves.push(blackMoves[3])
-                        moves.push('enpassantRight')
+                        moves.push(Moves.EnpassantRight)
                     }
                 }
 
@@ -102,10 +122,22 @@ class Pawn extends Piece {
             const whiteMoves = [
                 from[0] + (parseInt(from[1]) + 1),
                 from[0] + (parseInt(from[1]) + 2),
-                alphs.changeAlphPos(from, '-', 1, '+', 1),
-                alphs.changeAlphPos(from, '+', 1, '+', 1),
-                alphs.changeAlphPos(from, '-', 1),
-                alphs.changeAlphPos(from, '+', 1),
+                alphs.changeAlphPos(
+                    from,
+                    Operators.Backward,
+                    1,
+                    Operators.Forward,
+                    1
+                ),
+                alphs.changeAlphPos(
+                    from,
+                    Operators.Forward,
+                    1,
+                    Operators.Forward,
+                    1
+                ),
+                alphs.changeAlphPos(from, Operators.Backward, 1),
+                alphs.changeAlphPos(from, Operators.Forward, 1),
             ]
 
             whiteMoves.forEach((move, index) => {
@@ -129,7 +161,7 @@ class Pawn extends Piece {
 
                 const isEnpassantAvailable =
                     moveIsEatMove &&
-                    pieceOnMove?.type === 'Pawn' &&
+                    pieceOnMove?.type === Pieces.Pawn &&
                     initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
                     parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
                         parseInt(move[1]) + 2 &&
@@ -150,7 +182,7 @@ class Pawn extends Piece {
                 if (index > 1) {
                     if (!pieceOnMove) {
                         return
-                    } else if (pieceOnMove.color === 'White') {
+                    } else if (pieceOnMove.color === Colors.White) {
                         return
                     }
                 }
@@ -158,10 +190,10 @@ class Pawn extends Piece {
                 if (isEnpassantAvailable) {
                     if (pieceOnLeftSide) {
                         moves.push(whiteMoves[2])
-                        moves.push('enpassantLeft')
+                        moves.push(Moves.EnpassantLeft)
                     } else {
                         moves.push(whiteMoves[3])
-                        moves.push('enpassantRight')
+                        moves.push(Moves.EnpassantRight)
                     }
                 }
 

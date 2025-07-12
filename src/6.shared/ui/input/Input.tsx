@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react'
+import { ChangeEvent, KeyboardEvent } from 'react'
 import classes from './input.module.css'
 
 type Props = {

@@ -1,3 +1,5 @@
+import { Operators } from 'src/6.shared/model/constants/board'
+
 interface IPosNumber {
     [key: string]: number
 }
@@ -12,9 +14,9 @@ export default interface IAlphs {
 
     changeAlphPos: (
         field: string,
-        operator: string,
+        letterOperator: Operators,
         num: number,
-        secondOperator?: string,
+        numericOperator?: Operators,
         secondNum?: number
     ) => string
 }

@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { boardContext } from 'src/3.widgets/ui/Board'
 import DateTimeDisplay from 'src/5.entities/ui/timer/DateTimeDisplay'
 import TimerExpired from 'src/5.entities/ui/timer/TimerExpired'
 import getReturnValues from 'src/6.shared/lib/helpers/getReturnValues'
-import sounds from 'src/6.shared/lib/helpers/misc/sounds'
+import sounds from 'src/6.shared/lib/helpers/misc/playSounds'
 import Player from 'src/6.shared/lib/helpers/player'
 
 type CounterProps = {

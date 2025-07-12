@@ -1,6 +1,6 @@
-import Coords from "src/5.entities/model/Coords"
-import { KeyableNumbers } from "src/6.shared/model/Keyable"
-
+import Coords from 'src/5.entities/model/types/Coords'
+import { Colors } from 'src/6.shared/model/constants/board'
+import { KeyableNumbers } from 'src/6.shared/model/types/Keyable'
 
 function getFieldCoordinates(
     coords: KeyableNumbers,
@@ -22,7 +22,7 @@ function getFieldCoordinates(
 
     const fieldCoords = { row: 0, col: 0 }
 
-    if (variant === 'black') {
+    if (variant === Colors.Black) {
         x = yCoord
         y = xCoord
     }
@@ -30,7 +30,7 @@ function getFieldCoordinates(
     fieldSizes.forEach((fieldStartsOn, index) => {
         if (x >= fieldStartsOn && x <= fieldSizes[index + 1]) {
             const row = index + 1
-            variant === 'black'
+            variant === Colors.Black
                 ? (fieldCoords.col = row)
                 : (fieldCoords.row = row)
         }
@@ -40,7 +40,7 @@ function getFieldCoordinates(
     fieldSizesReversed.forEach((fieldStartsOn, index) => {
         if (y <= fieldStartsOn && y >= fieldSizesReversed[index + 1]) {
             const col = index + 1
-            variant === 'black'
+            variant === Colors.Black
                 ? (fieldCoords.row = col)
                 : (fieldCoords.col = col)
         }

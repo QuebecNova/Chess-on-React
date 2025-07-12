@@ -1,16 +1,17 @@
-import piecesImages from 'src/6.shared/lib/helpers/misc/piecesImages'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
+import { Colors, Pieces } from 'src/6.shared/model/constants/board'
+import piecesImages from 'src/6.shared/model/constants/piecesImages'
+import { Bishop, Rook } from './index'
 import Piece from './piece'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
-import {Bishop, Rook} from './index'
 
 class Queen extends Piece {
     constructor(color: string) {
         super(
             color,
-            color === 'Black'
+            color === Colors.Black
                 ? piecesImages.BlackQueen
                 : piecesImages.WhiteQueen,
-            'Queen'
+            Pieces.Queen
         )
     }
 

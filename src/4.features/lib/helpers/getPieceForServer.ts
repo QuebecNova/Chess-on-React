@@ -1,4 +1,5 @@
-import { KeyablePieceOnField } from "src/5.entities/model/Keyable"
+import { KeyablePieceOnField } from 'src/5.entities/model/types/Keyable'
+import { Pieces } from 'src/6.shared/model/constants/board'
 
 export function getPieceOnFieldForServer(
     pieceOnField: KeyablePieceOnField,
@@ -11,7 +12,7 @@ export function getPieceOnFieldForServer(
     for (const [key, value] of Object.entries(pieceOnField)) {
         if (value) {
             if (castleAvailable) {
-                if (value.type === 'Rook') {
+                if (value.type === Pieces.Rook) {
                     pieceOnFieldForServer[key] = {
                         type: value.type,
                         from: castledRookInitialField,

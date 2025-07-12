@@ -1,7 +1,8 @@
 import { Dispatch, ReactElement, SetStateAction, useContext } from 'react'
 import { boardContext } from 'src/3.widgets/ui/Board'
 import { Bishop, Knight, Queen, Rook } from 'src/5.entities/lib/figures'
-import IPiece from 'src/5.entities/model/IPiece'
+import IPiece from 'src/5.entities/model/types/IPiece'
+import { Colors } from 'src/6.shared/model/constants/board'
 
 type Props = {
     promotedField: string
@@ -14,7 +15,7 @@ export default function Promotion(props: Props): ReactElement {
 
     const app = useContext(boardContext)
 
-    const turnReversed = app.turn === 'Black' ? 'White' : 'Black'
+    const turnReversed = app.turn === Colors.Black ? Colors.White : Colors.Black
 
     const queen = new Queen(turnReversed)
     const knight = new Knight(turnReversed)

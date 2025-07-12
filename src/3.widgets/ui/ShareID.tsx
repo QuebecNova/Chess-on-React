@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { AppContext } from 'src/2.pages/ui'
 import socket from 'src/6.shared/api/socket'
 

@@ -14,7 +14,7 @@ export default function Chat() {
     useEffect(() => {
         if (!msgRef.current) return
         scrollToBottom(msgRef.current)
-    }, [messages.length])   
+    }, [messages.length])
 
     if (settings.offlineMode) return
 
@@ -62,7 +62,11 @@ export default function Chat() {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
-                <img src={src} onClick={sendMessage} alt="Send button" />
+                <img
+                    src={'assets/images/sendButton.png'}
+                    onClick={sendMessage}
+                    alt="Send button"
+                />
             </div>
         </div>
     )

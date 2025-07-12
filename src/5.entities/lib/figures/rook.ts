@@ -1,14 +1,17 @@
-import piecesImages from 'src/6.shared/lib/helpers/misc/piecesImages'
-import Piece from './piece'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
 import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
+import { Colors, Operators, Pieces } from 'src/6.shared/model/constants/board'
+import piecesImages from 'src/6.shared/model/constants/piecesImages'
+import Piece from './piece'
 
 class Rook extends Piece {
     constructor(color: string) {
         super(
             color,
-            color === 'Black' ? piecesImages.BlackRook : piecesImages.WhiteRook,
-            'Rook'
+            color === Colors.Black
+                ? piecesImages.BlackRook
+                : piecesImages.WhiteRook,
+            Pieces.Rook
         )
     }
 
@@ -24,22 +27,22 @@ class Rook extends Piece {
         const rawMoves: string[] = [
             // rows 0-13
             // 0-6 left
-            alphs.changeAlphPos(from, '-', 1),
-            alphs.changeAlphPos(from, '-', 2),
-            alphs.changeAlphPos(from, '-', 3),
-            alphs.changeAlphPos(from, '-', 4),
-            alphs.changeAlphPos(from, '-', 5),
-            alphs.changeAlphPos(from, '-', 6),
-            alphs.changeAlphPos(from, '-', 7),
+            alphs.changeAlphPos(from, Operators.Backward, 1),
+            alphs.changeAlphPos(from, Operators.Backward, 2),
+            alphs.changeAlphPos(from, Operators.Backward, 3),
+            alphs.changeAlphPos(from, Operators.Backward, 4),
+            alphs.changeAlphPos(from, Operators.Backward, 5),
+            alphs.changeAlphPos(from, Operators.Backward, 6),
+            alphs.changeAlphPos(from, Operators.Backward, 7),
 
             // 7-13 right
-            alphs.changeAlphPos(from, '+', 1),
-            alphs.changeAlphPos(from, '+', 2),
-            alphs.changeAlphPos(from, '+', 3),
-            alphs.changeAlphPos(from, '+', 4),
-            alphs.changeAlphPos(from, '+', 5),
-            alphs.changeAlphPos(from, '+', 6),
-            alphs.changeAlphPos(from, '+', 7),
+            alphs.changeAlphPos(from, Operators.Forward, 1),
+            alphs.changeAlphPos(from, Operators.Forward, 2),
+            alphs.changeAlphPos(from, Operators.Forward, 3),
+            alphs.changeAlphPos(from, Operators.Forward, 4),
+            alphs.changeAlphPos(from, Operators.Forward, 5),
+            alphs.changeAlphPos(from, Operators.Forward, 6),
+            alphs.changeAlphPos(from, Operators.Forward, 7),
 
             // cols 14-27
             // 14-20 back

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { boardContext } from 'src/3.widgets/ui/Board'
 import socket from 'src/6.shared/api/socket'
 import Button from 'src/6.shared/ui/button'

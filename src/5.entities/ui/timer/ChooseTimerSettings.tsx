@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react'
+import { useContext, useState } from 'react'
 import { boardContext } from 'src/3.widgets/ui/Board'
 import socket from 'src/6.shared/api/socket'
 import settings from 'src/6.shared/config/settings'
-import sounds from 'src/6.shared/lib/helpers/misc/sounds'
+import sounds from 'src/6.shared/lib/helpers/misc/playSounds'
 import TimeRange from './TimeRange'
 
 export default function ChooseTimerSettings() {

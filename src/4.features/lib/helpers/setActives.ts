@@ -1,4 +1,5 @@
-import { KeyableSquares } from "src/5.entities/model/Keyable"
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
+import { FieldStates } from 'src/6.shared/model/constants/board'
 
 export function addActives(
     moves: Array<string>,
@@ -8,9 +9,9 @@ export function addActives(
     //adding available moves on board
     const movesActiveFields = {}
     moves.forEach((move) => {
-        movesActiveFields[move] = 'pieceCanMoveHere'
+        movesActiveFields[move] = FieldStates.PieceCanMoveHere
     })
-    movesActiveFields[currentPiece] = 'currentPiece'
+    movesActiveFields[currentPiece] = FieldStates.CurrentPiece
     setActiveFields({ ...movesActiveFields })
     return movesActiveFields
 }

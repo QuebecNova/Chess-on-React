@@ -1,9 +1,9 @@
-
 import setupBoard from 'src/3.widgets/config/setupBoard'
-import { KeyableSquares } from 'src/5.entities/model/Keyable'
-import IPiece from 'src/5.entities/model/IPiece'
-import sounds from 'src/6.shared/lib/helpers/misc/sounds'
 import getSquares from 'src/4.features/lib/helpers/getSquares'
+import IPiece from 'src/5.entities/model/types/IPiece'
+import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
+import sounds from 'src/6.shared/lib/helpers/misc/playSounds'
+import { BoardState, Pieces } from 'src/6.shared/model/constants/board'
 
 const initialPositions = setupBoard()
 const nullSquares = getSquares(null)
@@ -52,7 +52,7 @@ export function getMovesThatLeadsToCheck(
         for (const field in simulateNextMoveSquares) {
             if (
                 simulateNextOppositeMoves[field] &&
-                simulateNextMoveSquares[field]?.type === 'King' &&
+                simulateNextMoveSquares[field]?.type === Pieces.King &&
                 simulateNextMoveSquares[field]?.color === turn
             ) {
                 kingOnCheckAfterThisMoves[move] = simulateNextMoveSquares[field]
@@ -93,9 +93,9 @@ export function isMated(
     if (
         allLegalMoves.length === 1 &&
         allLegalMoves[0].length === 1 &&
-        squares[allLegalMoves[0][0]].type === 'King'
+        squares[allLegalMoves[0][0]].type === Pieces.King
     ) {
-        return 'stalemate'
+        return BoardState.Stalemate
     }
 
     const mated = allLegalMoves.every((legalMoves) => legalMoves.length === 0)

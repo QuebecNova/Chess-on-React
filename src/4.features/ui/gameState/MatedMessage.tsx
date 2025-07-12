@@ -1,10 +1,11 @@
-import React, { ReactElement, useContext, useState } from 'react'
-import Waiting from './Waiting'
-import settings from 'src/6.shared/config/settings'
-import socket from 'src/6.shared/api/socket'
-import { playSoundWhenMated } from 'src/6.shared/lib/helpers/misc/sounds'
-import Button from 'src/6.shared/ui/button'
+import { ReactElement, useContext, useState } from 'react'
 import { boardContext } from 'src/3.widgets/ui/Board'
+import socket from 'src/6.shared/api/socket'
+import settings from 'src/6.shared/config/settings'
+import { playSoundWhenMated } from 'src/6.shared/lib/helpers/misc/playSounds'
+import { Colors } from 'src/6.shared/model/constants/board'
+import Button from 'src/6.shared/ui/button'
+import Waiting from './Waiting'
 
 type MatedMessageProps = {
     restartGame: () => void
@@ -31,10 +32,11 @@ export default function MatedMessage(props: MatedMessageProps): ReactElement {
     const typeOfMessage = isStaleMate
         ? 'Stalemate!'
         : board.timeExpired
-        ? 'Time Ends!'
-        : 'Mate!'
+          ? 'Time Ends!'
+          : 'Mate!'
 
-    const winnedColor = board.turn === 'White' ? 'Black' : 'White'
+    const winnedColor =
+        board.turn === Colors.White ? Colors.Black : Colors.White
 
     const message = isStaleMate ? 'Draw!' : `${winnedColor} player wins`!
 

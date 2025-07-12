@@ -1,4 +1,5 @@
-import IPiece from "src/5.entities/model/IPiece"
+import IPiece from 'src/5.entities/model/types/IPiece'
+import { Moves, Pieces } from 'src/6.shared/model/constants/board'
 
 export function setEnpassant(
     moves: Array<string>,
@@ -7,8 +8,8 @@ export function setEnpassant(
 ) {
     if (
         moves.length &&
-        piece.type === 'Pawn' &&
-        moves.slice().pop().includes('enpassant')
+        piece.type === Pieces.Pawn &&
+        moves.slice().pop().includes(Moves.Enpassant)
     ) {
         setEnpassantAvailable(moves.slice().pop())
     }
@@ -19,10 +20,12 @@ export function setCastle(
     piece: IPiece,
     setCastleAvailable: React.Dispatch<React.SetStateAction<string[]>>
 ) {
-    if (moves.length && piece.type === 'King') {
+    if (moves.length && piece.type === Pieces.King) {
         const castleOnThisSides: Array<string> = []
-        if (moves.includes('castleRight')) castleOnThisSides.push('castleRight')
-        if (moves.includes('castleLeft')) castleOnThisSides.push('castleLeft')
+        if (moves.includes(Moves.CastleRight))
+            castleOnThisSides.push(Moves.CastleRight)
+        if (moves.includes(Moves.CastleLeft))
+            castleOnThisSides.push(Moves.CastleLeft)
         setCastleAvailable(castleOnThisSides)
     }
 }
