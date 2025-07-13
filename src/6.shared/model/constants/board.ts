@@ -1,20 +1,22 @@
+import { ValueOf } from "../types/ValueOf"
+
 export const Colors = {
     White: 'white',
     Black: 'black',
 }
-export type Colors = (typeof Colors)[keyof typeof Colors]
+export type Colors = ValueOf<typeof Colors>
 
 export const Fields = {
     BlackField: 'blackField',
     WhiteField: 'whiteField',
 }
-export type Fields = (typeof Fields)[keyof typeof Fields]
+export type Fields = ValueOf<typeof Fields>
 
 export const FieldStates = {
     PieceCanMoveHere: 'pieceCanMoveHere',
     CurrentPiece: 'currentPiece',
 }
-export type FieldStates = (typeof FieldStates)[keyof typeof FieldStates]
+export type FieldStates = ValueOf<typeof FieldStates>
 
 export const Moves = {
     CastleRight: 'castleRight',
@@ -23,7 +25,7 @@ export const Moves = {
     EnpassantLeft: 'enpassantLeft',
     EnpassantRight: 'enpassantRight',
 }
-export type Moves = (typeof Moves)[keyof typeof Moves]
+export type Moves = ValueOf<typeof Moves>
 
 export const Pieces = {
     King: 'King',
@@ -33,23 +35,23 @@ export const Pieces = {
     Knight: 'Knight',
     Pawn: 'Pawn',
 }
-export type Pieces = (typeof Pieces)[keyof typeof Pieces]
+export type Pieces = ValueOf<typeof Pieces>
 
 export const BoardState = {
     Stalemate: 'stalemate',
     Mate: 'mate',
     Draw: 'draw',
 }
-export type BoardState = (typeof BoardState)[keyof typeof BoardState]
+export type BoardState = ValueOf<typeof BoardState>
 
 export const Directions = {
     Right: 'right',
     Left: 'left',
 }
-export type Directions = (typeof Directions)[keyof typeof Directions]
+export type Directions = ValueOf<typeof Directions>
 
 export const Operators = {
     Forward: 'forward',
     Backward: 'backward',
 } as const
-export type Operators = (typeof Operators)[keyof typeof Operators]
+export type Operators = ValueOf<typeof Operators>
