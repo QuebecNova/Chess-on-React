@@ -1,4 +1,4 @@
-export default interface Coords {
+export interface Coords {
     col: number
     row: number
 }

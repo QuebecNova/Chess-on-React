@@ -1,1 +1,1 @@
-export type Dispatch<A> = {dispatch: (action: A) => A}
+export type Dispatch<A> = { dispatch: (action: A) => A }

@@ -1,6 +1,6 @@
 import { KeyableSquares } from './Keyable'
 
-export default interface IPiece {
+export interface IPiece {
     color: string
     type: string
     img: React.FunctionComponent<React.SVGAttributes<SVGElement>>

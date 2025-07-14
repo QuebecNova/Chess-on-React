@@ -1,7 +1,5 @@
 import { createContext, useState } from 'react'
-import Board from 'src/3.widgets/ui/Board'
-import Header from 'src/3.widgets/ui/Header'
-import CreateGame from 'src/4.features/ui/gameState/CreateGame'
+import { Game, Header, CreateGame } from 'src/3.widgets/ui'
 
 export const AppContext = createContext(null)
 
@@ -19,7 +17,7 @@ export default function LandingPage() {
             {inGame ? (
                 <div className="wrapper">
                     <Header />
-                    <Board />
+                    <Game />
                 </div>
             ) : (
                 <div className="wrapper">

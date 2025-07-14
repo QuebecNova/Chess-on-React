@@ -1,4 +1,4 @@
-function arrayRemove(
+export function arrayRemove(
     arr: Array<string | number>,
     value: string | number
 ): Array<string | number> {
@@ -6,5 +6,3 @@ function arrayRemove(
         return ele !== value
     })
 }
-
-export default arrayRemove

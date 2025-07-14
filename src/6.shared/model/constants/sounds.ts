@@ -5,9 +5,9 @@ import placedPieceSound from 'public/assets/sounds/placePiece.wav'
 import takePiece from 'public/assets/sounds/takePiece.wav'
 import timeExpiring from 'public/assets/sounds/timeExpiring.wav'
 import win from 'public/assets/sounds/win.wav'
-import { KeyableAudio } from 'src/6.shared/model/types/Keyable'
+import { KeyableAudio } from 'src/6.shared/model'
 
-const sounds: KeyableAudio =
+export const sounds: KeyableAudio =
     typeof Audio === 'undefined'
         ? {}
         : {
@@ -19,5 +19,3 @@ const sounds: KeyableAudio =
               newGame: new Audio(newGame),
               timeExpiring: new Audio(timeExpiring),
           }
-
-export default sounds

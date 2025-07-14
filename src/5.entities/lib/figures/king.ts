@@ -1,16 +1,16 @@
-import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
-import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
-import arrayRemove from 'src/6.shared/lib/helpers/math/arrayRemove'
+import { KeyableSquares } from 'src/5.entities/model'
+import { arrayRemove } from 'src/6.shared/lib/helpers'
 import {
     Colors,
     Moves,
     Operators,
     Pieces,
-} from 'src/6.shared/model/constants/board'
-import piecesImages from 'src/6.shared/model/constants/piecesImages'
-import Piece from './piece'
+    piecesImages,
+} from 'src/6.shared/model'
+import { alphs } from '../alphabetPositions'
+import { Piece } from './piece'
 
-class King extends Piece {
+export class King extends Piece {
     lastMoves: string[]
     onCheck: boolean
 
@@ -195,5 +195,3 @@ class King extends Piece {
         return moves
     }
 }
-
-export default King

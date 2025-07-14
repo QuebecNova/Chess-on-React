@@ -1,10 +1,6 @@
 'use client'
 
-import {
-    GameStoreProvider,
-    SocketProvider,
-    UserStoreProvider,
-} from 'src/1.app/model/providers'
+import { SocketProvider, UserStoreProvider } from 'src/1.app/model/providers'
 
 export default function MainLayout({
     children,
@@ -15,11 +11,9 @@ export default function MainLayout({
 }) {
     return (
         <UserStoreProvider>
-            <GameStoreProvider>
-                <SocketProvider BACKEND_SOCKET_URL={BACKEND_SOCKET_URL}>
-                    {children}
-                </SocketProvider>
-            </GameStoreProvider>
+            <SocketProvider BACKEND_SOCKET_URL={BACKEND_SOCKET_URL}>
+                {children}
+            </SocketProvider>
         </UserStoreProvider>
     )
 }

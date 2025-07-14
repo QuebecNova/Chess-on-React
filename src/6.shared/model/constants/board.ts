@@ -1,4 +1,4 @@
-import { ValueOf } from "../types/ValueOf"
+import { ValueOf } from '../types/ValueOf'
 
 export const Colors = {
     White: 'white',

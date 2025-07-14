@@ -1,7 +1,6 @@
-import IPiece from 'src/5.entities/model/types/IPiece'
-import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
+import { IPiece, KeyableSquares } from 'src/5.entities/model'
 
-export default class Piece implements IPiece {
+export class Piece implements IPiece {
     readonly color: string
     readonly img: React.FunctionComponent<React.SVGAttributes<SVGElement>>
     readonly type: string

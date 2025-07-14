@@ -1,10 +1,9 @@
-import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
-import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
-import { Colors, Operators, Pieces } from 'src/6.shared/model/constants/board'
-import piecesImages from 'src/6.shared/model/constants/piecesImages'
-import Piece from './piece'
+import { KeyableSquares } from 'src/5.entities/model'
+import { Colors, Operators, Pieces, piecesImages } from 'src/6.shared/model'
+import { alphs } from '../alphabetPositions'
+import { Piece } from './piece'
 
-class Knight extends Piece {
+export class Knight extends Piece {
     constructor(color: string) {
         super(
             color,
@@ -99,5 +98,3 @@ class Knight extends Piece {
         return moves
     }
 }
-
-export default Knight

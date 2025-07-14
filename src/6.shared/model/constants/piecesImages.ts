@@ -12,9 +12,9 @@ import WhitePawn from 'public/assets/images/pawnWhite.svg'
 import WhiteQueen from 'public/assets/images/queenWhite.svg'
 import WhiteRook from 'public/assets/images/rookWhite.svg'
 
-import { KeyableSVGElement } from 'src/6.shared/model/types/Keyable'
+import { KeyableSVGElement } from 'src/6.shared/model'
 
-const piecesImages: KeyableSVGElement = {
+export const piecesImages: KeyableSVGElement = {
     WhitePawn,
     WhiteRook,
     WhiteKnight,
@@ -29,5 +29,3 @@ const piecesImages: KeyableSVGElement = {
     BlackQueen,
     BlackKing,
 }
-
-export default piecesImages

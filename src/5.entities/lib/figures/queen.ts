@@ -1,10 +1,10 @@
-import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
-import { Colors, Pieces } from 'src/6.shared/model/constants/board'
-import piecesImages from 'src/6.shared/model/constants/piecesImages'
-import { Bishop, Rook } from './index'
-import Piece from './piece'
+import { KeyableSquares } from 'src/5.entities/model'
+import { Colors, Pieces, piecesImages } from 'src/6.shared/model'
+import { Bishop } from './bishop'
+import { Piece } from './piece'
+import { Rook } from './rook'
 
-class Queen extends Piece {
+export class Queen extends Piece {
     constructor(color: string) {
         super(
             color,
@@ -56,5 +56,3 @@ class Queen extends Piece {
         return moves
     }
 }
-
-export default Queen

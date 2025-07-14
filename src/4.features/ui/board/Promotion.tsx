@@ -1,21 +1,23 @@
-import { Dispatch, ReactElement, SetStateAction, useContext } from 'react'
-import { boardContext } from 'src/3.widgets/ui/Board'
-import { Bishop, Knight, Queen, Rook } from 'src/5.entities/lib/figures'
-import IPiece from 'src/5.entities/model/types/IPiece'
-import { Colors } from 'src/6.shared/model/constants/board'
+'use client'
+
+import { ReactElement } from 'react'
+import { useGameStore } from 'src/4.features/model/providers'
+import { GameActionTypes } from 'src/4.features/model/store/game'
+import { Bishop, Knight, Queen, Rook } from 'src/5.entities/lib'
+import { IPiece, KeyablePieceOnField } from 'src/5.entities/model'
+import { Colors } from 'src/6.shared/model'
 
 type Props = {
-    promotedField: string
-    setPromotedField: Dispatch<SetStateAction<string>>
     fieldWidth: number
 }
 
 export default function Promotion(props: Props): ReactElement {
-    const { promotedField, setPromotedField } = props
+    const squares = useGameStore((state) => state.squares)
+    const turn = useGameStore((state) => state.turn)
+    const promotedField = useGameStore((state) => state.promotedField)
+    const dispatch = useGameStore((state) => state.dispatch)
 
-    const app = useContext(boardContext)
-
-    const turnReversed = app.turn === Colors.Black ? Colors.White : Colors.Black
+    const turnReversed = turn === Colors.Black ? Colors.White : Colors.Black
 
     const queen = new Queen(turnReversed)
     const knight = new Knight(turnReversed)
@@ -23,18 +25,25 @@ export default function Promotion(props: Props): ReactElement {
     const rook = new Rook(turnReversed)
 
     function transformPiece(piece: IPiece): void {
-        app.squares[promotedField] = piece
-
-        const pieceOnField = {
+        //TEST
+        const pieceOnField: KeyablePieceOnField = {
             [promotedField]: piece,
         }
 
-        app.setSquares((squares) => ({
-            ...squares,
-            ...pieceOnField,
-        }))
+        dispatch({
+            type: GameActionTypes.SQUARES,
+            payload: {
+                squares: {
+                    ...squares,
+                    ...pieceOnField,
+                },
+            },
+        })
 
-        setPromotedField(null)
+        dispatch({
+            type: GameActionTypes.PROMOTED_FIELD,
+            payload: { promotedField: null },
+        })
     }
 
     return (

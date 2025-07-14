@@ -1,0 +1,7 @@
+export { alphs } from './alphabetPositions'
+export { Bishop } from './figures/bishop'
+export { King } from './figures/king'
+export { Knight } from './figures/knight'
+export { Pawn } from './figures/pawn'
+export { Queen } from './figures/queen'
+export { Rook } from './figures/rook'

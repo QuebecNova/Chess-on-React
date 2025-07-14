@@ -1,16 +1,15 @@
-import { rawMakedMoves } from 'src/3.widgets/ui/Board'
-import { KeyableSquares } from 'src/5.entities/model/types/Keyable'
-import alphs from 'src/6.shared/lib/helpers/math/alphabetPositions'
+import { KeyableSquares } from 'src/5.entities/model'
 import {
     Colors,
     Moves,
     Operators,
     Pieces,
-} from 'src/6.shared/model/constants/board'
-import piecesImages from 'src/6.shared/model/constants/piecesImages'
-import Piece from './piece'
+    piecesImages,
+} from 'src/6.shared/model'
+import { alphs } from '../alphabetPositions'
+import { Piece } from './piece'
 
-class Pawn extends Piece {
+export class Pawn extends Piece {
     lastMoves: string[]
 
     constructor(color: string) {
@@ -82,8 +81,8 @@ class Pawn extends Piece {
                     initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
                     parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
                         parseInt(move[1]) - 2 &&
-                    rawMakedMoves.slice().pop() ===
-                        `P${pieceOnMove.lastMoves.slice().pop()}` &&
+                    //TEST// rawMadeMoves.slice().pop() ===
+                    //TEST//     `P${pieceOnMove.lastMoves.slice().pop()}` &&
                     opponentPieceOnMove
 
                 if (
@@ -165,8 +164,8 @@ class Pawn extends Piece {
                     initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
                     parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
                         parseInt(move[1]) + 2 &&
-                    rawMakedMoves.slice().pop() ===
-                        `P${pieceOnMove.lastMoves.slice().pop()}` &&
+                    //TEST// rawMakedMoves.slice().pop() ===
+                    //TEST//     `P${pieceOnMove.lastMoves.slice().pop()}` &&
                     opponentPieceOnMove
 
                 if (
@@ -205,5 +204,3 @@ class Pawn extends Piece {
         return moves
     }
 }
-
-export default Pawn

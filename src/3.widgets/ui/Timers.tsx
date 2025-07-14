@@ -1,19 +1,21 @@
-import { useContext } from 'react'
-import Timer from 'src/4.features/ui/timer/TimerDisplay'
-import { Colors } from 'src/6.shared/model/constants/board'
-import { boardContext } from './Board'
+'use client'
+
+import { useGameStore } from 'src/4.features/model/providers'
+import { Timer } from 'src/4.features/ui'
+import { Colors } from 'src/6.shared/model'
 
 export default function Timers() {
-    const board = useContext(boardContext)
+    const variant = useGameStore((state) => state.variant)
+    const players = useGameStore((state) => state.players)
 
-    if (board.variant === Colors.White || board.variant === 'notChoosen') {
+    if (variant === Colors.White || !variant) {
         return (
             <>
                 <div className="board__timer black-top">
-                    <Timer player={board.playerBlack} />
+                    <Timer player={players[Colors.Black]} />
                 </div>
                 <div className="board__timer white-bottom">
-                    <Timer player={board.playerWhite} />
+                    <Timer player={players[Colors.White]} />
                 </div>
             </>
         )
@@ -21,10 +23,10 @@ export default function Timers() {
         return (
             <>
                 <div className="board__timer white-top">
-                    <Timer player={board.playerWhite} />
+                    <Timer player={players[Colors.White]} />
                 </div>
                 <div className="board__timer black-bottom">
-                    <Timer player={board.playerBlack} />
+                    <Timer player={players[Colors.Black]} />
                 </div>
             </>
         )

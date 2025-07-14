@@ -1,48 +1,10 @@
-import { useContext, useEffect, useState } from 'react'
-import { boardContext } from 'src/3.widgets/ui/Board'
-import DateTimeDisplay from 'src/5.entities/ui/timer/DateTimeDisplay'
-import TimerExpired from 'src/5.entities/ui/timer/TimerExpired'
-import getReturnValues from 'src/6.shared/lib/helpers/getReturnValues'
-import sounds from 'src/6.shared/lib/helpers/misc/playSounds'
-import Player from 'src/6.shared/lib/helpers/player'
+'use client'
 
-type CounterProps = {
-    player: Player
-}
-
-const ShowCounter = ({ player }: CounterProps) => {
-    const [hours, minutes, seconds] = getReturnValues(player.timer)
-
-    const secondsLow = player.timer / 1000 < 30
-
-    useEffect(() => {
-        if (secondsLow) sounds.timeExpiring.play()
-    }, [secondsLow])
-
-    if (hours > 0)
-        return (
-            <div className="counter">
-                <DateTimeDisplay value={hours} type={'H'} />
-                <p>:</p>
-                <DateTimeDisplay value={minutes} type={'M'} />
-                <p>:</p>
-                <DateTimeDisplay value={seconds} type={'S'} />
-            </div>
-        )
-
-    const timeExpired = player.timer <= 0
-
-    if (!timeExpired)
-        return (
-            <div className={`counter ${secondsLow ? 'lowTime' : ''}`}>
-                <DateTimeDisplay value={minutes} type={'M'} />
-                <p>:</p>
-                <DateTimeDisplay value={seconds} type={'S'} />
-            </div>
-        )
-
-    if (timeExpired) return <TimerExpired />
-}
+import { useEffect, useState } from 'react'
+import { useGameStore } from 'src/4.features/model/providers'
+import { GameActionTypes } from 'src/4.features/model/store/game'
+import { Player } from 'src/5.entities/model'
+import ShowCounter from 'src/6.shared/ui/timer/ShowCounter'
 
 type TimerProps = {
     player: Player
@@ -51,12 +13,15 @@ type TimerProps = {
 export default function Timer({ player }: TimerProps) {
     const [countDown, setCountDown] = useState(player.timer)
 
-    const board = useContext(boardContext)
+    const dispatch = useGameStore((state) => state.dispatch)
 
     useEffect(() => {
         if (player.timer) setCountDown(player.timer)
         if (player.timer <= 0) {
-            board.setTimeExpired(true)
+            dispatch({
+                type: GameActionTypes.TIME_EXPIRED,
+                payload: { isTimeExpired: true },
+            })
             return
         }
         if (!player.isPlaying) return
@@ -69,12 +34,12 @@ export default function Timer({ player }: TimerProps) {
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [countDown, player, player.timer, player.isPlaying, board])
+    }, [countDown, player, player.timer, player.isPlaying])
 
     return (
         <>
             <p>{player.color} time:</p>
-            <ShowCounter player={player} />
+            <ShowCounter timer={player.timer} />
         </>
     )
 }

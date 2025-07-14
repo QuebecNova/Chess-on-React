@@ -1,4 +1,4 @@
-import { Operators } from 'src/6.shared/model/constants/board'
+import { Operators } from 'src/6.shared/model'
 
 interface IPosNumber {
     [key: string]: number
@@ -8,7 +8,7 @@ interface IPosString {
     [key: number]: String
 }
 
-export default interface IAlphs {
+export interface IAlphs {
     posIn: IPosNumber
     posOut: IPosString
 
