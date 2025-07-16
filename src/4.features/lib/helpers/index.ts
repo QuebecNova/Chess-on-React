@@ -1,5 +1,3 @@
-export { getSquares } from './board/getSquares'
-
 export { getMovesThatLeadsToCheck } from './board/checkAndMate/getMovesThatLeadsToCheck'
 export { isMated } from './board/checkAndMate/isMated'
 export { defineColor } from './board/defineColor'
@@ -7,6 +5,7 @@ export { setCastle, setEnpassant } from './board/dragStartHandlers'
 export { checkForCastle, checkForEnpassant } from './board/dropHandlers'
 export { getFieldCoordinates } from './board/getFieldCoordinates'
 export { getPieceOnFieldForServer } from './board/getPieceForServer'
+export { getSquares } from './board/getSquares'
 export { isDragStartIllegal } from './board/isDragStartIllegal'
 export { parsePieceOnField } from './board/parsePieceOnField'
 export { addActives, removeActives } from './board/setActives'

@@ -27,7 +27,8 @@ export class Pawn extends Piece {
         from: string,
         squareState: KeyableSquares,
         movesLeadsToCheck: KeyableSquares,
-        initialState?: KeyableSquares
+        initialState: KeyableSquares = {},
+        playedMoves: string[] = []
     ): string[] {
         const moves: string[] = []
         let pieceInfront = false
@@ -81,8 +82,8 @@ export class Pawn extends Piece {
                     initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
                     parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
                         parseInt(move[1]) - 2 &&
-                    //TEST// rawMadeMoves.slice().pop() ===
-                    //TEST//     `P${pieceOnMove.lastMoves.slice().pop()}` &&
+                    playedMoves.slice().pop() ===
+                        `P${pieceOnMove.lastMoves.slice().pop()}` &&
                     opponentPieceOnMove
 
                 if (
@@ -164,8 +165,8 @@ export class Pawn extends Piece {
                     initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
                     parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
                         parseInt(move[1]) + 2 &&
-                    //TEST// rawMakedMoves.slice().pop() ===
-                    //TEST//     `P${pieceOnMove.lastMoves.slice().pop()}` &&
+                    playedMoves.slice().pop() ===
+                        `P${pieceOnMove.lastMoves.slice().pop()}` &&
                     opponentPieceOnMove
 
                 if (

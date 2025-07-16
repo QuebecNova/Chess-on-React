@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react'
-import { Game, Header, CreateGame } from 'src/3.widgets/ui'
+import { CreateGame, Game, Header } from 'src/3.widgets/ui'
 
 export const AppContext = createContext(null)
 

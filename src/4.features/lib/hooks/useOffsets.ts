@@ -2,10 +2,18 @@ import { useEffect, useState } from 'react'
 import { KeyableNumbers } from 'src/6.shared/model'
 import { useCurrentWidth } from './useCurrentWidth'
 
+type ReturnType = {
+    chessBoardOffsets: KeyableNumbers
+    fieldOffsets: KeyableNumbers
+    fieldSizes: number[]
+    fieldWidth: number
+}
+
 //changing usable sizes of the board related on it size in browser
+//this helps to handle different screen sizes and when the screen size changes
 export function useChessBoardOffsets(
     ref: React.RefObject<HTMLDivElement>
-): [KeyableNumbers, KeyableNumbers, number[], number] {
+): ReturnType {
     const currentWindowWidth = useCurrentWidth()
 
     const [chessBoardOffsets, setChessBoardOffsets] = useState<KeyableNumbers>({
@@ -55,5 +63,5 @@ export function useChessBoardOffsets(
         new ResizeObserver(resizedBoard).observe(chessBoard)
     }, [currentWindowWidth, ref])
 
-    return [chessBoardOffsets, fieldOffsets, fieldSizes, fieldWidth]
+    return { chessBoardOffsets, fieldOffsets, fieldSizes, fieldWidth }
 }

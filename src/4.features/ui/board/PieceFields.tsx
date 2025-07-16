@@ -8,7 +8,7 @@ import { Colors, FieldStates } from 'src/6.shared/model'
 type PieceFieldsProps = {
     activeFields: object
     fieldWidth: number
-    click: (e: any, field: string) => void
+    onClick: (e: any, field: string) => void
     dragStart: (e: any) => void
     dragMove: (e: any) => void
     drop: (e: any) => void
@@ -19,7 +19,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
     const {
         activeFields,
         fieldWidth,
-        click,
+        onClick,
         dragStart,
         dragMove,
         drop,
@@ -51,7 +51,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
                     className={`${defineColor(index, row)} ${isActive}`}
                     key={index}
                     style={{ height: fieldWidth }}
-                    onClick={(e) => click(e, field)}
+                    onClick={(e) => onClick(e, field)}
                 >
                     {Svg ? (
                         <Svg
@@ -83,7 +83,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
                     id={field}
                     className={`${defineColor(index, row)} ${isActive}`}
                     key={index}
-                    onClick={(e) => click(e, field)}
+                    onClick={(e) => onClick(e, field)}
                     style={{ height: fieldWidth }}
                 />
             )

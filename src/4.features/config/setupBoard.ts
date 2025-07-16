@@ -1,8 +1,7 @@
 import { Bishop, King, Knight, Pawn, Queen, Rook } from 'src/5.entities/lib'
 import { KeyableSquares } from 'src/5.entities/model'
 import { Colors } from 'src/6.shared/model'
-//TEST
-import { getSquares } from './../lib/helpers/board/getSquares';
+import { getSquares } from './../lib/helpers/board/getSquares'
 
 export function setupBoard(): KeyableSquares {
     const squares = getSquares(null)

@@ -10,6 +10,7 @@ export interface IPiece {
         from: string,
         squareState: KeyableSquares,
         movesLeadsToCheck: KeyableSquares,
-        initialState?: KeyableSquares
+        initialState?: KeyableSquares,
+        playedMoves?: string[]
     ) => Array<string>
 }

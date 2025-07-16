@@ -28,4 +28,4 @@ export const piecesImages: KeyableSVGElement = {
     BlackBishop,
     BlackQueen,
     BlackKing,
-}
+} as const

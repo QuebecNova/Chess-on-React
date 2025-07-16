@@ -1,6 +1,6 @@
 import { alphs } from 'src/5.entities/lib'
 import { IPiece, KeyableSquares } from 'src/5.entities/model'
-import { Colors, Directions, Operators } from 'src/6.shared/model'
+import { Colors, Directions, Moves, Operators } from 'src/6.shared/model'
 
 export function checkForCastle(
     squares: KeyableSquares,
@@ -68,26 +68,25 @@ export function checkForEnpassant(
     }
 
     const piece: IPiece = squares[from]
-
     let enpassantedField: string
     if (
         piece.color === Colors.White &&
-        enpassantAvailable.includes(Directions.Left)
+        enpassantAvailable.includes(Moves.EnpassantLeft)
     )
         enpassantedField = alphs.changeAlphPos(from, Operators.Backward, 1)
     if (
         piece.color === Colors.White &&
-        enpassantAvailable.includes(Directions.Right)
+        enpassantAvailable.includes(Moves.EnpassantRight)
     )
         enpassantedField = alphs.changeAlphPos(from, Operators.Forward, 1)
     if (
         piece.color === Colors.Black &&
-        enpassantAvailable.includes(Directions.Left)
+        enpassantAvailable.includes(Moves.EnpassantLeft)
     )
         enpassantedField = alphs.changeAlphPos(from, Operators.Backward, 1)
     if (
         piece.color === Colors.Black &&
-        enpassantAvailable.includes(Directions.Right)
+        enpassantAvailable.includes(Moves.EnpassantRight)
     )
         enpassantedField = alphs.changeAlphPos(from, Operators.Forward, 1)
     if (
@@ -115,14 +114,15 @@ export function checkForEnpassant(
                 Operators.Backward,
                 1
             ) ||
-        dropField ===
+        (dropField ===
             alphs.changeAlphPos(
                 from,
                 Operators.Backward,
                 1,
                 Operators.Forward,
                 1
-            )
+            ) &&
+            enpassantedField)
     ) {
         modifiedPieceOnField[enpassantedField] = null
     }

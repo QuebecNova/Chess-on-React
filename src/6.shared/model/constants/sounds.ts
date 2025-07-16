@@ -10,7 +10,7 @@ import { KeyableAudio } from 'src/6.shared/model'
 export const sounds: KeyableAudio =
     typeof Audio === 'undefined'
         ? {}
-        : {
+        : ({
               placePiece: new Audio(placedPieceSound),
               takePiece: new Audio(takePiece),
               check: new Audio(check),
@@ -18,4 +18,4 @@ export const sounds: KeyableAudio =
               lose: new Audio(lose),
               newGame: new Audio(newGame),
               timeExpiring: new Audio(timeExpiring),
-          }
+          } as const)

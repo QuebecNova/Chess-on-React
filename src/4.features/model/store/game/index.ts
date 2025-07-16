@@ -3,7 +3,7 @@ import { KeyableSquares, Player } from 'src/5.entities/model'
 import { Colors } from 'src/6.shared/model'
 import { Dispatch } from 'src/6.shared/model/types/Dispatch'
 import { createStore } from 'zustand'
-import { devtools, persist, redux } from 'zustand/middleware'
+import { devtools, redux } from 'zustand/middleware'
 import { GameActions, reducer } from './reducer'
 export { GameActionTypes } from './reducer'
 
@@ -44,9 +44,7 @@ const initialState: GameState = {
 
 export const createGameStore = () =>
     createStore<GameStore>()(
-        devtools(
-            redux(reducer, initialState), {
-                name: 'game-store',
-            }
-        )
+        devtools(redux(reducer, initialState), {
+            name: 'game-store',
+        })
     )

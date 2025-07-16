@@ -1,5 +1,3 @@
-//move the board to 4.features layer
-
 import { GameStoreProvider } from 'src/4.features/model/providers'
 import {
     AcceptRestart,
