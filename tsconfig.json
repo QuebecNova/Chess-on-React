@@ -15,7 +15,9 @@
         "noEmit": true,
         "lib": ["dom", "dom.iterable", "esnext"],
         "strict": false,
-        "incremental": true
+        "incremental": true,
+        "target": "ES2017",
+        "baseUrl": "."
     },
     "include": ["src", "typings.d.ts"],
     "exclude": ["node_modules"]
