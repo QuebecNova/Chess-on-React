@@ -11,7 +11,6 @@ import {
     getPieceOnFieldForServer,
     getSquares,
     isDragStartIllegal,
-    parsePieceOnField,
     playPlacedPieceSound,
     removeActives,
     setCastle,
@@ -24,11 +23,15 @@ import { useChessBoardOffsets } from 'src/4.features/lib/hooks'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { alphs } from 'src/5.entities/lib'
-import { Coords, KeyablePieceOnField } from 'src/5.entities/model'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config/settings'
-import { useSocket } from 'src/6.shared/lib/hooks'
-import { Colors, FieldStates, Pieces } from 'src/6.shared/model'
+import {
+    CastlingSide,
+    Colors,
+    FieldStates,
+    Move,
+    Pieces,
+} from 'src/6.shared/model'
 
 type ReturnType = [
     dragStart: (e: any) => void,
@@ -39,10 +42,10 @@ type ReturnType = [
 ]
 
 export function useBoardControls(
-    chessBoardRef: React.RefObject<HTMLDivElement>
+    chessBoardRef: React.RefObject<HTMLDivElement>,
+    disabled: boolean
 ): ReturnType {
     const dispatch = useGameStore((state) => state.dispatch)
-    const isSettingsReady = useGameStore((state) => state.isSettingsReady)
     const players = useGameStore((state) => state.players)
     const squares = useGameStore((state) => state.squares)
     const turn = useGameStore((state) => state.turn)
@@ -52,10 +55,7 @@ export function useBoardControls(
     const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState<HTMLImageElement>(null)
     const [clickedPiece, setClickedPiece] = useState<HTMLImageElement>(null)
-    const [draggedPieceCoords, setDraggedPieceCoords] = useState<Coords>({
-        col: 0,
-        row: 0,
-    })
+    const [draggedPieceCoords, setDraggedPieceCoords] = useState<string>()
     const [castleAvailable, setCastleAvailable] = useState<Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState<string>(null)
     //
@@ -66,31 +66,31 @@ export function useBoardControls(
         useChessBoardOffsets(chessBoardRef)
     //
 
-    useSocket('piece-on-field', (pieceOnFieldData: KeyablePieceOnField) => {
-        const pieceOnField = parsePieceOnField(pieceOnFieldData, squares)
-        dispatch({
-            type: GameActionTypes.SQUARES,
-            payload: { squares: { ...squares, ...pieceOnField } },
-        })
+    // useSocket('piece-on-field', (pieceOnFieldData: KeyablePieceOnField) => {
+    //     const pieceOnField = parsePieceOnField(pieceOnFieldData, squares)
+    //     dispatch({
+    //         type: GameActionTypes.SQUARES,
+    //         payload: { squares: { ...squares, ...pieceOnField } },
+    //     })
+    //     //BUG
+    //     playPlacedPieceSound(false)
+    //     switchTurn()
 
-        playPlacedPieceSound()
-        switchTurn()
-
-        const currentPlayer =
-            turn === Colors.White
-                ? players[Colors.White]
-                : players[Colors.Black]
-        stopAndStartPlayerTime(currentPlayer, [
-            players[Colors.White],
-            players[Colors.Black],
-        ])
-    })
+    //     const currentPlayer =
+    //         turn === Colors.White
+    //             ? players[Colors.White]
+    //             : players[Colors.Black]
+    //     stopAndStartPlayerTime(currentPlayer, [
+    //         players[Colors.White],
+    //         players[Colors.Black],
+    //     ])
+    // })
 
     //onClick handler for possibility to place piece on click
     function onClick(e: any, field: string): void {
         if (
             !e.target.classList.contains(FieldStates.PieceCanMoveHere) ||
-            !isSettingsReady
+            disabled
         )
             return
         if (
@@ -111,7 +111,7 @@ export function useBoardControls(
         if (
             isDragStartIllegal(
                 e,
-                isSettingsReady,
+                !disabled,
                 players[Colors.White],
                 players[Colors.Black]
             )
@@ -127,20 +127,9 @@ export function useBoardControls(
         const x: number = e.clientX
         const y: number = e.clientY
 
-        const coords = { x: e.clientX, y: e.clientY }
-
-        const localDraggedPieceCoords = getFieldCoordinates(
-            coords,
-            chessBoardOffsets,
-            fieldSizes,
-            variant
-        )
-        setDraggedPieceCoords(localDraggedPieceCoords)
-
         //getting all legal moves and display that on board
-        const pieceField =
-            alphs.posOut[localDraggedPieceCoords.row].toString() +
-            localDraggedPieceCoords.col.toString()
+        const pieceField = e.target.parentElement.id
+        setDraggedPieceCoords(pieceField)
         const piece = squares[pieceField]
         const moves = piece.canMove(
             pieceField,
@@ -156,8 +145,8 @@ export function useBoardControls(
 
         //moving static piece image to cursor (field offsets needed to center piece on cursor)
         e.target.style.position = 'absolute'
-        e.target.style.left = `${x - fieldOffsets.x}px`
-        e.target.style.top = `${y - fieldOffsets.y}px`
+        e.target.style.left = `${e.clientX - chessBoardOffsets.left - fieldOffsets.x + window.scrollX}px`
+        e.target.style.top = `${e.clientY - chessBoardOffsets.top - fieldOffsets.y + window.scrollY}px`
         e.target.style.width = `${fieldWidth}px`
     }
     //
@@ -168,10 +157,12 @@ export function useBoardControls(
         if (!(draggedPiece as HTMLElement).dataset.color.includes(turn)) return
 
         //mouse coordinates (field offsets included)
-        const x = e.clientX - fieldOffsets.x
-        const y = e.clientY - fieldOffsets.y
+        const x =
+            e.clientX - chessBoardOffsets.left - fieldOffsets.x + window.scrollX
+        const y =
+            e.clientY - chessBoardOffsets.top - fieldOffsets.y + window.scrollY
 
-        //moving static piece image to cursor when move it
+        // //moving static piece image to cursor when move it
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
         draggedPiece.style.top = `${y}px`
@@ -187,8 +178,10 @@ export function useBoardControls(
         )
             return
 
-        const coords = { x: e.clientX, y: e.clientY }
-
+        const coords = {
+            x: e.clientX,
+            y: e.clientY,
+        }
         const dropCoords = getFieldCoordinates(
             coords,
             chessBoardOffsets,
@@ -200,46 +193,50 @@ export function useBoardControls(
         //if dropfield is not valid => call resetAll()
         if (dropCoords.row !== 0 && dropCoords.col !== 0) {
             //getting piece data
-            const pieceFromThisField =
-                alphs.posOut[draggedPieceCoords.row].toString() +
-                draggedPieceCoords.col.toString()
             const dropField =
                 alphs.posOut[dropCoords.row].toString() +
                 dropCoords.col.toString()
-            const piece = squares[pieceFromThisField]
+            const piece = squares[draggedPieceCoords]
 
             let pieceOnField = {
-                [pieceFromThisField]: null,
+                [draggedPieceCoords]: null,
                 [dropField]: piece,
             }
 
-            //empassant and castle dataset
-            let empassanted = false
+            //enpassant and castle dataset
+            let enpassanted = false
             let castledRookInitialField: string | null = null
 
             if (enpassantAvailable) {
-                const enpassantedFields = checkForEnpassant(
+                const [isEnpassanted, enpassantedFields] = checkForEnpassant(
                     squares,
                     dropField,
-                    pieceFromThisField,
+                    draggedPieceCoords,
                     enpassantAvailable
                 )
-                pieceOnField = { ...pieceOnField, ...enpassantedFields }
-                empassanted = true
+                if (isEnpassanted) {
+                    pieceOnField = { ...pieceOnField, ...enpassantedFields }
+                    enpassanted = true
+                }
             }
-
+            let castledSide: CastlingSide | null = null
             if (castleAvailable.length) {
-                const castledFields = checkForCastle(
+                const {
+                    modifiedPieceOnField,
+                    rookInitialPieceField,
+                    castlingSide,
+                } = checkForCastle(
                     squares,
                     dropField,
-                    pieceFromThisField,
+                    draggedPieceCoords,
                     castleAvailable
                 )
                 pieceOnField = {
                     ...pieceOnField,
-                    ...castledFields.modifiedPieceOnField,
+                    ...modifiedPieceOnField,
                 }
-                castledRookInitialField = castledFields.rookInitialPieceField
+                castledRookInitialField = rookInitialPieceField
+                castledSide = castlingSide
             }
             //
 
@@ -260,7 +257,12 @@ export function useBoardControls(
                 return
             }
             //
-
+            const isCapture = !!squares[dropField] || enpassanted
+            const move: Move = {
+                from: draggedPieceCoords,
+                to: dropField,
+                isCapture,
+            }
             //handling promotions for pawns
             const blackPawnOnPromotionField =
                 dropField[1] === '1' &&
@@ -273,17 +275,16 @@ export function useBoardControls(
             const pawnOnPromotionField =
                 blackPawnOnPromotionField || whitePawnOnPromotionField
 
-            if (pawnOnPromotionField && piece.color === turn)
+            if (pawnOnPromotionField && piece.color === turn) {
                 dispatch({
-                    type: GameActionTypes.PROMOTED_FIELD,
-                    payload: { promotedField: dropField },
+                    type: GameActionTypes.PROMOTION_MOVE,
+                    payload: { move },
                 })
-            //
-            //finally, setting squares data with placed piece
-            dispatch({
-                type: GameActionTypes.SQUARES,
-                payload: { squares: { ...squares, ...pieceOnField } },
-            })
+
+                resetAll(draggedPiece)
+
+                return
+            }
 
             const currentPlayer =
                 turn === Colors.White
@@ -293,7 +294,7 @@ export function useBoardControls(
                 players[Colors.White],
                 players[Colors.Black],
             ])
-            playPlacedPieceSound(squares[dropField], empassanted)
+            playPlacedPieceSound(isCapture)
             //
 
             //sending moved piece data to server if not in offline mode
@@ -302,26 +303,28 @@ export function useBoardControls(
                     pieceOnField,
                     castleAvailable,
                     castledRookInitialField,
-                    pieceFromThisField
+                    draggedPieceCoords
                 )
 
                 socket.emit('move-played', pieceOnFieldForServer)
                 console.log(pieceOnFieldForServer)
             }
-            //
+
+            if (piece.addMove) piece.addMove(move)
 
             dispatch({
-                type: GameActionTypes.ADD_MOVE,
+                type: GameActionTypes.NEW_MOVE,
                 payload: {
-                    move: `${piece.type.slice(0, 1)}${pieceFromThisField}`,
+                    squares: { ...squares, ...pieceOnField },
+                    move,
+                    promotionTo: null,
+                    piece,
+                    isEnpassant: enpassanted,
+                    castlingSide: castledSide,
                 },
             })
 
-            if (piece.lastMoves) piece.lastMoves.push(pieceFromThisField)
-
-            //resetting board and piece states and changing turn
             resetAll(draggedPiece)
-            switchTurn()
         } else {
             resetAll(draggedPiece)
         }
@@ -334,15 +337,6 @@ export function useBoardControls(
         setDraggedPiece(null)
         setClickedPiece(null)
         removeActives(activeFields, setActiveFields)
-    }
-
-    function switchTurn() {
-        dispatch({
-            type: GameActionTypes.TURN,
-            payload: {
-                turn: turn === Colors.White ? Colors.Black : Colors.White,
-            },
-        })
     }
 
     return [dragStart, dragMove, dragDrop, onClick, activeFields]

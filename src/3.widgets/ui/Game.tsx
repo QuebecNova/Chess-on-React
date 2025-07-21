@@ -1,26 +1,17 @@
-import { GameStoreProvider } from 'src/4.features/model/providers'
-import {
-    AcceptRestart,
-    Board,
-    Chat,
-    MatedMessage,
-    PlayedMoves,
-    StartingSettings,
-} from 'src/4.features/ui'
-import Timers from './Timers'
+import { Grid, GridItem } from '@chakra-ui/react'
+import { Board } from 'src/4.features/ui'
+import { SideMenu } from './SideMenu'
 
-export default function Game() {
+export default function Game({ disabled }: { disabled: boolean }) {
     return (
-        <GameStoreProvider>
-            <div className="board-wrapper">
-                <StartingSettings />
-                <Timers />
-                <Board />
-                <MatedMessage />
-                <AcceptRestart />
-                <PlayedMoves />
-                <Chat />
-            </div>
-        </GameStoreProvider>
+        <Grid templateColumns="repeat(3, 1fr)">
+            <GridItem />
+            <GridItem>
+                <Board disabled={disabled} />
+            </GridItem>
+            <GridItem>
+                <SideMenu />
+            </GridItem>
+        </Grid>
     )
 }

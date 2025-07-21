@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { touch2Mouse } from 'src/6.shared/lib/helpers'
 
@@ -10,15 +10,23 @@ import {
     useBoardControls,
     useChessBoardOffsets,
 } from 'src/4.features/lib/hooks'
+import { useGameStore } from 'src/4.features/model/providers'
+import { GameActionTypes } from 'src/4.features/model/store/game'
 import Promotion from './Promotion'
 
-export default function Board() {
+export default function Board({ disabled }: { disabled: boolean }) {
     const chessBoardRef = useRef<HTMLDivElement>(null)
-
+    const dispatch = useGameStore((state) => state.dispatch)
     const { fieldWidth } = useChessBoardOffsets(chessBoardRef)
 
     const [dragStart, dragMove, dragDrop, onClick, activeFields] =
-        useBoardControls(chessBoardRef)
+        useBoardControls(chessBoardRef, disabled)
+
+    useEffect(() => {
+        return () => {
+            dispatch({ type: GameActionTypes.RESET_STORE })
+        }
+    }, [])
 
     return (
         <>
