@@ -1,7 +1,7 @@
 import { Colors } from 'src/6.shared/model'
 
 export class Player {
-    readonly color: string
+    readonly color: Colors
     timer: number
     isPlaying: boolean
     isCurrentUser: boolean

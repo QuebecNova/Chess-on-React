@@ -1,14 +1,15 @@
 import { IPiece, KeyableSquares } from 'src/5.entities/model'
+import { Colors, Pieces } from 'src/6.shared/model'
 
 export class Piece implements IPiece {
-    readonly color: string
+    readonly color: Colors
     readonly img: React.FunctionComponent<React.SVGAttributes<SVGElement>>
-    readonly type: string
+    readonly type: Pieces
 
     constructor(
-        color: string,
+        color: Colors,
         img: React.FunctionComponent<React.SVGAttributes<SVGElement>>,
-        type: string
+        type: Pieces
     ) {
         this.color = color
         this.img = img

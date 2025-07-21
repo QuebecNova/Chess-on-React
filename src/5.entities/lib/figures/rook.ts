@@ -1,10 +1,20 @@
 import { KeyableSquares } from 'src/5.entities/model'
-import { Colors, Operators, Pieces, piecesImages } from 'src/6.shared/model'
+import {
+    Colors,
+    Move,
+    Operators,
+    Pieces,
+    piecesImages,
+} from 'src/6.shared/model'
+import { RookSides } from 'src/6.shared/model/constants/board'
 import { alphs } from '../alphabetPositions'
 import { Piece } from './piece'
 
 export class Rook extends Piece {
-    constructor(color: string) {
+    readonly lastMoves: Move[] = []
+    readonly side?: RookSides
+
+    constructor(color: Colors, side?: RookSides) {
         super(
             color,
             color === Colors.Black
@@ -12,9 +22,9 @@ export class Rook extends Piece {
                 : piecesImages.WhiteRook,
             Pieces.Rook
         )
-    }
 
-    lastMoves: string[] = []
+        this.side = side
+    }
 
     canMove(
         from: string,
@@ -45,22 +55,22 @@ export class Rook extends Piece {
 
             // cols 14-27
             // 14-20 back
-            from[0] + (parseInt(from[1]) - 1),
-            from[0] + (parseInt(from[1]) - 2),
-            from[0] + (parseInt(from[1]) - 3),
-            from[0] + (parseInt(from[1]) - 4),
-            from[0] + (parseInt(from[1]) - 5),
-            from[0] + (parseInt(from[1]) - 6),
-            from[0] + (parseInt(from[1]) - 7),
+            alphs.changeNumPos(from, Operators.Backward, 1),
+            alphs.changeNumPos(from, Operators.Backward, 2),
+            alphs.changeNumPos(from, Operators.Backward, 3),
+            alphs.changeNumPos(from, Operators.Backward, 4),
+            alphs.changeNumPos(from, Operators.Backward, 5),
+            alphs.changeNumPos(from, Operators.Backward, 6),
+            alphs.changeNumPos(from, Operators.Backward, 7),
 
             // 20-27 front
-            from[0] + (parseInt(from[1]) + 1),
-            from[0] + (parseInt(from[1]) + 2),
-            from[0] + (parseInt(from[1]) + 3),
-            from[0] + (parseInt(from[1]) + 4),
-            from[0] + (parseInt(from[1]) + 5),
-            from[0] + (parseInt(from[1]) + 6),
-            from[0] + (parseInt(from[1]) + 7),
+            alphs.changeNumPos(from, Operators.Forward, 1),
+            alphs.changeNumPos(from, Operators.Forward, 2),
+            alphs.changeNumPos(from, Operators.Forward, 3),
+            alphs.changeNumPos(from, Operators.Forward, 4),
+            alphs.changeNumPos(from, Operators.Forward, 5),
+            alphs.changeNumPos(from, Operators.Forward, 6),
+            alphs.changeNumPos(from, Operators.Forward, 7),
         ]
 
         let pieceInbackCol = false
@@ -70,11 +80,8 @@ export class Rook extends Piece {
         let pieceInfrontRow = false
 
         rawMoves.forEach((move, index) => {
-            const movePassingValidation =
-                move &&
-                !move[2] &&
-                parseInt(move[1]) > 0 &&
-                parseInt(move[1]) < 9
+            const num = alphs.getNum(move)
+            const movePassingValidation = move && !move[2] && num > 0 && num < 9
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
             const pieceOnMove = squareState[move]
 
@@ -134,5 +141,10 @@ export class Rook extends Piece {
         })
 
         return moves
+    }
+
+    addMove(move: Move) {
+        this.lastMoves.push(move)
+        return this.lastMoves
     }
 }

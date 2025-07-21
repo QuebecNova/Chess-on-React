@@ -4,7 +4,7 @@ import { alphs } from '../alphabetPositions'
 import { Piece } from './piece'
 
 export class Knight extends Piece {
-    constructor(color: string) {
+    constructor(color: Colors) {
         super(
             color,
             color === Colors.Black
@@ -81,14 +81,11 @@ export class Knight extends Piece {
         ]
 
         rawMoves.forEach((move) => {
+            const num = alphs.getNum(move)
             const pieceOnMove = squareState[move]
             const samePieceOnMove = pieceOnMove?.color === this.color
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
-            const movePassingValidation =
-                move &&
-                !move[2] &&
-                parseInt(move[1]) > 0 &&
-                parseInt(move[1]) < 9
+            const movePassingValidation = move && !move[2] && num > 0 && num < 9
 
             if (samePieceOnMove) return
             if (moveLeadsToCheck) return

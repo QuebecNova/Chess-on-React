@@ -5,7 +5,7 @@ interface IPosNumber {
 }
 
 interface IPosString {
-    [key: number]: String
+    [key: number]: string
 }
 
 export interface IAlphs {
@@ -19,4 +19,9 @@ export interface IAlphs {
         numericOperator?: Operators,
         secondNum?: number
     ) => string
+
+    changeNumPos: (field: string, operator: Operators, num: number) => string
+
+    getNum: (field: string) => number
+    getAlph: (field: string) => string
 }

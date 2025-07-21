@@ -86,6 +86,23 @@ export const alphs: IAlphs = {
             throw new Error('not a valid numberic operator')
         }
 
-        return modifiedField
+        return modifiedField ? modifiedField : ''
     },
-}
+
+    changeNumPos(field: string, operator: Operators, num: number): string {
+        if (operator === Operators.Forward) {
+            return field[0] + (parseInt(field[1]) + num)
+        }
+        if (operator === Operators.Backward) {
+            return field[0] + (parseInt(field[1]) - num)
+        }
+    },
+
+    getNum(field: string) {
+        return parseInt(field.at(-1))
+    },
+
+    getAlph(field: string) {
+        return field[0]
+    },
+} as const

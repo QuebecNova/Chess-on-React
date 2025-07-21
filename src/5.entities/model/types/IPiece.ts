@@ -1,16 +1,20 @@
+import { CastlingSide, Colors, Move, Pieces } from 'src/6.shared/model'
 import { KeyableSquares } from './Keyable'
+import { PlayedMove } from './PlayedMove'
 
 export interface IPiece {
-    color: string
-    type: string
-    img: React.FunctionComponent<React.SVGAttributes<SVGElement>>
-    lastMoves?: Array<string>
+    readonly color: Colors
+    readonly type: Pieces
+    readonly img: React.FunctionComponent<React.SVGAttributes<SVGElement>>
+    readonly side?: CastlingSide
+    readonly lastMoves?: Move[]
     onCheck?: boolean
     canMove: (
         from: string,
         squareState: KeyableSquares,
         movesLeadsToCheck: KeyableSquares,
         initialState?: KeyableSquares,
-        playedMoves?: string[]
+        playedMoves?: PlayedMove[]
     ) => Array<string>
+    addMove?: (move: Move) => Move[]
 }

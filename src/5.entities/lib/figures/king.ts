@@ -2,6 +2,7 @@ import { KeyableSquares } from 'src/5.entities/model'
 import { arrayRemove } from 'src/6.shared/lib/helpers'
 import {
     Colors,
+    Move,
     Moves,
     Operators,
     Pieces,
@@ -11,10 +12,10 @@ import { alphs } from '../alphabetPositions'
 import { Piece } from './piece'
 
 export class King extends Piece {
-    lastMoves: string[]
+    readonly lastMoves: Move[]
     onCheck: boolean
 
-    constructor(color: string) {
+    constructor(color: Colors) {
         super(
             color,
             color === Colors.Black
@@ -47,7 +48,7 @@ export class King extends Piece {
 
         const rawMoves: string[] = [
             //circular moves starting from kingpos[1] + 1
-            from[0] + (parseInt(from[1]) + 1),
+            alphs.changeNumPos(from, Operators.Forward, 1),
             alphs.changeAlphPos(
                 from,
                 Operators.Forward,
@@ -63,7 +64,7 @@ export class King extends Piece {
                 Operators.Backward,
                 1
             ),
-            from[0] + (parseInt(from[1]) - 1),
+            alphs.changeNumPos(from, Operators.Backward, 1),
             alphs.changeAlphPos(
                 from,
                 Operators.Backward,
@@ -85,21 +86,19 @@ export class King extends Piece {
             from,
             alphs.changeAlphPos(from, Operators.Backward, 3),
         ]
-
         rawMoves.forEach((move, index) => {
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
+            if (moveLeadsToCheck) return
+
+            const num = alphs.getNum(move)
+
             const movePassingValidation =
-                move &&
-                !move[2] &&
-                parseInt(move[1]) > 0 &&
-                parseInt(move[1]) < 9 &&
-                index < 11
+                move && !move[2] && num > 0 && num < 9 && index < 11
 
             const pieceOnMove = squareState[move]
             const samePieceOnMove = pieceOnMove?.color === this.color
 
             const kingOnCheck = movesLeadsToCheck?.[from]
-
             if (samePieceOnMove && pieceOnMove.type !== Pieces.King) return
 
             //castle logic
@@ -115,8 +114,7 @@ export class King extends Piece {
                 const castlePassingValidationToRight =
                     !kingMoved &&
                     squareState[rookRight]?.type === Pieces.Rook &&
-                    initialState[rookRight]?.type === Pieces.Rook &&
-                    initialState[rookRight]?.lastMoves.length === 0 &&
+                    squareState[rookRight]?.lastMoves?.length === 0 &&
                     !pieceOnMove &&
                     !squareState[rawMoves[2]] &&
                     !kingOnCheck &&
@@ -125,8 +123,7 @@ export class King extends Piece {
                 const castlePassingValidationToLeft =
                     !kingMoved &&
                     squareState[rookLeft]?.type === Pieces.Rook &&
-                    initialState[rookLeft]?.type === Pieces.Rook &&
-                    initialState[rookLeft]?.lastMoves.length === 0 &&
+                    squareState[rookLeft]?.lastMoves?.length === 0 &&
                     !pieceOnMove &&
                     !squareState[rawMoves[6]] &&
                     !squareState[rawMoves[11]] &&
@@ -146,7 +143,6 @@ export class King extends Piece {
                 }
             }
 
-            if (moveLeadsToCheck) return
             if (movePassingValidation) moves.push(move)
 
             //checking that enemy piece attacking field that used to castle king
@@ -161,11 +157,11 @@ export class King extends Piece {
 
             const rookLeftMoved =
                 squareState[rookLeft]?.type === Pieces.Rook &&
-                initialState[rookLeft]?.lastMoves.length !== 0
+                squareState[rookLeft]?.lastMoves?.length !== 0
 
             const rookRightMoved =
                 squareState[rookRight]?.type === Pieces.Rook &&
-                initialState[rookRight]?.lastMoves.length !== 0
+                squareState[rookRight]?.lastMoves?.length !== 0
 
             const somethingBlockingCastleToLeft =
                 movesLeadsToCheck?.[rawMoves[6]] ||
@@ -193,5 +189,10 @@ export class King extends Piece {
         })
 
         return moves
+    }
+
+    addMove(move: Move) {
+        this.lastMoves.push(move)
+        return this.lastMoves
     }
 }

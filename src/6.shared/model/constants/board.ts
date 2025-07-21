@@ -28,19 +28,20 @@ export const Moves = {
 export type Moves = ValueOf<typeof Moves>
 
 export const Pieces = {
-    King: 'King',
-    Queen: 'Queen',
-    Rook: 'Rook',
-    Bishop: 'Bishop',
-    Knight: 'Knight',
-    Pawn: 'Pawn',
+    King: 'K',
+    Queen: 'Q',
+    Rook: 'R',
+    Bishop: 'B',
+    Knight: 'N',
+    Pawn: 'P',
 } as const
 export type Pieces = ValueOf<typeof Pieces>
 
 export const BoardState = {
     Stalemate: 'stalemate',
-    Mate: 'mate',
+    Checkmate: 'Checkmate',
     Draw: 'draw',
+    Check: 'check',
 } as const
 export type BoardState = ValueOf<typeof BoardState>
 
@@ -55,3 +56,9 @@ export const Operators = {
     Backward: 'backward',
 } as const
 export type Operators = ValueOf<typeof Operators>
+
+export const CastlingSide = {
+    QueenSide: 'queenSide',
+    KingSide: 'kingSide',
+} as const
+export type CastlingSide = ValueOf<typeof CastlingSide>

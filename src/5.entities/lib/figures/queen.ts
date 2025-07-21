@@ -1,11 +1,12 @@
 import { KeyableSquares } from 'src/5.entities/model'
 import { Colors, Pieces, piecesImages } from 'src/6.shared/model'
+import { alphs } from '../alphabetPositions'
 import { Bishop } from './bishop'
 import { Piece } from './piece'
 import { Rook } from './rook'
 
 export class Queen extends Piece {
-    constructor(color: string) {
+    constructor(color: Colors) {
         super(
             color,
             color === Colors.Black
@@ -39,11 +40,8 @@ export class Queen extends Piece {
         const rawMoves: string[] = [...diagonalRawMoves, ...linearRawMoves]
 
         rawMoves.forEach((move) => {
-            const movePassingValidation =
-                move &&
-                !move[2] &&
-                parseInt(move[1]) > 0 &&
-                parseInt(move[1]) < 9
+            const num = alphs.getNum(move)
+            const movePassingValidation = move && !move[2] && num > 0 && num < 9
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
             const pieceOnMove = squareState[move]
             const sameColorPieceOnMove = pieceOnMove?.color === this.color

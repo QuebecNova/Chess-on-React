@@ -4,7 +4,7 @@ import { alphs } from '../alphabetPositions'
 import { Piece } from './piece'
 
 export class Bishop extends Piece {
-    constructor(color: string) {
+    constructor(color: Colors) {
         super(
             color,
             color === Colors.Black
@@ -234,11 +234,9 @@ export class Bishop extends Piece {
 
         rawMoves.forEach((move, index) => {
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
-            const movePassingValidation =
-                move &&
-                !move[2] &&
-                parseInt(move[1]) > 0 &&
-                parseInt(move[1]) < 9
+            const num = alphs.getNum(move)
+
+            const movePassingValidation = move && !move[2] && num > 0 && num < 9
             const pieceOnMove = squareState[move]
 
             const NWDiagonal = index < 7

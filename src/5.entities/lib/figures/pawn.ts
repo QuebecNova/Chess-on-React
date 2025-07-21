@@ -1,6 +1,7 @@
-import { KeyableSquares } from 'src/5.entities/model'
+import { KeyableSquares, PlayedMove } from 'src/5.entities/model'
 import {
     Colors,
+    Move,
     Moves,
     Operators,
     Pieces,
@@ -10,9 +11,9 @@ import { alphs } from '../alphabetPositions'
 import { Piece } from './piece'
 
 export class Pawn extends Piece {
-    lastMoves: string[]
+    readonly lastMoves: Move[]
 
-    constructor(color: string) {
+    constructor(color: Colors) {
         super(
             color,
             color === Colors.Black
@@ -28,7 +29,7 @@ export class Pawn extends Piece {
         squareState: KeyableSquares,
         movesLeadsToCheck: KeyableSquares,
         initialState: KeyableSquares = {},
-        playedMoves: string[] = []
+        playedMoves: PlayedMove[] = []
     ): string[] {
         const moves: string[] = []
         let pieceInfront = false
@@ -36,8 +37,8 @@ export class Pawn extends Piece {
         if (this.color === Colors.Black) {
             const blackMoves = [
                 //basic moves
-                from[0] + (parseInt(from[1]) - 1),
-                from[0] + (parseInt(from[1]) - 2),
+                alphs.changeNumPos(from, Operators.Backward, 1),
+                alphs.changeNumPos(from, Operators.Backward, 2),
                 //eat figures moves
                 alphs.changeAlphPos(
                     from,
@@ -59,15 +60,12 @@ export class Pawn extends Piece {
             ]
 
             blackMoves.forEach((move, index) => {
+                const num = alphs.getNum(move)
                 const pieceOnMove = squareState[move]
                 const opponentPieceOnMove = pieceOnMove?.color !== this.color
                 const moveLeadsToCheck = movesLeadsToCheck?.[move]
                 const movePassingValidation =
-                    move[0] &&
-                    move[1] &&
-                    parseInt(move[1]) <= 8 &&
-                    parseInt(move[1]) > 0 &&
-                    index < 4
+                    move[0] && move[1] && num <= 8 && num > 0 && index < 4
 
                 const moveIsAnyOfForwardMove = index < 2
                 const moveIsTwoFieldsForward = index === 1
@@ -76,14 +74,23 @@ export class Pawn extends Piece {
 
                 const pawnNotMoved = !initialState?.[from]
 
+                const isOppositePawnMovedTwoSquaresForward = () =>
+                    parseInt(pieceOnMove.lastMoves.slice().pop()?.from?.[1]) ===
+                    num - 2
+
+                const isOppositePawnMovedForFirstTime = () =>
+                    initialState?.[pieceOnMove.lastMoves.slice().pop()?.from]
+
+                const isOppositePawnMadeMoveIsLast = () =>
+                    playedMoves.slice().pop()?.from ===
+                    pieceOnMove.lastMoves.slice().pop()?.from
+
                 const isEnpassantAvailable =
                     moveIsEatMove &&
                     pieceOnMove?.type === Pieces.Pawn &&
-                    initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
-                    parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
-                        parseInt(move[1]) - 2 &&
-                    playedMoves.slice().pop() ===
-                        `P${pieceOnMove.lastMoves.slice().pop()}` &&
+                    isOppositePawnMovedTwoSquaresForward() &&
+                    isOppositePawnMovedForFirstTime() &&
+                    isOppositePawnMadeMoveIsLast() &&
                     opponentPieceOnMove
 
                 if (
@@ -120,8 +127,8 @@ export class Pawn extends Piece {
         } else {
             //same but for white pawns
             const whiteMoves = [
-                from[0] + (parseInt(from[1]) + 1),
-                from[0] + (parseInt(from[1]) + 2),
+                alphs.changeNumPos(from, Operators.Forward, 1),
+                alphs.changeNumPos(from, Operators.Forward, 2),
                 alphs.changeAlphPos(
                     from,
                     Operators.Backward,
@@ -141,6 +148,7 @@ export class Pawn extends Piece {
             ]
 
             whiteMoves.forEach((move, index) => {
+                const num = alphs.getNum(move)
                 const pieceOnMove = squareState[move]
                 const opponentPieceOnMove = pieceOnMove?.color !== this.color
                 const moveLeadsToCheck = movesLeadsToCheck?.[move]
@@ -148,8 +156,8 @@ export class Pawn extends Piece {
                     move &&
                     move[1] &&
                     !move[2] &&
-                    parseInt(move[1]) < 9 &&
-                    parseInt(move[1]) > 0 &&
+                    num < 9 &&
+                    num > 0 &&
                     index < 4
 
                 const moveIsAnyOfForwardMove = index < 2
@@ -159,14 +167,23 @@ export class Pawn extends Piece {
 
                 const pawnNotMoved = !initialState?.[from]
 
+                const isOppositePawnMovedTwoSquaresForward = () =>
+                    parseInt(pieceOnMove.lastMoves.slice().pop()?.from?.[1]) ===
+                    num + 2
+
+                const isOppositePawnMovedForFirstTime = () =>
+                    initialState?.[pieceOnMove.lastMoves.slice().pop()?.from]
+
+                const isOppositePawnMadeMoveIsLast = () =>
+                    playedMoves.slice().pop()?.from ===
+                    pieceOnMove.lastMoves.slice().pop()?.from
+
                 const isEnpassantAvailable =
                     moveIsEatMove &&
                     pieceOnMove?.type === Pieces.Pawn &&
-                    initialState?.[pieceOnMove.lastMoves.slice().pop()] &&
-                    parseInt(pieceOnMove.lastMoves.slice().pop()[1]) ===
-                        parseInt(move[1]) + 2 &&
-                    playedMoves.slice().pop() ===
-                        `P${pieceOnMove.lastMoves.slice().pop()}` &&
+                    isOppositePawnMovedTwoSquaresForward() &&
+                    isOppositePawnMovedForFirstTime() &&
+                    isOppositePawnMadeMoveIsLast() &&
                     opponentPieceOnMove
 
                 if (
@@ -203,5 +220,10 @@ export class Pawn extends Piece {
         }
 
         return moves
+    }
+
+    addMove(move: Move) {
+        this.lastMoves.push(move)
+        return this.lastMoves
     }
 }
