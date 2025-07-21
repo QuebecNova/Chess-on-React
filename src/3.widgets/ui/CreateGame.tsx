@@ -1,28 +1,23 @@
-import React, { useContext, useState } from 'react'
-import { AppContext } from 'src/2.pages/ui'
-import { ShareID } from 'src/4.features/ui'
+import { Card, Container, Stack, Tabs } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { BsFillPlusSquareFill } from 'react-icons/bs'
+import { BotDifficulty, StartingSettings } from 'src/4.features/ui'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
-import { Input } from 'src/6.shared/ui'
-import Button from 'src/6.shared/ui/button'
+import { Button } from 'src/6.shared/ui'
+import { Modal } from 'src/6.shared/ui/modal'
 import { v4 as uuidv4 } from 'uuid'
-
 const RoomID = uuidv4()
 
-type Props = {
-    setOfflineMode: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-export default function CreateGame({ setOfflineMode }: Props) {
+export default function CreateGame() {
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState('')
-    const app = useContext(AppContext)
-
     const [newRoomCreated, setNewRoomCreated] = useState(false)
+    const router = useRouter()
 
     function setOffline() {
-        app.setInGame(true)
-        setOfflineMode(true)
+        router.push('/1213')
         settings.offlineMode = true
     }
 
@@ -43,37 +38,94 @@ export default function CreateGame({ setOfflineMode }: Props) {
         app.setInGame(true)
     })
 
-    if (newRoomCreated) {
-        return <ShareID roomID={RoomID} />
-    }
-
     return (
-        <div className="new-game__wrapper">
-            <div className="create-game">
-                <p>Create a new Game!</p>
-                <Button className="create-game__button" onClick={displayID}>
-                    New Game
-                </Button>
-            </div>
-            <div className="join-game">
-                <p>Join created game!</p>
-                <Input
-                    id="idInput"
-                    label
-                    labelText="Pass ID:"
-                    placeholder="game id"
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                />
-                <span>{error}</span>
-                <Button className="create-game__button-join" onClick={join}>
-                    Join!
-                </Button>
-            </div>
-            <div className="offline-game">
-                <Button onClick={setOffline}>Offline-mode</Button>
-            </div>
-        </div>
+        <Container maxW="lg">
+            <Card.Root
+                bgGradient="to-b"
+                gradientFrom="gray.700"
+                gradientTo="gray.800"
+            >
+                <Card.Body>
+                    <Tabs.Root defaultValue="create" fitted>
+                        <Tabs.List>
+                            <Tabs.Trigger value="create">
+                                <BsFillPlusSquareFill />
+                                Create
+                            </Tabs.Trigger>
+                            <Tabs.Trigger value="lobby">
+                                <BsFillPlusSquareFill />
+                                Lobby
+                            </Tabs.Trigger>
+                            <Tabs.Trigger value="inplay">
+                                <BsFillPlusSquareFill />
+                                In play
+                            </Tabs.Trigger>
+                        </Tabs.List>
+                        <Tabs.Content value="create">
+                            <Stack gap="4">
+                                <Modal
+                                    trigger={
+                                        <Button onClick={displayID}>
+                                            New Game
+                                        </Button>
+                                    }
+                                    body={<StartingSettings />}
+                                    title="Create a game"
+                                    footer={
+                                        <Button colorPalette="teal">
+                                            Create
+                                        </Button>
+                                    }
+                                />
+                                <Modal
+                                    trigger={
+                                        <Button onClick={join}>Join</Button>
+                                    }
+                                    title="Join a game"
+                                    body={<>пиши сука код</>}
+                                />
+                                <Modal
+                                    trigger={
+                                        <Button onClick={join}>
+                                            Play with the computer
+                                        </Button>
+                                    }
+                                    title="Play with the computer"
+                                    body={
+                                        <>
+                                            <BotDifficulty
+                                                mb="6"
+                                                justifyContent="center"
+                                            />
+                                            <StartingSettings />
+                                        </>
+                                    }
+                                    footer={
+                                        <Button colorPalette="teal">
+                                            Play
+                                        </Button>
+                                    }
+                                />
+                                <Modal
+                                    trigger={<Button>Offline mode</Button>}
+                                    title="Play in offline mode"
+                                    body={<StartingSettings />}
+                                    footer={
+                                        <Button
+                                            colorPalette="teal"
+                                            onClick={setOffline}
+                                        >
+                                            Play
+                                        </Button>
+                                    }
+                                />
+                            </Stack>
+                        </Tabs.Content>
+                        <Tabs.Content value="lobby">LOBBY</Tabs.Content>
+                        <Tabs.Content value="inplay">INPLAY</Tabs.Content>
+                    </Tabs.Root>
+                </Card.Body>
+            </Card.Root>
+        </Container>
     )
 }
