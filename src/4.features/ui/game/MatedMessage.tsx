@@ -2,24 +2,21 @@
 
 import { ReactElement, useState } from 'react'
 import { playSoundWhenMated } from 'src/4.features/lib/helpers'
-import { useMated } from 'src/4.features/lib/hooks'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
-import { Colors } from 'src/6.shared/model'
+import { BoardState, Colors } from 'src/6.shared/model'
 import Button from 'src/6.shared/ui/button'
 import Waiting from './Waiting'
 
 export default function MatedMessage(): ReactElement {
     const dispatch = useGameStore((state) => state.dispatch)
-    const squares = useGameStore((state) => state.squares)
     const turn = useGameStore((state) => state.turn)
     const variant = useGameStore((state) => state.variant)
     const timeExpired = useGameStore((state) => state.timeExpired)
     const players = useGameStore((state) => state.players)
-
-    const [mated, isStaleMate] = useMated(squares, turn)
+    const boardState = useGameStore((state) => state.boardState)
 
     const [waitingForAccept, setWaitingForAccept] = useState(false)
 
@@ -33,7 +30,8 @@ export default function MatedMessage(): ReactElement {
         socket.emit('restart-game')
         setWaitingForAccept(true)
     }
-
+    const isStaleMate = boardState === BoardState.Stalemate
+    const isCheckmated = boardState === BoardState.Checkmate
     const typeOfMessage = isStaleMate
         ? 'Stalemate!'
         : timeExpired
@@ -49,7 +47,7 @@ export default function MatedMessage(): ReactElement {
             (player) => player.wantsRestart && !player.isCurrentUser
         )
 
-    if (mated) playSoundWhenMated(turn, variant)
+    if (isCheckmated) playSoundWhenMated(turn, variant)
 
     if (waitingForAccept)
         return (
@@ -63,7 +61,9 @@ export default function MatedMessage(): ReactElement {
         return (
             <div
                 className={`board__mated ${
-                    mated || isStaleMate || timeExpired ? 'active' : 'inactive'
+                    isCheckmated || isStaleMate || timeExpired
+                        ? 'active'
+                        : 'inactive'
                 }`}
             >
                 <p>{typeOfMessage}</p>
