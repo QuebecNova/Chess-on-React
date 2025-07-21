@@ -29,19 +29,19 @@ export function useChessBoardOffsets(
 
     useEffect(() => {
         let chessBoard = ref.current
-
+        if (!chessBoard) return
         function addUpRowsAndCols(chessBoard: HTMLDivElement): void {
+            const { left, top } = chessBoard.getBoundingClientRect()
             setChessBoardOffsets({
-                left: chessBoard.offsetLeft,
-                top: chessBoard.offsetTop,
+                left: left + window.scrollX,
+                top: top + window.scrollY,
             })
 
             const boardWidth = chessBoard.clientWidth
             const currentFieldWidth = boardWidth / 8
-
             setFieldWidth(currentFieldWidth)
             setFieldOffsets({
-                x: currentFieldWidth / 2.1,
+                x: currentFieldWidth / 1.9,
                 y: currentFieldWidth / 1.9,
             })
 
@@ -56,7 +56,6 @@ export function useChessBoardOffsets(
         }
 
         function resizedBoard() {
-            chessBoard = ref.current
             addUpRowsAndCols(chessBoard)
         }
 
