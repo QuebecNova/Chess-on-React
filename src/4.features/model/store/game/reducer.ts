@@ -1,22 +1,34 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
-import { KeyableSquares, Player } from 'src/5.entities/model'
-import { Colors } from 'src/6.shared/model'
-import { GameState } from '.'
+import { getBoardState } from 'src/4.features/lib/helpers'
+import { Fen } from 'src/5.entities/lib'
+import { Piece } from 'src/5.entities/lib/figures/piece'
+import { KeyableSquares, PlayedMove, Player } from 'src/5.entities/model'
+import {
+    BoardState,
+    CastlingSide,
+    Colors,
+    Move,
+    sounds,
+} from 'src/6.shared/model'
+import { GameState, getInitialState } from '.'
 
 export const GameActionTypes = {
     SQUARES: 'SQUARES',
-    IS_TIMER_SET: 'IS_TIMER_SET',
     TIME_EXPIRED: 'TIME_EXPIRED',
-    SETTINGS_READY: 'SETTINGS_READY',
     SEND_RESTART_REQUEST: 'SEND_RESTART_REQUEST',
     VARIANT: 'VARIANT',
     TURN: 'TURN',
-    IN_GAME: 'IM_GAME',
+    IN_GAME: 'IN_GAME',
     RESTART_GAME: 'RESTART_GAME',
+    RESET_STORE: 'RESET_STORE',
     PLAYED_MOVES: 'PLAYED_MOVES',
     ADD_MOVE: 'ADD_MOVE',
     PLAYER: 'PLAYER',
-    PROMOTED_FIELD: 'PROMOTED_FIELD',
+    TIMERS: 'TIMERS',
+    TIMER: 'TIMER',
+    PROMOTION_MOVE: 'PROMOTION_MOVE',
+    FEN: 'FEN',
+    NEW_MOVE: 'NEW_MOVE',
 } as const
 
 export type GameActions =
@@ -25,16 +37,8 @@ export type GameActions =
           payload: { squares: KeyableSquares }
       }
     | {
-          type: typeof GameActionTypes.IS_TIMER_SET
-          payload: { isTimerSet: boolean }
-      }
-    | {
           type: typeof GameActionTypes.TIME_EXPIRED
           payload: { isTimeExpired: boolean }
-      }
-    | {
-          type: typeof GameActionTypes.SETTINGS_READY
-          payload: { isSettingsReady: boolean }
       }
     | {
           type: typeof GameActionTypes.IN_GAME
@@ -55,20 +59,46 @@ export type GameActions =
           type: typeof GameActionTypes.RESTART_GAME
       }
     | {
+          type: typeof GameActionTypes.RESET_STORE
+      }
+    | {
           type: typeof GameActionTypes.PLAYED_MOVES
-          payload: { moves: string[] }
+          payload: { moves: PlayedMove[] }
       }
     | {
           type: typeof GameActionTypes.ADD_MOVE
-          payload: { move: string }
+          payload: { move: PlayedMove }
       }
     | {
           type: typeof GameActionTypes.PLAYER
           payload: { color: Colors; player: Player }
       }
     | {
-          type: typeof GameActionTypes.PROMOTED_FIELD
-          payload: { promotedField: string }
+          type: typeof GameActionTypes.TIMERS
+          payload: { timer: number }
+      }
+    | {
+          type: typeof GameActionTypes.TIMER
+          payload: { playerColor: Colors; timer: number }
+      }
+    | {
+          type: typeof GameActionTypes.PROMOTION_MOVE
+          payload: { move: Move }
+      }
+    | {
+          type: typeof GameActionTypes.FEN
+          payload: { fen: string }
+      }
+    | {
+          type: typeof GameActionTypes.NEW_MOVE
+          payload: {
+              squares: KeyableSquares
+              move: Move
+              piece: Piece
+              promotionTo?: Piece | null
+              isEnpassant?: boolean
+              castlingSide?: CastlingSide
+          }
       }
 
 export const reducer = (state: GameState, action: GameActions) => {
@@ -78,17 +108,7 @@ export const reducer = (state: GameState, action: GameActions) => {
                 ...state,
                 ...action.payload,
             }
-        case GameActionTypes.IS_TIMER_SET:
-            return {
-                ...state,
-                ...action.payload,
-            }
         case GameActionTypes.TIME_EXPIRED:
-            return {
-                ...state,
-                ...action.payload,
-            }
-        case GameActionTypes.SETTINGS_READY:
             return {
                 ...state,
                 ...action.payload,
@@ -102,10 +122,8 @@ export const reducer = (state: GameState, action: GameActions) => {
             console.error('Not implemented')
             return state
         case GameActionTypes.VARIANT:
-            return {
-                ...state,
-                ...action.payload,
-            }
+            state.variant = action.payload.variant
+            return state
         case GameActionTypes.TURN:
             return {
                 ...state,
@@ -135,19 +153,79 @@ export const reducer = (state: GameState, action: GameActions) => {
                     state.variant === Colors.White
                         ? Colors.Black
                         : Colors.White,
+                boardState: null,
+                promotionMove: null,
+                fen: new Fen(setupBoard()).fen,
             }
+        case GameActionTypes.RESET_STORE:
+            return getInitialState()
         case GameActionTypes.PLAYED_MOVES:
             return {
                 ...state,
                 ...action.payload,
             }
         case GameActionTypes.PLAYER:
-            state[action.payload.color] = action.payload.player
+            state.players[action.payload.color] = action.payload.player
+            return state
+        case GameActionTypes.TIMERS:
+            state.players[Colors.White].timer = action.payload.timer
+            state.players[Colors.Black].timer = action.payload.timer
+            return state
+        case GameActionTypes.TIMER:
+            state.players[action.payload.playerColor].timer =
+                action.payload.timer
             return state
         case GameActionTypes.ADD_MOVE:
-            state.playedMoves.push(action.payload.move)
+            return {
+                ...state,
+                playedMoves: [...state.playedMoves, action.payload.move],
+            }
+        case GameActionTypes.PROMOTION_MOVE:
+            state.promotionMove = action.payload.move
             return state
-        case GameActionTypes.PROMOTED_FIELD:
+        case GameActionTypes.NEW_MOVE:
+            state.squares = action.payload.squares
+
+            state.turn =
+                state.turn === Colors.White ? Colors.Black : Colors.White
+
+            state.fen = new Fen(
+                state.squares,
+                state.playedMoves,
+                state.turn
+            ).fen
+
+            if (action.payload.promotionTo) {
+                state.promotionMove = null
+            }
+
+            const boardState = getBoardState(action.payload.squares, state.turn)
+
+            if (
+                boardState === BoardState.Check ||
+                boardState === BoardState.Checkmate
+            )
+                sounds.check.play()
+
+            state.boardState = boardState
+            const playedMove: PlayedMove = {
+                ...action.payload.move,
+                piece: action.payload.piece,
+                boardState,
+                castlingSide: action.payload.castlingSide
+                    ? action.payload.castlingSide
+                    : null,
+                promotionTo: action.payload.promotionTo
+                    ? action.payload.promotionTo
+                    : null,
+                isEnpassant: action.payload.isEnpassant ?? false,
+            }
+
+            state.playedMoves = [...state.playedMoves, playedMove]
+            return {
+                ...state,
+            }
+        case GameActionTypes.FEN:
             return {
                 ...state,
                 ...action.payload,

@@ -1,6 +1,7 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
-import { KeyableSquares, Player } from 'src/5.entities/model'
-import { Colors } from 'src/6.shared/model'
+import { Fen } from 'src/5.entities/lib'
+import { KeyableSquares, PlayedMove, Player } from 'src/5.entities/model'
+import { BoardState, Colors, Move } from 'src/6.shared/model'
 import { Dispatch } from 'src/6.shared/model/types/Dispatch'
 import { createStore } from 'zustand'
 import { devtools, redux } from 'zustand/middleware'
@@ -13,38 +14,38 @@ export type GameState = {
     turn: Colors
     squares: KeyableSquares
     timeExpired: boolean
-    isTimerSet: boolean
     isInGame: boolean
-    isSettingsReady: boolean
-    promotedField: string | null
+    promotionMove: Move | null
+    boardState: BoardState | null
     players: {
-        [key: Colors]: Player
+        [key in Colors]: Player
     }
-    playedMoves: string[]
+    playedMoves: PlayedMove[]
+    fen: string
 }
 
 export type GameStore = GameState & Dispatch<GameActions>
 
-const initialState: GameState = {
+export const getInitialState = (): GameState => ({
     id: null,
-    variant: null,
-    promotedField: null,
+    variant: Colors.White,
+    promotionMove: null,
     turn: Colors.White,
     squares: setupBoard(),
-    isSettingsReady: false,
     timeExpired: false,
     isInGame: false,
-    isTimerSet: false,
+    boardState: null,
     players: {
         [Colors.Black]: new Player(Colors.Black, false, false),
         [Colors.White]: new Player(Colors.White, false, false),
     },
     playedMoves: [],
-}
+    fen: new Fen(setupBoard()).fen,
+})
 
 export const createGameStore = () =>
     createStore<GameStore>()(
-        devtools(redux(reducer, initialState), {
+        devtools(redux(reducer, getInitialState()), {
             name: 'game-store',
         })
     )
