@@ -5,6 +5,7 @@
 }
 
 .board {
+    position: relative;
     grid-column: 3;
     grid-row: 1 / 9;
     width: 700px;
@@ -12,8 +13,9 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    background-color: rgb(77, 54, 13);
-    border: 5px solid rgb(56, 38, 7);
+    background-color: var(--blue-dark);
+    border: 5px solid var(--blue-darker);
+    border-radius: 3px;
 }
 
 .whiteField,
@@ -27,24 +29,69 @@
 }
 
 .whiteField {
-    background-color: rgb(201, 194, 120);
-    border: 1px solid rgb(250, 249, 236);
+    background-color: var(--blue-light);
+    /* border: 1px solid rgb(250, 249, 236); */
     box-sizing: border-box;
 }
 
 .blackField {
-    background-color: rgb(105, 79, 30);
-    border: 1px solid rgb(250, 249, 236);
+    background-color: var(--blue-dark);
+    /* border: 1px solid rgb(250, 249, 236); */
     box-sizing: border-box;
 }
 
-.pieceCanMoveHere {
-    background-color: rgb(98, 136, 29);
+.whiteField.pieceCanMoveHere:not(:has(svg)) {
+    background: radial-gradient(var(--green) 19%, var(--blue-light) 20%);
     cursor: pointer;
 }
 
+.blackField.pieceCanMoveHere:not(:has(svg)) {
+    background: radial-gradient(var(--green-dark) 19%, var(--blue-dark) 20%);
+    cursor: pointer;
+}
+
+.whiteField.pieceCanMoveHere svg {
+    background: radial-gradient(
+        transparent 0%,
+        transparent 79%,
+        var(--green-dark) 80%
+    );
+}
+
+.blackField.pieceCanMoveHere svg {
+    background: radial-gradient(
+        transparent 0%,
+        transparent 79%,
+        var(--green-dark) 80%
+    );
+}
+
+.whiteField.pieceCanMoveHere:hover svg {
+    background: radial-gradient(
+        transparent 0%,
+        transparent 70%,
+        var(--green-dark) 72%
+    );
+}
+
+.blackField.pieceCanMoveHere:hover svg {
+    background: radial-gradient(
+        transparent 0%,
+        transparent 70%,
+        var(--green-dark) 72%
+    );
+}
+
+.whiteField.pieceCanMoveHere:not(:has(svg)):hover {
+    background: radial-gradient(var(--green) 23%, var(--blue-light) 24%);
+}
+
+.blackField.pieceCanMoveHere:not(:has(svg)):hover {
+    background: radial-gradient(var(--green-dark) 23%, var(--blue-dark) 24%);
+}
+
 .currentPiece {
-    background-color: rgb(16, 88, 76);
+    background-color: var(--green-light);
 }
 
 .board__mated,
@@ -57,8 +104,8 @@
     align-items: center;
     flex-direction: column;
     text-shadow: 1px 1px 1px black;
-    background-color: rgba(16, 88, 76, 0.9);
-    border: 4px solid rgb(77, 54, 13);
+    background-color: var(--gray);
+    border: 1px solid var(--black);
     border-radius: 10px;
     left: 50%;
     top: 50%;
@@ -79,13 +126,13 @@
 }
 
 .board__promotion-pieces-wrapper {
-    border: 4px solid rgb(77, 54, 13);
+    border: 2px solid var(--blue-darker);
     border-radius: 5px;
 }
 
 .board__promotion-pieceBlock {
     display: inline-block;
-    background-color: rgba(16, 88, 76);
+    background-color: var(--blue-dark);
 }
 
 div .inactive {

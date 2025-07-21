@@ -1,28 +1,20 @@
+@import 'colors.css';
 @import 'outer.css';
 @import 'board.css';
-@import 'timer.css';
 @import 'pieces.css';
 @import 'fonts.css';
-@import 'button.css';
-@import 'playedMoves.css';
-@import 'newGame.css';
-@import 'chat.css';
-@import 'mediaQueries.css';
-
-* {
-    margin: 0;
-    padding: 0;
-}
 
 html,
 body {
-    font-size: 21px;
-    font-family: 'fira_sansmedium';
-    color: rgb(170, 163, 91);
-    letter-spacing: 0.4px;
-    overflow: hidden;
+    font-family: 'notosans-light';
 }
 
 body {
-    background-color: rgb(5, 47, 40);
+    background: linear-gradient(
+        180deg,
+        rgb(53 53 53) 0%,
+        rgba(48, 48, 48, 1) 35%,
+        rgba(41, 41, 41, 1) 65%,
+        rgba(20, 20, 20, 1) 100%
+    );
 }

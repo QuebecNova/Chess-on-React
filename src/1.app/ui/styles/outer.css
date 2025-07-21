@@ -1,13 +1,13 @@
 /* Typography */
 
 h1 {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-family: 'kaushan_scriptregular';
     margin: 0;
 }
 
 h2 {
-    font-size: 2.4rem;
+    font-size: 1.6rem;
 }
 
 p {
@@ -42,19 +42,16 @@ li {
     width: 7px;
 }
 ::-webkit-scrollbar-track {
-    background-color: rgb(35, 83, 70);
-    border-left: 1px solid rgb(3, 26, 19);
+    background-color: var(--gray);
+    border-left: 2px solid var(--gray-dark);
 }
 ::-webkit-scrollbar-thumb {
-    background-color: rgb(9, 41, 32);
-    border-left: 1px solid rgb(3, 26, 19);
+    background-color: var(--gray-dark);
+    border-left: 2px solid var(--black);
+    border-radius: 5px;
 }
 
 /* Link style */
-
-a {
-    margin-right: 10%;
-}
 
 a:link {
     color: rgb(78, 194, 178);
@@ -94,19 +91,13 @@ header {
     align-self: flex-start;
     align-items: center;
     gap: 10px;
-    border-bottom: 3px solid rgb(2, 17, 15);
-    background-color: rgba(2, 20, 9, 0.8);
+    background-color: var(--gray-dark);
     border-collapse: collapse;
-    height: 12%;
+    height: 9%;
     width: 100%;
     -moz-user-select: none;
     -khtml-user-select: none;
     user-select: none;
-}
-
-header h1 {
-    align-self: flex-start;
-    margin-left: 10%;
 }
 
 /* Misc */
