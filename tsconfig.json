@@ -19,6 +19,6 @@
         "target": "ES2017",
         "baseUrl": "."
     },
-    "include": ["src", "typings.d.ts"],
+    "include": ["src", "typings.d.ts", "ui", "1.app"],
     "exclude": ["node_modules"]
 }
