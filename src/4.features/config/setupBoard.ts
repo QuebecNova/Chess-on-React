@@ -1,19 +1,19 @@
 import { Bishop, King, Knight, Pawn, Queen, Rook } from 'src/5.entities/lib'
 import { KeyableSquares } from 'src/5.entities/model'
-import { Colors } from 'src/6.shared/model'
+import { CastlingSide, Colors } from 'src/6.shared/model'
 import { getSquares } from './../lib/helpers/board/getSquares'
 
 export function setupBoard(): KeyableSquares {
     const squares = getSquares(null)
 
-    squares.a8 = new Rook(Colors.Black)
+    squares.a8 = new Rook(Colors.Black, CastlingSide.QueenSide)
     squares.b8 = new Knight(Colors.Black)
     squares.c8 = new Bishop(Colors.Black)
     squares.d8 = new Queen(Colors.Black)
     squares.e8 = new King(Colors.Black)
     squares.f8 = new Bishop(Colors.Black)
     squares.g8 = new Knight(Colors.Black)
-    squares.h8 = new Rook(Colors.Black)
+    squares.h8 = new Rook(Colors.Black, CastlingSide.KingSide)
 
     squares.a7 = new Pawn(Colors.Black)
     squares.b7 = new Pawn(Colors.Black)
@@ -33,14 +33,14 @@ export function setupBoard(): KeyableSquares {
     squares.g2 = new Pawn(Colors.White)
     squares.h2 = new Pawn(Colors.White)
 
-    squares.a1 = new Rook(Colors.White)
+    squares.a1 = new Rook(Colors.White, CastlingSide.QueenSide)
     squares.b1 = new Knight(Colors.White)
     squares.c1 = new Bishop(Colors.White)
     squares.d1 = new Queen(Colors.White)
     squares.e1 = new King(Colors.White)
     squares.f1 = new Bishop(Colors.White)
     squares.g1 = new Knight(Colors.White)
-    squares.h1 = new Rook(Colors.White)
+    squares.h1 = new Rook(Colors.White, CastlingSide.KingSide)
 
     return squares
 }
