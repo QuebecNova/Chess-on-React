@@ -1,15 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { useGameStore } from 'src/4.features/model/providers'
+import { Flex } from '@chakra-ui/react'
 import ChooseTimerSettings from '../timer/ChooseTimerSettings'
 import DefineSide from './DefineSide'
 
 export default function StartingSettings() {
-    const [isSideSet, setIsSideSet] = useState(false)
-    const isTimerSet = useGameStore((state) => state.isTimerSet)
-
-    if (!isSideSet) return <DefineSide setIsSideSet={setIsSideSet} />
-
-    if (isSideSet && !isTimerSet) return <ChooseTimerSettings />
+    return (
+        <Flex flexDirection="column" gap="8">
+            <ChooseTimerSettings />
+            <Flex justifyContent="center">
+                <DefineSide />
+            </Flex>
+        </Flex>
+    )
 }
