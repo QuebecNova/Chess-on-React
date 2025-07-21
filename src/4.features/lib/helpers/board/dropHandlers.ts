@@ -1,6 +1,6 @@
 import { alphs } from 'src/5.entities/lib'
 import { IPiece, KeyableSquares } from 'src/5.entities/model'
-import { Colors, Directions, Moves, Operators } from 'src/6.shared/model'
+import { CastlingSide, Colors, Moves, Operators } from 'src/6.shared/model'
 
 export function checkForCastle(
     squares: KeyableSquares,
@@ -26,13 +26,13 @@ export function checkForCastle(
     const rookRight: string = alphs.changeAlphPos(from, Operators.Forward, 3)
 
     castleAvailable.forEach((castle) => {
-        if (castle.includes(Directions.Left) && kingMovedLeft)
+        if (castle.includes(Moves.CastleLeft) && kingMovedLeft)
             castledRookLeft = alphs.changeAlphPos(
                 rookLeft,
                 Operators.Forward,
                 3
             )
-        if (castle.includes(Directions.Right) && kingMovedRight)
+        if (castle.includes(Moves.CastleRight) && kingMovedRight)
             castledRookRight = alphs.changeAlphPos(
                 rookRight,
                 Operators.Backward,
@@ -40,19 +40,23 @@ export function checkForCastle(
             )
     })
 
+    let castlingSide: CastlingSide
+
     if (castledRookLeft) {
         modifiedPieceOnField[rookLeft] = null
         modifiedPieceOnField[castledRookLeft] = squares[rookLeft]
         rookInitialPieceField = rookLeft
+        castlingSide = CastlingSide.QueenSide
     }
 
     if (castledRookRight) {
         modifiedPieceOnField[rookRight] = null
         modifiedPieceOnField[castledRookRight] = squares[rookRight]
         rookInitialPieceField = rookRight
+        castlingSide = CastlingSide.KingSide
     }
 
-    return { modifiedPieceOnField, rookInitialPieceField }
+    return { modifiedPieceOnField, rookInitialPieceField, castlingSide }
 }
 
 export function checkForEnpassant(
@@ -60,7 +64,7 @@ export function checkForEnpassant(
     dropField: string,
     from: string,
     enpassantAvailable: string
-): KeyableSquares {
+): [boolean, KeyableSquares] {
     if (!enpassantAvailable) return
 
     const modifiedPieceOnField: KeyableSquares = {
@@ -69,6 +73,7 @@ export function checkForEnpassant(
 
     const piece: IPiece = squares[from]
     let enpassantedField: string
+    let isEnpassanted = false
     if (
         piece.color === Colors.White &&
         enpassantAvailable.includes(Moves.EnpassantLeft)
@@ -125,7 +130,8 @@ export function checkForEnpassant(
             enpassantedField)
     ) {
         modifiedPieceOnField[enpassantedField] = null
+        isEnpassanted = true
     }
 
-    return modifiedPieceOnField
+    return [isEnpassanted, modifiedPieceOnField]
 }

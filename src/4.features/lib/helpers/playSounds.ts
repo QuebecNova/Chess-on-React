@@ -1,4 +1,3 @@
-import { IPiece } from 'src/5.entities/model'
 import { Colors, sounds } from 'src/6.shared/model'
 
 export function playSoundWhenMated(turn: string, variant: string): void {
@@ -12,12 +11,9 @@ export function playSoundWhenMated(turn: string, variant: string): void {
     }
 }
 
-export function playPlacedPieceSound(
-    takedPiece?: IPiece,
-    empassanted?: boolean
-): void {
+export function playPlacedPieceSound(isCapture: boolean): void {
     if (typeof Audio === 'undefined') return
-    if (takedPiece || empassanted) {
+    if (isCapture) {
         sounds.takePiece.play()
         return
     } else sounds.placePiece.play()
