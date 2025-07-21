@@ -1,5 +1,6 @@
 export { default as Button } from './button'
+export { Provider } from './chakra/provider'
 export { default as Input } from './input'
-export { default as RangeInput } from './rangeInput'
+export { default as Slider } from './slider'
 export { default as DateTimeDisplay } from './timer/DateTimeDisplay'
-export { default as ShowCounter } from './timer/ShowCounter'
+export { default as Select, default as ShowCounter } from './timer/ShowCounter'
