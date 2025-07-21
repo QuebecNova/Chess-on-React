@@ -1,19 +1,16 @@
+import { ButtonProps, Button as ChakraButton } from '@chakra-ui/react'
 import { ReactNode } from 'react'
-import classes from './button.module.css'
 
 type Props = {
     className?: string
     onClick?: () => void
     children?: ReactNode
-}
+} & ButtonProps
 
 export default function Button(props: Props) {
     return (
-        <button
-            className={`${classes.btn} ${props.className || ''}`}
-            onClick={props.onClick}
-        >
-            <span>{props.children}</span>
-        </button>
+        <ChakraButton variant="surface" onClick={props.onClick} {...props}>
+            {props.children}
+        </ChakraButton>
     )
 }
