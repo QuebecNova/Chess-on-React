@@ -1,5 +1,5 @@
+export { getBoardState } from './board/checkAndMate/getBoardState'
 export { getMovesThatLeadsToCheck } from './board/checkAndMate/getMovesThatLeadsToCheck'
-export { isMated } from './board/checkAndMate/isMated'
 export { defineColor } from './board/defineColor'
 export { setCastle, setEnpassant } from './board/dragStartHandlers'
 export { checkForCastle, checkForEnpassant } from './board/dropHandlers'

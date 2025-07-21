@@ -1,14 +1,15 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
 import { KeyableSquares } from 'src/5.entities/model'
-import { BoardState, Pieces, sounds } from 'src/6.shared/model'
+import { BoardState, Pieces } from 'src/6.shared/model'
 import { getMovesThatLeadsToCheck } from './getMovesThatLeadsToCheck'
 
-export function isMated(
+export function getBoardState(
     squares: KeyableSquares,
     turn: string
-): boolean | string {
+): BoardState | null {
     //simulating next move for check
     const allLegalMoves = []
+    let checked = false
     for (const field in squares) {
         if (squares[field]?.color === turn) {
             allLegalMoves.push(
@@ -24,9 +25,7 @@ export function isMated(
                     setupBoard()
                 )
             )
-
-            //checked or not
-            if (squares[field].onCheck) sounds.check.play()
+            if (squares[field].onCheck) checked = true
         }
     }
 
@@ -37,8 +36,8 @@ export function isMated(
     ) {
         return BoardState.Stalemate
     }
-
-    const mated = allLegalMoves.every((legalMoves) => legalMoves.length === 0)
-
-    return mated
+    if (allLegalMoves.every((legalMoves) => legalMoves.length === 0))
+        return BoardState.Checkmate
+    if (checked) return BoardState.Check
+    return null
 }
