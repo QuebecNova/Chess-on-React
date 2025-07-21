@@ -1,6 +1,10 @@
 'use client'
 
 import { ReactElement } from 'react'
+import {
+    playPlacedPieceSound,
+    stopAndStartPlayerTime,
+} from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { Bishop, Knight, Queen, Rook } from 'src/5.entities/lib'
@@ -14,42 +18,50 @@ type Props = {
 export default function Promotion(props: Props): ReactElement {
     const squares = useGameStore((state) => state.squares)
     const turn = useGameStore((state) => state.turn)
-    const promotedField = useGameStore((state) => state.promotedField)
+    const promotionMove = useGameStore((state) => state.promotionMove)
     const dispatch = useGameStore((state) => state.dispatch)
+    const players = useGameStore((state) => state.players)
 
-    const turnReversed = turn === Colors.Black ? Colors.White : Colors.Black
-
-    const queen = new Queen(turnReversed)
-    const knight = new Knight(turnReversed)
-    const bishop = new Bishop(turnReversed)
-    const rook = new Rook(turnReversed)
+    const queen = new Queen(turn)
+    const knight = new Knight(turn)
+    const bishop = new Bishop(turn)
+    const rook = new Rook(turn)
 
     function transformPiece(piece: IPiece): void {
-        //TEST
+        if (!promotionMove) return
         const pieceOnField: KeyablePieceOnField = {
-            [promotedField]: piece,
+            [promotionMove.from]: null,
+            [promotionMove.to]: piece,
         }
 
+        const currentPlayer =
+            turn === Colors.White
+                ? players[Colors.White]
+                : players[Colors.Black]
+        stopAndStartPlayerTime(currentPlayer, [
+            players[Colors.White],
+            players[Colors.Black],
+        ])
+        playPlacedPieceSound(true)
+
         dispatch({
-            type: GameActionTypes.SQUARES,
+            type: GameActionTypes.NEW_MOVE,
             payload: {
                 squares: {
                     ...squares,
                     ...pieceOnField,
                 },
+                piece: squares[promotionMove.from],
+                move: promotionMove,
+                promotionTo: piece,
             },
-        })
-
-        dispatch({
-            type: GameActionTypes.PROMOTED_FIELD,
-            payload: { promotedField: null },
         })
     }
 
     return (
         <div
             className={`board__promotion ${
-                promotedField ? 'active' : 'inactive'
+                promotionMove ? 'active' : 'inactive'
             }`}
         >
             <p>Choose one type of piece</p>
