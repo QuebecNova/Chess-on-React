@@ -1,7 +1,7 @@
 declare module '*.module.css'
 
 declare module '*.svg' {
-    const content: SVGElement
+    const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>
     export default content
 }
 
