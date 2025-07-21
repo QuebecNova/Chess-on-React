@@ -1,5 +1,6 @@
 'use client'
 
+import { Card } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
@@ -8,11 +9,12 @@ import ShowCounter from 'src/6.shared/ui/timer/ShowCounter'
 
 type TimerProps = {
     player: Player
-}
+} & Card.RootProps
 
-export default function Timer({ player }: TimerProps) {
+export default function Timer({ player, ...props }: TimerProps) {
     const [countDown, setCountDown] = useState(player.timer)
-
+    const playedMoves = useGameStore((state) => state.playedMoves)
+    const turn = useGameStore((state) => state.turn)
     const dispatch = useGameStore((state) => state.dispatch)
 
     useEffect(() => {
@@ -24,22 +26,29 @@ export default function Timer({ player }: TimerProps) {
             })
             return
         }
-        if (!player.isPlaying) return
+        if (player.color !== turn || !playedMoves.length) return
         let sec = 0
         const interval = setInterval(() => {
             sec += 1
-            const removedTime = countDown - sec * 1000
-            player.timer = removedTime
-            setCountDown(removedTime)
+            const newTime = countDown - sec * 1000
+            dispatch({
+                type: GameActionTypes.TIMER,
+                payload: {
+                    playerColor: player.color,
+                    timer: newTime,
+                },
+            })
+            setCountDown(newTime)
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [countDown, player, player.timer, player.isPlaying])
+    }, [countDown, player, player.timer, turn])
 
     return (
-        <>
-            <p>{player.color} time:</p>
-            <ShowCounter timer={player.timer} />
-        </>
+        <Card.Root backgroundColor="gray.800" {...props}>
+            <Card.Body p="2">
+                <ShowCounter timer={player.timer} />
+            </Card.Body>
+        </Card.Root>
     )
 }

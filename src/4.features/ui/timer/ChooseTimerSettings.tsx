@@ -1,69 +1,88 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Flex, Show } from '@chakra-ui/react'
+import { useState } from 'react'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
-import { Colors, sounds } from 'src/6.shared/model'
-import { Button, RangeInput } from 'src/6.shared/ui'
+import { ValueOf } from 'src/6.shared/model'
+import { Slider } from 'src/6.shared/ui'
+import Select from 'src/6.shared/ui/select'
+
+const TimeControl = {
+    STANDARD: 'standard',
+    UNLIMITED: 'unlimited',
+} as const
+type TimeControl = ValueOf<typeof TimeControl>
 
 export default function ChooseTimerSettings() {
-    const [rangeValue, setRangeValue] = useState('1')
+    const [timeControl, setTimeControl] = useState<TimeControl[]>([
+        TimeControl.STANDARD,
+    ])
 
-    const players = useGameStore((state) => state.players)
     const dispatch = useGameStore((state) => state.dispatch)
 
-    function startGame(choosenRange: number) {
-        players[Colors.White].timer = choosenRange
-        players[Colors.Black].timer = choosenRange
+    function setTimer(value?: number) {
+        const choosenRange =
+            timeControl[0] === TimeControl.UNLIMITED
+                ? Infinity
+                : value * 60 * 1000
         dispatch({
-            type: GameActionTypes.IS_TIMER_SET,
-            payload: { isTimerSet: true },
+            type: GameActionTypes.TIMERS,
+            payload: {
+                timer: choosenRange,
+            },
         })
-        dispatch({
-            type: GameActionTypes.SETTINGS_READY,
-            payload: { isSettingsReady: true },
-        })
-        sounds.newGame.play()
-    }
-
-    useEffect(() => {
-        if (!settings.offlineMode) {
-            socket.on('player-choosen-time', (choosenRange) => {
-                startGame(choosenRange)
-                sounds.newGame.play()
-            })
-        }
-        return () => {
-            socket.removeListener('player-choosen-time')
-        }
-    }, [])
-
-    function setTimer() {
-        const choosenRange = parseInt(rangeValue) * 60 * 1000
-        startGame(choosenRange)
         if (!settings.offlineMode) socket.emit('choosen-time', choosenRange)
     }
 
-    function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setRangeValue(e.target.value)
+    function onMinutesValueChange(value: number) {
+        setTimer(value)
+    }
+
+    function onTimeControlChange({ value }: { value: TimeControl[] }) {
+        setTimeControl(value)
+        setTimer()
     }
 
     return (
-        <div className={`board__define-side active`}>
-            <p>Set timer</p>
-            <RangeInput
-                type="range"
-                label
-                id="timerRange"
-                labelText={`${rangeValue} minutes`}
-                min={1}
-                max={180}
-                value={rangeValue}
-                onChange={onChange}
+        <Flex flexDirection="column" gap="3">
+            <Select
+                defaultValue={timeControl}
+                value={timeControl}
+                onValueChange={onTimeControlChange}
+                label="Time control"
+                items={[
+                    { label: 'Standard', value: TimeControl.STANDARD },
+                    { label: 'Unlimited', value: TimeControl.UNLIMITED },
+                ]}
             />
-            <Button onClick={() => setTimer()}>Ok!</Button>
-        </div>
+            <Show when={timeControl[0] === TimeControl.STANDARD}>
+                <Slider
+                    label="Minutes per side"
+                    marks={[
+                        { value: 0.5, label: '0.5' },
+                        { value: 90, label: '90' },
+                        { value: 180, label: '180' },
+                    ]}
+                    min={0.5}
+                    max={180}
+                    step={0.5}
+                    onValueChangeEnd={onMinutesValueChange}
+                />
+                <Slider
+                    label="Increment in seconds"
+                    marks={[
+                        { value: 1, label: '1' },
+                        { value: 90, label: '90' },
+                        { value: 180, label: '180' },
+                    ]}
+                    min={1}
+                    max={180}
+                    step={1}
+                />
+            </Show>
+        </Flex>
     )
 }

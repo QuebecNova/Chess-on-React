@@ -1,3 +1,4 @@
+import { Flex, Text } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { getParsedTime } from 'src/6.shared/lib/helpers'
 import { sounds } from 'src/6.shared/model'
@@ -18,30 +19,32 @@ export default function ShowCounter({ timer }: CounterProps) {
 
     if (hours > 0)
         return (
-            <div className="counter">
-                <DateTimeDisplay value={hours} type={'H'} />
-                <p>:</p>
-                <DateTimeDisplay value={minutes} type={'M'} />
-                <p>:</p>
-                <DateTimeDisplay value={seconds} type={'S'} />
-            </div>
+            <Flex>
+                <DateTimeDisplay value={hours} />
+                <Text>:</Text>
+                <DateTimeDisplay value={minutes} />
+                <Text>:</Text>
+                <DateTimeDisplay value={seconds} />
+            </Flex>
         )
 
     const timeExpired = timer <= 0
 
     if (!timeExpired)
         return (
-            <div className={`counter ${secondsLow ? 'lowTime' : ''}`}>
-                <DateTimeDisplay value={minutes} type={'M'} />
-                <p>:</p>
-                <DateTimeDisplay value={seconds} type={'S'} />
-            </div>
+            <Flex>
+                <DateTimeDisplay value={minutes} />
+                <Text>:</Text>
+                <DateTimeDisplay value={seconds} />
+            </Flex>
         )
 
     if (timeExpired)
         return (
-            <div className="counter expired">
-                <p>Expired</p>
-            </div>
+            <Flex>
+                <DateTimeDisplay value={0} />
+                <Text>:</Text>
+                <DateTimeDisplay value={0} />
+            </Flex>
         )
 }
