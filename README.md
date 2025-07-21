@@ -1,5 +1,7 @@
 # My chess engine on React
 
+Check new-implementation branch to see the newest code.
+
 ## Now we have:
 
 1.All pieces follows their movement rules
