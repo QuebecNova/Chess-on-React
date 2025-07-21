@@ -13,8 +13,8 @@ export function getFieldCoordinates(
 
     //mouse positions(x, y) including borders, and board offset
 
-    let x = coords.x - chessBoardOffsets.left - 5
-    let y = coords.y - chessBoardOffsets.top - 5
+    let x = coords.x - chessBoardOffsets.left + window.scrollX
+    let y = coords.y - chessBoardOffsets.top + window.scrollY
 
     const xCoord = x
     const yCoord = y
