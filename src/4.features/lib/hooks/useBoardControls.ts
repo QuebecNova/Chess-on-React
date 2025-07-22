@@ -8,14 +8,12 @@ import {
     checkForEnpassant,
     getFieldCoordinates,
     getMovesThatLeadsToCheck,
-    getPieceOnFieldForServer,
     getSquares,
     isDragStartIllegal,
     playPlacedPieceSound,
     removeActives,
     setCastle,
     setEnpassant,
-    stopAndStartPlayerTime,
 } from 'src/4.features/lib/helpers'
 
 import { setupBoard } from 'src/4.features/config/setupBoard'
@@ -23,8 +21,6 @@ import { useChessBoardOffsets } from 'src/4.features/lib/hooks'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { alphs } from 'src/5.entities/lib'
-import { socket } from 'src/6.shared/api'
-import { settings } from 'src/6.shared/config/settings'
 import {
     CastlingSide,
     Colors,
@@ -51,11 +47,12 @@ export function useBoardControls(
     const turn = useGameStore((state) => state.turn)
     const variant = useGameStore((state) => state.variant)
     const playedMoves = useGameStore((state) => state.playedMoves)
+    const withComputer = useGameStore((state) => state.withComputer)
 
     const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState<HTMLImageElement>(null)
     const [clickedPiece, setClickedPiece] = useState<HTMLImageElement>(null)
-    const [draggedPieceCoords, setDraggedPieceCoords] = useState<string>()
+    const [draggedField, setDraggedField] = useState<string>()
     const [castleAvailable, setCastleAvailable] = useState<Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState<string>(null)
     //
@@ -75,15 +72,6 @@ export function useBoardControls(
     //     //BUG
     //     playPlacedPieceSound(false)
     //     switchTurn()
-
-    //     const currentPlayer =
-    //         turn === Colors.White
-    //             ? players[Colors.White]
-    //             : players[Colors.Black]
-    //     stopAndStartPlayerTime(currentPlayer, [
-    //         players[Colors.White],
-    //         players[Colors.Black],
-    //     ])
     // })
 
     //onClick handler for possibility to place piece on click
@@ -113,7 +101,8 @@ export function useBoardControls(
                 e,
                 !disabled,
                 players[Colors.White],
-                players[Colors.Black]
+                players[Colors.Black],
+                withComputer
             )
         )
             return
@@ -129,7 +118,7 @@ export function useBoardControls(
 
         //getting all legal moves and display that on board
         const pieceField = e.target.parentElement.id
-        setDraggedPieceCoords(pieceField)
+        setDraggedField(pieceField)
         const piece = squares[pieceField]
         const moves = piece.canMove(
             pieceField,
@@ -145,8 +134,8 @@ export function useBoardControls(
 
         //moving static piece image to cursor (field offsets needed to center piece on cursor)
         e.target.style.position = 'absolute'
-        e.target.style.left = `${e.clientX - chessBoardOffsets.left - fieldOffsets.x + window.scrollX}px`
-        e.target.style.top = `${e.clientY - chessBoardOffsets.top - fieldOffsets.y + window.scrollY}px`
+        e.target.style.left = `${e.clientX - chessBoardOffsets.left - fieldOffsets.x + (window ? window.scrollX : 0)}px`
+        e.target.style.top = `${e.clientY - chessBoardOffsets.top - fieldOffsets.y + (window ? window.scrollY : 0)}px`
         e.target.style.width = `${fieldWidth}px`
     }
     //
@@ -158,9 +147,15 @@ export function useBoardControls(
 
         //mouse coordinates (field offsets included)
         const x =
-            e.clientX - chessBoardOffsets.left - fieldOffsets.x + window.scrollX
+            e.clientX -
+            chessBoardOffsets.left -
+            fieldOffsets.x +
+            (window ? window.scrollX : 0)
         const y =
-            e.clientY - chessBoardOffsets.top - fieldOffsets.y + window.scrollY
+            e.clientY -
+            chessBoardOffsets.top -
+            fieldOffsets.y +
+            (window ? window.scrollY : 0)
 
         // //moving static piece image to cursor when move it
         draggedPiece.style.position = 'absolute'
@@ -196,50 +191,8 @@ export function useBoardControls(
             const dropField =
                 alphs.posOut[dropCoords.row].toString() +
                 dropCoords.col.toString()
-            const piece = squares[draggedPieceCoords]
 
-            let pieceOnField = {
-                [draggedPieceCoords]: null,
-                [dropField]: piece,
-            }
-
-            //enpassant and castle dataset
-            let enpassanted = false
-            let castledRookInitialField: string | null = null
-
-            if (enpassantAvailable) {
-                const [isEnpassanted, enpassantedFields] = checkForEnpassant(
-                    squares,
-                    dropField,
-                    draggedPieceCoords,
-                    enpassantAvailable
-                )
-                if (isEnpassanted) {
-                    pieceOnField = { ...pieceOnField, ...enpassantedFields }
-                    enpassanted = true
-                }
-            }
-            let castledSide: CastlingSide | null = null
-            if (castleAvailable.length) {
-                const {
-                    modifiedPieceOnField,
-                    rookInitialPieceField,
-                    castlingSide,
-                } = checkForCastle(
-                    squares,
-                    dropField,
-                    draggedPieceCoords,
-                    castleAvailable
-                )
-                pieceOnField = {
-                    ...pieceOnField,
-                    ...modifiedPieceOnField,
-                }
-                castledRookInitialField = rookInitialPieceField
-                castledSide = castlingSide
-            }
-            //
-
+            const piece = squares[draggedField]
             //checking if move illegal (ex: trying to move same colors pieces on eachother)
             //if true => return
             const IllegalMove =
@@ -257,9 +210,52 @@ export function useBoardControls(
                 return
             }
             //
+
+            let pieceOnField = {
+                [draggedField]: null,
+                [dropField]: piece,
+            }
+
+            //enpassant and castle dataset
+            let enpassanted = false
+            let castledRookInitialField: string | null = null
+
+            if (enpassantAvailable) {
+                const [isEnpassanted, enpassantedFields] = checkForEnpassant(
+                    squares,
+                    dropField,
+                    draggedField,
+                    enpassantAvailable
+                )
+                if (isEnpassanted) {
+                    pieceOnField = { ...pieceOnField, ...enpassantedFields }
+                    enpassanted = true
+                }
+            }
+            let castledSide: CastlingSide | null = null
+            if (castleAvailable.length) {
+                const {
+                    modifiedPieceOnField,
+                    rookInitialPieceField,
+                    castlingSide,
+                } = checkForCastle(
+                    squares,
+                    dropField,
+                    draggedField,
+                    castleAvailable
+                )
+                pieceOnField = {
+                    ...pieceOnField,
+                    ...modifiedPieceOnField,
+                }
+                castledRookInitialField = rookInitialPieceField
+                castledSide = castlingSide
+            }
+            //
+
             const isCapture = !!squares[dropField] || enpassanted
             const move: Move = {
-                from: draggedPieceCoords,
+                from: draggedField,
                 to: dropField,
                 isCapture,
             }
@@ -286,29 +282,21 @@ export function useBoardControls(
                 return
             }
 
-            const currentPlayer =
-                turn === Colors.White
-                    ? players[Colors.White]
-                    : players[Colors.Black]
-            stopAndStartPlayerTime(currentPlayer, [
-                players[Colors.White],
-                players[Colors.Black],
-            ])
             playPlacedPieceSound(isCapture)
             //
 
             //sending moved piece data to server if not in offline mode
-            if (!settings.offlineMode) {
-                const pieceOnFieldForServer = getPieceOnFieldForServer(
-                    pieceOnField,
-                    castleAvailable,
-                    castledRookInitialField,
-                    draggedPieceCoords
-                )
+            // if (!settings.offlineMode) {
+            //     const pieceOnFieldForServer = getPieceOnFieldForServer(
+            //         pieceOnField,
+            //         castleAvailable,
+            //         castledRookInitialField,
+            //         draggedField
+            //     )
 
-                socket.emit('move-played', pieceOnFieldForServer)
-                console.log(pieceOnFieldForServer)
-            }
+            //     socket.emit('move-played', pieceOnFieldForServer)
+            //     console.log(pieceOnFieldForServer)
+            // }
 
             if (piece.addMove) piece.addMove(move)
 

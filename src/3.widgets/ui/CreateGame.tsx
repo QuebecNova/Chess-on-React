@@ -2,7 +2,13 @@ import { Card, Container, Stack, Tabs } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { BsFillPlusSquareFill } from 'react-icons/bs'
+import { useGameStore } from 'src/4.features/model/providers'
+import { GameActionTypes } from 'src/4.features/model/store/game'
 import { BotDifficulty, StartingSettings } from 'src/4.features/ui'
+import {
+    isStockfishDifficultyLevels,
+    StockfishDifficultyLevels,
+} from 'src/5.entities/lib'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
 import { Button } from 'src/6.shared/ui'
@@ -14,9 +20,17 @@ export default function CreateGame() {
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState('')
     const [newRoomCreated, setNewRoomCreated] = useState(false)
+    const computerDifficulty = useGameStore((state) => state.computerDifficulty)
     const router = useRouter()
+    const dispatch = useGameStore((state) => state.dispatch)
 
-    function setOffline() {
+    function setOffline(bot?: boolean) {
+        if (bot) {
+            dispatch({
+                type: GameActionTypes.WITH_COMPUTER,
+                payload: { withComputer: true },
+            })
+        }
         router.push('/1213')
         settings.offlineMode = true
     }
@@ -34,8 +48,17 @@ export default function CreateGame() {
         socket.emit('connect-to-game', inputValue)
     }
 
+    function changeDifficulty(difficulty: StockfishDifficultyLevels) {
+        dispatch({
+            type: GameActionTypes.COMPUTER_DIFFICULTY,
+            payload: {
+                computerDifficulty: difficulty,
+            },
+        })
+    }
+
     socket.on('room-valid', () => {
-        app.setInGame(true)
+        // app.setInGame(true)
     })
 
     return (
@@ -96,12 +119,26 @@ export default function CreateGame() {
                                             <BotDifficulty
                                                 mb="6"
                                                 justifyContent="center"
+                                                value={computerDifficulty.toString()}
+                                                onValueChange={({ value }) => {
+                                                    const num = parseInt(value)
+                                                    if (
+                                                        isStockfishDifficultyLevels(
+                                                            num
+                                                        )
+                                                    ) {
+                                                        changeDifficulty(num)
+                                                    }
+                                                }}
                                             />
                                             <StartingSettings />
                                         </>
                                     }
                                     footer={
-                                        <Button colorPalette="teal">
+                                        <Button
+                                            colorPalette="teal"
+                                            onClick={() => setOffline(true)}
+                                        >
                                             Play
                                         </Button>
                                     }
@@ -113,7 +150,7 @@ export default function CreateGame() {
                                     footer={
                                         <Button
                                             colorPalette="teal"
-                                            onClick={setOffline}
+                                            onClick={() => setOffline()}
                                         >
                                             Play
                                         </Button>

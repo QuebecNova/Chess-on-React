@@ -18,7 +18,6 @@ export default function Board({ disabled }: { disabled: boolean }) {
     const chessBoardRef = useRef<HTMLDivElement>(null)
     const dispatch = useGameStore((state) => state.dispatch)
     const { fieldWidth } = useChessBoardOffsets(chessBoardRef)
-
     const [dragStart, dragMove, dragDrop, onClick, activeFields] =
         useBoardControls(chessBoardRef, disabled)
 

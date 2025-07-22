@@ -56,7 +56,7 @@ export default function PlayedMoves() {
                                     borderRadius="0"
                                     w="full"
                                 >
-                                    {notation.getAlgebraic(move, index)}
+                                    {notation.getShortAlgebraic(move, index)}
                                 </Button>
                             </GridItem>
                         ))}

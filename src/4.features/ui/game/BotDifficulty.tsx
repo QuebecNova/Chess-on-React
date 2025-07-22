@@ -1,16 +1,29 @@
 import { Field, Flex, SegmentGroup } from '@chakra-ui/react'
+import { StockfishDifficultyLevels } from 'src/5.entities/lib'
 
-export default function BotDifficulty(props: Field.RootProps) {
+export default function BotDifficulty({
+    fieldProps,
+    ...props
+}: { fieldProps?: Field.RootProps } & SegmentGroup.RootProps) {
     return (
-        <Field.Root {...props}>
+        <Field.Root {...fieldProps}>
             <Field.Label w="100%" justifyContent="center">
                 Computer difficulty
             </Field.Label>
             <Flex w="100%" justifyContent="center">
-                <SegmentGroup.Root justifyContent="center" defaultValue="1">
+                <SegmentGroup.Root
+                    {...props}
+                    justifyContent="center"
+                    defaultValue="1"
+                >
                     <SegmentGroup.Indicator />
                     <SegmentGroup.Items
-                        items={['1', '2', '3', '4', '5', '6', '7', '8']}
+                        items={Object.entries(StockfishDifficultyLevels).map(
+                            ([label, value]) => ({
+                                label,
+                                value: value.toString(),
+                            })
+                        )}
                     />
                 </SegmentGroup.Root>
             </Flex>

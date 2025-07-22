@@ -73,8 +73,8 @@ export default function DefineSide() {
         }
 
         dispatch({
-            type: GameActionTypes.VARIANT,
-            payload: { variant: finalVariant },
+            type: GameActionTypes.PLAYING_SIDE,
+            payload: { side: finalVariant },
         })
     }
 

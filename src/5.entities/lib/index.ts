@@ -7,3 +7,8 @@ export { Pawn } from './figures/pawn'
 export { Queen } from './figures/queen'
 export { Rook } from './figures/rook'
 export { notation } from './notation'
+export {
+    Stockfish,
+    StockfishDifficultyLevels,
+    isStockfishDifficultyLevels,
+} from './stockfish'

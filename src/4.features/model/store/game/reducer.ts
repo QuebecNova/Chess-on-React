@@ -1,15 +1,13 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
 import { getBoardState } from 'src/4.features/lib/helpers'
-import { Fen } from 'src/5.entities/lib'
-import { Piece } from 'src/5.entities/lib/figures/piece'
-import { KeyableSquares, PlayedMove, Player } from 'src/5.entities/model'
+import { Fen, StockfishDifficultyLevels } from 'src/5.entities/lib'
 import {
-    BoardState,
-    CastlingSide,
-    Colors,
-    Move,
-    sounds,
-} from 'src/6.shared/model'
+    KeyableSquares,
+    NewMove,
+    PlayedMove,
+    Player,
+} from 'src/5.entities/model'
+import { BoardState, Colors, Move, sounds } from 'src/6.shared/model'
 import { GameState, getInitialState } from '.'
 
 export const GameActionTypes = {
@@ -17,6 +15,7 @@ export const GameActionTypes = {
     TIME_EXPIRED: 'TIME_EXPIRED',
     SEND_RESTART_REQUEST: 'SEND_RESTART_REQUEST',
     VARIANT: 'VARIANT',
+    PLAYING_SIDE: 'PLAYING_SIDE',
     TURN: 'TURN',
     IN_GAME: 'IN_GAME',
     RESTART_GAME: 'RESTART_GAME',
@@ -29,6 +28,8 @@ export const GameActionTypes = {
     PROMOTION_MOVE: 'PROMOTION_MOVE',
     FEN: 'FEN',
     NEW_MOVE: 'NEW_MOVE',
+    WITH_COMPUTER: 'WITH_COMPUTER',
+    COMPUTER_DIFFICULTY: 'COMPUTER_DIFFICULTY',
 } as const
 
 export type GameActions =
@@ -50,6 +51,10 @@ export type GameActions =
     | {
           type: typeof GameActionTypes.VARIANT
           payload: { variant: Colors }
+      }
+    | {
+          type: typeof GameActionTypes.PLAYING_SIDE
+          payload: { side: Colors }
       }
     | {
           type: typeof GameActionTypes.TURN
@@ -91,14 +96,15 @@ export type GameActions =
       }
     | {
           type: typeof GameActionTypes.NEW_MOVE
-          payload: {
-              squares: KeyableSquares
-              move: Move
-              piece: Piece
-              promotionTo?: Piece | null
-              isEnpassant?: boolean
-              castlingSide?: CastlingSide
-          }
+          payload: NewMove
+      }
+    | {
+          type: typeof GameActionTypes.WITH_COMPUTER
+          payload: { withComputer: boolean }
+      }
+    | {
+          type: typeof GameActionTypes.COMPUTER_DIFFICULTY
+          payload: { computerDifficulty: StockfishDifficultyLevels }
       }
 
 export const reducer = (state: GameState, action: GameActions) => {
@@ -109,6 +115,8 @@ export const reducer = (state: GameState, action: GameActions) => {
                 ...action.payload,
             }
         case GameActionTypes.TIME_EXPIRED:
+            state.timeExpired = action.payload.isTimeExpired
+            state.boardState = BoardState.TimeExpired
             return {
                 ...state,
                 ...action.payload,
@@ -123,6 +131,10 @@ export const reducer = (state: GameState, action: GameActions) => {
             return state
         case GameActionTypes.VARIANT:
             state.variant = action.payload.variant
+            return state
+        case GameActionTypes.PLAYING_SIDE:
+            state.variant = action.payload.side
+            state.players[action.payload.side].isCurrentUser = true
             return state
         case GameActionTypes.TURN:
             return {
@@ -139,8 +151,8 @@ export const reducer = (state: GameState, action: GameActions) => {
                 state.players[Colors.Black].isCurrentUser = true
             }
 
-            state.players[Colors.Black].timer = 60000
-            state.players[Colors.White].timer = 60000
+            state.players[Colors.Black].timer = state.initTimer
+            state.players[Colors.White].timer = state.initTimer
 
             return {
                 ...state,
@@ -170,6 +182,7 @@ export const reducer = (state: GameState, action: GameActions) => {
         case GameActionTypes.TIMERS:
             state.players[Colors.White].timer = action.payload.timer
             state.players[Colors.Black].timer = action.payload.timer
+            state.initTimer = action.payload.timer
             return state
         case GameActionTypes.TIMER:
             state.players[action.payload.playerColor].timer =
@@ -184,22 +197,14 @@ export const reducer = (state: GameState, action: GameActions) => {
             state.promotionMove = action.payload.move
             return state
         case GameActionTypes.NEW_MOVE:
-            state.squares = action.payload.squares
-
-            state.turn =
-                state.turn === Colors.White ? Colors.Black : Colors.White
-
-            state.fen = new Fen(
-                state.squares,
-                state.playedMoves,
-                state.turn
-            ).fen
-
             if (action.payload.promotionTo) {
                 state.promotionMove = null
             }
 
-            const boardState = getBoardState(action.payload.squares, state.turn)
+            const turn =
+                state.turn === Colors.White ? Colors.Black : Colors.White
+
+            const boardState = getBoardState(action.payload.squares, turn)
 
             if (
                 boardState === BoardState.Check ||
@@ -207,7 +212,6 @@ export const reducer = (state: GameState, action: GameActions) => {
             )
                 sounds.check.play()
 
-            state.boardState = boardState
             const playedMove: PlayedMove = {
                 ...action.payload.move,
                 piece: action.payload.piece,
@@ -220,12 +224,27 @@ export const reducer = (state: GameState, action: GameActions) => {
                     : null,
                 isEnpassant: action.payload.isEnpassant ?? false,
             }
+            const playedMoves = [...state.playedMoves, playedMove]
 
-            state.playedMoves = [...state.playedMoves, playedMove]
             return {
                 ...state,
+                squares: action.payload.squares,
+                playedMoves,
+                turn,
+                fen: new Fen(action.payload.squares, playedMoves, turn).fen,
+                boardState,
             }
         case GameActionTypes.FEN:
+            return {
+                ...state,
+                ...action.payload,
+            }
+        case GameActionTypes.WITH_COMPUTER:
+            return {
+                ...state,
+                ...action.payload,
+            }
+        case GameActionTypes.COMPUTER_DIFFICULTY:
             return {
                 ...state,
                 ...action.payload,

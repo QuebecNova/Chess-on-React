@@ -6,7 +6,8 @@ export function isDragStartIllegal(
     e: any,
     isSettingsReady: boolean,
     playerWhite: Player,
-    playerBlack: Player
+    playerBlack: Player,
+    withComputer: boolean
 ): boolean {
     if (!isSettingsReady) return true
 
@@ -18,13 +19,13 @@ export function isDragStartIllegal(
     if (
         playerBlack.isCurrentUser &&
         !e.target.dataset.color.includes(playerBlack.color) &&
-        !settings.offlineMode
+        (!settings.offlineMode || withComputer)
     )
         return true
     if (
         playerWhite.isCurrentUser &&
         !e.target.dataset.color.includes(playerWhite.color) &&
-        !settings.offlineMode
+        (!settings.offlineMode || withComputer)
     )
         return true
 

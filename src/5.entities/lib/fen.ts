@@ -42,8 +42,8 @@ export class Fen implements IFen {
 
     #getPositions() {
         let emptySquares = 0
-
-        return Object.entries(this.squares).reduce((acc, [_, piece], index) => {
+        const squaresArr = Object.entries(this.squares)
+        return squaresArr.reduce((acc, [_, piece], index) => {
             if (piece) {
                 if (emptySquares) {
                     acc += emptySquares.toString()
@@ -58,7 +58,11 @@ export class Fen implements IFen {
                 emptySquares += 1
             }
 
-            if (index && (index + 1) % 8 === 0) {
+            if (
+                index &&
+                (index + 1) % 8 === 0 &&
+                index !== squaresArr.length - 1
+            ) {
                 if (emptySquares) {
                     acc += emptySquares.toString()
                     emptySquares = 0
@@ -127,8 +131,7 @@ export class Fen implements IFen {
         const fromRow = alphs.getNum(lastMove.from)
         const toRow = alphs.getNum(lastMove.to)
 
-        const pawnMovedTwoSquares =
-            fromRow - toRow === 2 || toRow - fromRow === 2
+        const pawnMovedTwoSquares = Math.abs(fromRow - toRow) === 2
 
         if (pawnMovedTwoSquares) {
             const enpassantTargetSquare = alphs.changeNumPos(
