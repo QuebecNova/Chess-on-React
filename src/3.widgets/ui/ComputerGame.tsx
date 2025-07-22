@@ -55,6 +55,13 @@ export default function ComputerGame({ disabled }: { disabled: boolean }) {
         }
     }, [turn, currentPlayer])
 
+    useEffect(() => {
+        return () => {
+            stockfish.stop()
+            stockfish.quit()
+        }
+    }, [])
+
     return (
         <Grid templateColumns="repeat(3, 1fr)">
             <GridItem />
