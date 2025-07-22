@@ -33,8 +33,8 @@ export function useChessBoardOffsets(
         function addUpRowsAndCols(chessBoard: HTMLDivElement): void {
             const { left, top } = chessBoard.getBoundingClientRect()
             setChessBoardOffsets({
-                left: left + window.scrollX,
-                top: top + window.scrollY,
+                left: left + (window ? window.scrollX : 0),
+                top: top + (window ? window.scrollY : 0),
             })
 
             const boardWidth = chessBoard.clientWidth

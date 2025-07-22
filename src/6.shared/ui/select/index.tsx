@@ -10,7 +10,7 @@ export default function Select({
     label?: ReactNode
     placeholder?: string
     items: { value: string; label: string }[]
-} & ChakraSelect.RootProps) {
+} & Omit<ChakraSelect.RootProps, 'collection'>) {
     const collection = createListCollection({ items })
     return (
         <ChakraSelect.Root collection={collection} variant="subtle" {...props}>

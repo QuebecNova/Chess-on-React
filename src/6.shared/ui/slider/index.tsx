@@ -33,8 +33,10 @@ export default function Slider(props: Props) {
                             value={value[0].toString()}
                             onValueChange={(e: { value: string }) => {
                                 if (
-                                    (props.max && e.value > props.max) ||
-                                    (props.min && e.value < props.min)
+                                    (props.max &&
+                                        parseFloat(e.value) > props.max) ||
+                                    (props.min &&
+                                        parseFloat(e.value) < props.min)
                                 )
                                     return
                                 const stepMultiplier =
@@ -45,8 +47,6 @@ export default function Slider(props: Props) {
                                     ) / stepMultiplier || props.min,
                                 ])
                             }}
-                            max={props.max}
-                            min={props.min}
                         >
                             <Editable.Preview />
                             <Editable.Input />

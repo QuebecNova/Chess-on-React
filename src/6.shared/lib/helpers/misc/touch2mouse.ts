@@ -1,4 +1,7 @@
+'use client'
+
 export function touch2Mouse(e: any): undefined {
+    if (!window) return
     const theTouch = e.changedTouches[0]
     let mouseEv: string
 

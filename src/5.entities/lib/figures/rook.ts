@@ -1,20 +1,20 @@
 import { KeyableSquares } from 'src/5.entities/model'
 import {
+    CastlingSide,
     Colors,
     Move,
     Operators,
     Pieces,
     piecesImages,
 } from 'src/6.shared/model'
-import { RookSides } from 'src/6.shared/model/constants/board'
 import { alphs } from '../alphabetPositions'
 import { Piece } from './piece'
 
 export class Rook extends Piece {
     readonly lastMoves: Move[] = []
-    readonly side?: RookSides
+    readonly side?: CastlingSide
 
-    constructor(color: Colors, side?: RookSides) {
+    constructor(color: Colors, side?: CastlingSide) {
         super(
             color,
             color === Colors.Black

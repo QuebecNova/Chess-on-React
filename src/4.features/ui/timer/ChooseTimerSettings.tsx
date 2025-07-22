@@ -17,7 +17,7 @@ const TimeControl = {
 type TimeControl = ValueOf<typeof TimeControl>
 
 export default function ChooseTimerSettings() {
-    const [timeControl, setTimeControl] = useState<TimeControl[]>([
+    const [timeControl, setTimeControl] = useState<string[]>([
         TimeControl.STANDARD,
     ])
 
@@ -41,7 +41,7 @@ export default function ChooseTimerSettings() {
         setTimer(value)
     }
 
-    function onTimeControlChange({ value }: { value: TimeControl[] }) {
+    function onTimeControlChange({ value }: { value: string[] }) {
         setTimeControl(value)
         setTimer()
     }
@@ -69,7 +69,7 @@ export default function ChooseTimerSettings() {
                     min={0.5}
                     max={180}
                     step={0.5}
-                    onValueChangeEnd={onMinutesValueChange}
+                    onValueChangeEnd={(e) => onMinutesValueChange(e.value)}
                 />
                 <Slider
                     label="Increment in seconds"

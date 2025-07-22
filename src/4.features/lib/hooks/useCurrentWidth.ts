@@ -1,9 +1,13 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 
-const getWidth = () =>
+function getWidth(): number {
+    if (typeof window === 'undefined') return 0
     window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
+        document.documentElement.clientWidth ||
+        document.body.clientWidth
+}
 
 export function useCurrentWidth(): number {
     let [width, setWidth] = useState(getWidth())
