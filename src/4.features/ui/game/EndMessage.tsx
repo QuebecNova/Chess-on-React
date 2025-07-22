@@ -1,20 +1,21 @@
 'use client'
 
+import { Box, Text } from '@chakra-ui/react'
 import { ReactElement, useState } from 'react'
-import { playSoundWhenMated } from 'src/4.features/lib/helpers'
+import { playSoundOnEnd } from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
 import { BoardState, Colors } from 'src/6.shared/model'
 import Button from 'src/6.shared/ui/button'
+import { capitalize } from './../../../6.shared/lib/helpers/misc/capitalize'
 import Waiting from './Waiting'
 
-export default function MatedMessage(): ReactElement {
+export default function EndMessage(): ReactElement {
     const dispatch = useGameStore((state) => state.dispatch)
     const turn = useGameStore((state) => state.turn)
     const variant = useGameStore((state) => state.variant)
-    const timeExpired = useGameStore((state) => state.timeExpired)
     const players = useGameStore((state) => state.players)
     const boardState = useGameStore((state) => state.boardState)
 
@@ -32,22 +33,26 @@ export default function MatedMessage(): ReactElement {
     }
     const isStaleMate = boardState === BoardState.Stalemate
     const isCheckmated = boardState === BoardState.Checkmate
+    const isTimeExpired = boardState === BoardState.TimeExpired
     const typeOfMessage = isStaleMate
         ? 'Stalemate!'
-        : timeExpired
+        : isTimeExpired
           ? 'Time Ends!'
           : 'Mate!'
 
     const winnedColor = turn === Colors.White ? Colors.Black : Colors.White
 
-    const message = isStaleMate ? 'Draw!' : `${winnedColor} player wins`!
+    const message = isStaleMate
+        ? 'Draw!'
+        : `${capitalize(winnedColor)} player wins`!
 
     const isOpponentWantsRestart = () =>
         Object.values(players).find(
             (player) => player.wantsRestart && !player.isCurrentUser
         )
 
-    if (isCheckmated) playSoundWhenMated(turn, variant)
+    if (isCheckmated || isTimeExpired || isStaleMate)
+        playSoundOnEnd(turn, variant)
 
     if (waitingForAccept)
         return (
@@ -59,18 +64,18 @@ export default function MatedMessage(): ReactElement {
 
     if (!isOpponentWantsRestart())
         return (
-            <div
+            <Box
                 className={`board__mated ${
-                    isCheckmated || isStaleMate || timeExpired
+                    isCheckmated || isStaleMate || isTimeExpired
                         ? 'active'
                         : 'inactive'
                 }`}
             >
-                <p>{typeOfMessage}</p>
-                <p>{message}</p>
-                <Button onClick={restart}>
+                <Text>{typeOfMessage}</Text>
+                <Text>{message}</Text>
+                <Button mt={2} onClick={restart}>
                     {settings.offlineMode ? 'Restart' : 'Send rematch'}
                 </Button>
-            </div>
+            </Box>
         )
 }

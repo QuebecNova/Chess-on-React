@@ -69,7 +69,7 @@ export default function ChooseTimerSettings() {
                     min={0.5}
                     max={180}
                     step={0.5}
-                    onValueChangeEnd={(e) => onMinutesValueChange(e.value)}
+                    onValueChangeEnd={(value) => onMinutesValueChange(value)}
                 />
                 <Slider
                     label="Increment in seconds"

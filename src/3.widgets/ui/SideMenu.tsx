@@ -3,7 +3,7 @@ import { useGameStore } from 'src/4.features/model/providers'
 import {
     AcceptRestart,
     Chat,
-    MatedMessage,
+    EndMessage,
     PlayedMoves,
     Timer,
 } from 'src/4.features/ui'
@@ -21,7 +21,7 @@ export function SideMenu() {
                 alignItems="start"
                 justifyContent="center"
             >
-                <MatedMessage />
+                <EndMessage />
                 <AcceptRestart />
                 <Timer
                     borderTopLeftRadius={0}

@@ -1,6 +1,6 @@
 import { Colors, sounds } from 'src/6.shared/model'
 
-export function playSoundWhenMated(turn: string, variant: string): void {
+export function playSoundOnEnd(turn: string, variant: string): void {
     if (typeof Audio === 'undefined') return
     if (variant === Colors.White) {
         if (turn === Colors.Black) sounds.win.play()

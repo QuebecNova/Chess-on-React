@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { Player } from 'src/5.entities/model'
+import { BoardState } from 'src/6.shared/model'
 import ShowCounter from 'src/6.shared/ui/timer/ShowCounter'
 
 type TimerProps = {
@@ -15,6 +16,7 @@ export default function Timer({ player, ...props }: TimerProps) {
     const [countDown, setCountDown] = useState(player.timer)
     const playedMoves = useGameStore((state) => state.playedMoves)
     const turn = useGameStore((state) => state.turn)
+    const boardState = useGameStore((state) => state.boardState)
     const dispatch = useGameStore((state) => state.dispatch)
 
     useEffect(() => {
@@ -22,11 +24,22 @@ export default function Timer({ player, ...props }: TimerProps) {
         if (player.timer <= 0) {
             dispatch({
                 type: GameActionTypes.TIME_EXPIRED,
-                payload: { isTimeExpired: true },
+                payload: { isTimeExpired: true, player },
             })
             return
         }
-        if (player.color !== turn || !playedMoves.length) return
+        if (
+            player.color !== turn ||
+            !playedMoves.length ||
+            (
+                [
+                    BoardState.Checkmate,
+                    BoardState.Draw,
+                    BoardState.Stalemate,
+                ] as BoardState[]
+            ).includes(boardState)
+        )
+            return
         let sec = 0
         const interval = setInterval(() => {
             sec += 1

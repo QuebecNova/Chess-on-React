@@ -39,9 +39,10 @@ export type Pieces = ValueOf<typeof Pieces>
 
 export const BoardState = {
     Stalemate: 'stalemate',
-    Checkmate: 'Checkmate',
+    Checkmate: 'checkmate',
     Draw: 'draw',
     Check: 'check',
+    TimeExpired: 'timeExpired',
 } as const
 export type BoardState = ValueOf<typeof BoardState>
 
