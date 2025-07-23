@@ -135,6 +135,11 @@ export const reducer = (state: GameState, action: GameActions) => {
         case GameActionTypes.PLAYING_SIDE:
             state.variant = action.payload.side
             state.players[action.payload.side].isCurrentUser = true
+            state.players[
+                action.payload.side === Colors.Black
+                    ? Colors.White
+                    : Colors.Black
+            ].isCurrentUser = false
             return state
         case GameActionTypes.TURN:
             return {
