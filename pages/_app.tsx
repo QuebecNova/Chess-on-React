@@ -1,7 +1,13 @@
+import { Viewport } from 'next'
 import { AppProps } from 'next/app'
+import Head from 'next/head'
 import App from '../src/1.app/ui'
 import '../src/1.app/ui/styles/index.css'
 
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+}
 export default function _app({
     Component,
     pageProps,
@@ -9,9 +15,15 @@ export default function _app({
     BACKEND_SOCKET_URL,
 }: AppProps & { user: any; BACKEND_SOCKET_URL: string }) {
     return (
-        <App BACKEND_SOCKET_URL={BACKEND_SOCKET_URL}>
-            <Component {...pageProps} user={user} />
-        </App>
+        <>
+            <Head>
+                <link rel="icon" href="./favicon.ico" type="./favicon.ico" />
+                <title>Hamchess</title>
+            </Head>
+            <App BACKEND_SOCKET_URL={BACKEND_SOCKET_URL}>
+                <Component {...pageProps} user={user} />
+            </App>
+        </>
     )
 }
 

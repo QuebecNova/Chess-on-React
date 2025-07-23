@@ -17,8 +17,14 @@
         "strict": false,
         "incremental": true,
         "target": "ES2017",
-        "baseUrl": "."
+        "baseUrl": ".",
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "strictNullChecks": false
     },
-    "include": ["src", "typings.d.ts", "ui", "1.app"],
+    "include": ["1.app", "src", "typings.d.ts", "ui", ".next/types/**/*.ts"],
     "exclude": ["node_modules"]
 }
