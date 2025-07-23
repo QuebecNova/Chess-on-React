@@ -8,7 +8,7 @@ import Button from 'src/6.shared/ui/button'
 
 export default function AcceptRestart() {
     const dispatch = useGameStore((state) => state.dispatch)
-    const [opponnentWantsRestart, setOpponentWantsRestart] =
+    const [opponentWantsRestart, setOpponentWantsRestart] =
         useState<boolean>(false)
 
     //listening on event, when another player send you request for restart a game
@@ -35,7 +35,7 @@ export default function AcceptRestart() {
         socket.emit('player-rejecting-restart')
     }
 
-    if (opponnentWantsRestart)
+    if (opponentWantsRestart)
         return (
             <div className={`board__accept-restart`}>
                 <p>Opponent wants a restart</p>

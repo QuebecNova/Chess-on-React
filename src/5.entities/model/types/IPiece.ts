@@ -1,6 +1,6 @@
 import { CastlingSide, Colors, Move, Pieces } from 'src/6.shared/model'
 import { KeyableSquares } from './Keyable'
-import { PlayedMove } from './PlayedMove'
+import { PlayedMove } from './Move'
 
 export interface IPiece {
     readonly color: Colors

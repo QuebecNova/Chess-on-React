@@ -24,7 +24,7 @@ export default function Timer({ player, ...props }: TimerProps) {
         if (player.timer <= 0) {
             dispatch({
                 type: GameActionTypes.TIME_EXPIRED,
-                payload: { isTimeExpired: true, player },
+                payload: { isTimeExpired: true },
             })
             return
         }
