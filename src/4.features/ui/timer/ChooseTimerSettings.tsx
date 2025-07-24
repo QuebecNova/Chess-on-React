@@ -20,7 +20,8 @@ export default function ChooseTimerSettings() {
     const [timeControl, setTimeControl] = useState<string[]>([
         TimeControl.STANDARD,
     ])
-
+    const increment = useGameStore((state) => state.increment)
+    const initTimer = useGameStore((state) => state.initTimer)
     const dispatch = useGameStore((state) => state.dispatch)
 
     function setTimer(value?: number) {
@@ -39,6 +40,15 @@ export default function ChooseTimerSettings() {
 
     function onMinutesValueChange(value: number) {
         setTimer(value)
+    }
+
+    function onIncrementValueChange(value: number) {
+        dispatch({
+            type: GameActionTypes.INCREMENT,
+            payload: {
+                increment: value,
+            },
+        })
     }
 
     function onTimeControlChange({ value }: { value: string[] }) {
@@ -69,18 +79,21 @@ export default function ChooseTimerSettings() {
                     min={0.5}
                     max={180}
                     step={0.5}
+                    initialvalue={initTimer / 1000 / 60}
                     onValueChangeEnd={(value) => onMinutesValueChange(value)}
                 />
                 <Slider
                     label="Increment in seconds"
                     marks={[
-                        { value: 1, label: '1' },
+                        { value: 0, label: '0' },
                         { value: 90, label: '90' },
                         { value: 180, label: '180' },
                     ]}
-                    min={1}
+                    min={0}
                     max={180}
                     step={1}
+                    initialvalue={increment}
+                    onValueChangeEnd={(value) => onIncrementValueChange(value)}
                 />
             </Show>
         </Flex>

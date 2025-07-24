@@ -1,8 +1,8 @@
 export {
-    BoardState,
     CastlingSide,
     Colors,
     Directions,
+    EndCondition,
     FieldStates,
     Fields,
     Moves,

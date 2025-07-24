@@ -3,9 +3,11 @@
 import { ReactElement } from 'react'
 import { defineColor } from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
+import { KeyableSquares } from 'src/5.entities/model'
 import { Colors, FieldStates } from 'src/6.shared/model'
 
 type PieceFieldsProps = {
+    squares: KeyableSquares
     activeFields: object
     fieldWidth: number
     onClick: (e: any, field: string) => void
@@ -17,6 +19,7 @@ type PieceFieldsProps = {
 
 export default function PieceFields(props: PieceFieldsProps): ReactElement {
     const {
+        squares,
         activeFields,
         fieldWidth,
         onClick,
@@ -26,7 +29,6 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
         touch2Mouse,
     } = props
 
-    const squares = useGameStore((state) => state.squares)
     const variant = useGameStore((state) => state.variant)
 
     const board = []

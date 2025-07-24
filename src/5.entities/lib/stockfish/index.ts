@@ -1,5 +1,4 @@
 import { ValueOf } from 'src/6.shared/model'
-
 export class Stockfish {
     private stockfish: Worker | null
 
@@ -31,13 +30,18 @@ export class Stockfish {
         return () => {}
     }
 
-    evaluatePosition(fen: string, difficulty: StockfishDifficultyLevels) {
+    evaluatePosition(
+        fen: string,
+        difficulty: ValueOf<typeof StockfishDifficultyLevels>
+    ) {
         if (this.stockfish) {
             this.stockfish.postMessage(`position fen ${fen}`)
             this.stockfish.postMessage(
                 `setoption name Skill Level value ${difficulty}`
             )
-            this.stockfish.postMessage(`go depth 12`)
+            this.stockfish.postMessage(
+                `go depth ${difficulty <= 1 ? '1' : difficulty < 3 ? '3' : difficulty < 14 ? '7' : '12'}`
+            )
         }
     }
 
@@ -66,11 +70,9 @@ export const StockfishDifficultyLevels = {
     7: 17,
     8: 20,
 } as const
-export type StockfishDifficultyLevels = ValueOf<
-    typeof StockfishDifficultyLevels
->
+export type StockfishDifficultyLevels = typeof StockfishDifficultyLevels
 export function isStockfishDifficultyLevels(
     value: any
-): value is StockfishDifficultyLevels {
+): value is keyof StockfishDifficultyLevels {
     return true
 }

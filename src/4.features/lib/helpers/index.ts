@@ -1,4 +1,4 @@
-export { getBoardState } from './board/checkAndMate/getBoardState'
+export { getEndCondition } from './board/checkAndMate/getEndCondition'
 export { getMovesThatLeadsToCheck } from './board/checkAndMate/getMovesThatLeadsToCheck'
 export { defineColor } from './board/defineColor'
 export { setCastle, setEnpassant } from './board/dragStartHandlers'

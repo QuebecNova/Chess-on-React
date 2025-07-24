@@ -1,9 +1,9 @@
 import { KeyableSquares } from 'src/5.entities/model'
 import { arrayRemove } from 'src/6.shared/lib/helpers'
 import {
+    CastlingSide,
     Colors,
     Move,
-    Moves,
     Operators,
     Pieces,
     piecesImages,
@@ -132,13 +132,13 @@ export class King extends Piece {
 
                 if (castlingToRight && castlePassingValidationToRight) {
                     moves.push(rawMoves[8])
-                    moves.push(Moves.CastleRight)
+                    moves.push(CastlingSide.KingSide)
                     return
                 }
 
                 if (castlingToLeft && castlePassingValidationToLeft) {
                     moves.push(rawMoves[9])
-                    moves.push(Moves.CastleLeft)
+                    moves.push(CastlingSide.QueenSide)
                     return
                 }
             }

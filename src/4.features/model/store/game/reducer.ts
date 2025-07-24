@@ -1,13 +1,16 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
-import { getBoardState } from 'src/4.features/lib/helpers'
-import { Fen, StockfishDifficultyLevels } from 'src/5.entities/lib'
+import {
+    getEndCondition,
+    playPlacedPieceSound,
+} from 'src/4.features/lib/helpers'
+import { Fen, Rook, StockfishDifficultyLevels } from 'src/5.entities/lib'
 import {
     KeyableSquares,
     NewMove,
     PlayedMove,
     Player,
 } from 'src/5.entities/model'
-import { BoardState, Colors, Move, sounds } from 'src/6.shared/model'
+import { Colors, EndCondition, Move, sounds } from 'src/6.shared/model'
 import { GameState, getInitialState } from '.'
 
 export const GameActionTypes = {
@@ -30,6 +33,11 @@ export const GameActionTypes = {
     NEW_MOVE: 'NEW_MOVE',
     WITH_COMPUTER: 'WITH_COMPUTER',
     COMPUTER_DIFFICULTY: 'COMPUTER_DIFFICULTY',
+    OFFLINE: 'OFFLINE',
+    END_STATE: 'END_STATE',
+    TAKEBACK: 'TAKEBACK',
+    VIEW_SQUARES: 'VIEW_SQUARES',
+    INCREMENT: 'INCREMENT',
 } as const
 
 export type GameActions =
@@ -39,7 +47,7 @@ export type GameActions =
       }
     | {
           type: typeof GameActionTypes.TIME_EXPIRED
-          payload: { isTimeExpired: boolean }
+          payload: { isTimeExpired: boolean; color: Colors }
       }
     | {
           type: typeof GameActionTypes.IN_GAME
@@ -88,7 +96,7 @@ export type GameActions =
       }
     | {
           type: typeof GameActionTypes.PROMOTION_MOVE
-          payload: { move: Move }
+          payload: { promotionMove: Move }
       }
     | {
           type: typeof GameActionTypes.FEN
@@ -104,33 +112,53 @@ export type GameActions =
       }
     | {
           type: typeof GameActionTypes.COMPUTER_DIFFICULTY
-          payload: { computerDifficulty: StockfishDifficultyLevels }
+          payload: { computerDifficulty: keyof StockfishDifficultyLevels }
+      }
+    | {
+          type: typeof GameActionTypes.OFFLINE
+          payload: { isOfflineMode: boolean }
+      }
+    | {
+          type: typeof GameActionTypes.END_STATE
+          payload: { condition: EndCondition; color: Colors }
+      }
+    | {
+          type: typeof GameActionTypes.TAKEBACK
+          payload: { color: Colors }
+      }
+    | {
+          type: typeof GameActionTypes.VIEW_SQUARES
+          payload: { moveIndex: number }
+      }
+    | {
+          type: typeof GameActionTypes.INCREMENT
+          payload: { increment: number }
       }
 
 export const reducer = (state: GameState, action: GameActions) => {
     switch (action.type) {
+        case GameActionTypes.WITH_COMPUTER:
+        case GameActionTypes.FEN:
+        case GameActionTypes.COMPUTER_DIFFICULTY:
         case GameActionTypes.SQUARES:
+        case GameActionTypes.IN_GAME:
+        case GameActionTypes.VARIANT:
+        case GameActionTypes.TURN:
+        case GameActionTypes.PROMOTION_MOVE:
+        case GameActionTypes.PLAYED_MOVES:
+        case GameActionTypes.OFFLINE:
+        case GameActionTypes.INCREMENT:
             return {
                 ...state,
                 ...action.payload,
             }
         case GameActionTypes.TIME_EXPIRED:
             state.timeExpired = action.payload.isTimeExpired
-            state.boardState = BoardState.TimeExpired
-            return {
-                ...state,
-                ...action.payload,
-            }
-        case GameActionTypes.IN_GAME:
-            return {
-                ...state,
-                ...action.payload,
-            }
+            state.endState.condition = EndCondition.TimeExpired
+            state.endState.color = action.payload.color
+            return state
         case GameActionTypes.SEND_RESTART_REQUEST:
             console.error('Not implemented')
-            return state
-        case GameActionTypes.VARIANT:
-            state.variant = action.payload.variant
             return state
         case GameActionTypes.PLAYING_SIDE:
             state.variant = action.payload.side
@@ -141,11 +169,6 @@ export const reducer = (state: GameState, action: GameActions) => {
                     : Colors.Black
             ].isCurrentUser = false
             return state
-        case GameActionTypes.TURN:
-            return {
-                ...state,
-                ...action.payload,
-            }
         case GameActionTypes.RESTART_GAME:
             //changing players colors
             if (state.players[Colors.Black].isCurrentUser) {
@@ -159,6 +182,8 @@ export const reducer = (state: GameState, action: GameActions) => {
             state.players[Colors.Black].timer = state.initTimer
             state.players[Colors.White].timer = state.initTimer
 
+            sounds.newGame.play()
+
             return {
                 ...state,
                 squares: setupBoard(),
@@ -170,17 +195,13 @@ export const reducer = (state: GameState, action: GameActions) => {
                     state.variant === Colors.White
                         ? Colors.Black
                         : Colors.White,
-                boardState: null,
+                endState: { condition: null, color: null },
                 promotionMove: null,
                 fen: new Fen(setupBoard()).fen,
+                vieSquares: null,
             }
         case GameActionTypes.RESET_STORE:
             return getInitialState()
-        case GameActionTypes.PLAYED_MOVES:
-            return {
-                ...state,
-                ...action.payload,
-            }
         case GameActionTypes.PLAYER:
             state.players[action.payload.color] = action.payload.player
             return state
@@ -198,10 +219,22 @@ export const reducer = (state: GameState, action: GameActions) => {
                 ...state,
                 playedMoves: [...state.playedMoves, action.payload.move],
             }
-        case GameActionTypes.PROMOTION_MOVE:
-            state.promotionMove = action.payload.move
-            return state
         case GameActionTypes.NEW_MOVE:
+            if (
+                (
+                    [
+                        EndCondition.Checkmate,
+                        EndCondition.Draw,
+                        EndCondition.Resign,
+                        EndCondition.Stalemate,
+                        EndCondition.TimeExpired,
+                    ] as EndCondition[]
+                ).includes(state.endState.condition)
+            )
+                return
+
+            playPlacedPieceSound(action.payload.move.isCapture)
+
             if (action.payload.promotionTo) {
                 state.promotionMove = null
             }
@@ -209,18 +242,33 @@ export const reducer = (state: GameState, action: GameActions) => {
             const turn =
                 state.turn === Colors.White ? Colors.Black : Colors.White
 
-            const boardState = getBoardState(action.payload.squares, turn)
+            const endCondition = getEndCondition(action.payload.squares, turn)
+
+            if (state.isOfflineMode) {
+                state.players[state.turn].isCurrentUser = false
+                state.players[turn].isCurrentUser = true
+            }
+
+            const endState = {
+                condition: endCondition,
+                color: turn,
+            }
 
             if (
-                boardState === BoardState.Check ||
-                boardState === BoardState.Checkmate
+                endCondition === EndCondition.Check ||
+                endCondition === EndCondition.Checkmate
             )
                 sounds.check.play()
 
             const playedMove: PlayedMove = {
                 ...action.payload.move,
                 piece: action.payload.piece,
-                boardState,
+                takenPiece: action.payload.takenPiece
+                    ? action.payload.takenPiece
+                    : action.payload.move.isCapture
+                      ? state.squares[action.payload.move.to]
+                      : null,
+                endState,
                 castlingSide: action.payload.castlingSide
                     ? action.payload.castlingSide
                     : null,
@@ -228,8 +276,14 @@ export const reducer = (state: GameState, action: GameActions) => {
                     ? action.payload.promotionTo
                     : null,
                 isEnpassant: action.payload.isEnpassant ?? false,
+                squares: action.payload.squares,
             }
             const playedMoves = [...state.playedMoves, playedMove]
+
+            if (state.increment) {
+                state.players[state.turn].timer =
+                    state.players[state.turn].timer + state.increment * 1000
+            }
 
             return {
                 ...state,
@@ -237,23 +291,103 @@ export const reducer = (state: GameState, action: GameActions) => {
                 playedMoves,
                 turn,
                 fen: new Fen(action.payload.squares, playedMoves, turn).fen,
-                boardState,
+                endState,
             }
-        case GameActionTypes.FEN:
-            return {
-                ...state,
-                ...action.payload,
+        case GameActionTypes.END_STATE:
+            return { ...state, endState: action.payload }
+        case GameActionTypes.TAKEBACK:
+            const newSquares = { ...state.squares }
+            const lastPlayedMove = state.playedMoves.at(-1)
+            if (!lastPlayedMove) return state
+
+            function resetCastling(move: PlayedMove) {
+                const [rookField, rook] = Rook.find(
+                    newSquares,
+                    move.castlingSide,
+                    move.piece.color
+                )
+                if (!rook.lastMoves.at(-1)) return
+                newSquares[rookField] = null
+                newSquares[rook.lastMoves.at(-1).from] = rook
+                rook.lastMoves.pop()
             }
-        case GameActionTypes.WITH_COMPUTER:
-            return {
-                ...state,
-                ...action.payload,
+
+            function resetEnpassant(move: PlayedMove) {
+                const lastEnpassantedPawnPlayedMove =
+                    move.takenPiece.lastMoves.at(-1)
+                if (lastEnpassantedPawnPlayedMove) {
+                    newSquares[lastEnpassantedPawnPlayedMove.to] =
+                        move.takenPiece
+                }
             }
-        case GameActionTypes.COMPUTER_DIFFICULTY:
-            return {
-                ...state,
-                ...action.payload,
+
+            function resetMove(move: PlayedMove) {
+                if (move.isCapture && !move.isEnpassant) {
+                    newSquares[move.to] = move.takenPiece
+                } else {
+                    newSquares[move.to] = null
+                }
+                newSquares[move.from] = move.piece
+                move.piece.lastMoves?.pop()
             }
+
+            if (
+                lastPlayedMove.piece.color !== action.payload.color &&
+                !state.isOfflineMode
+            ) {
+                const secondLastPlayedMove = state.playedMoves.at(-2)
+                if (lastPlayedMove.castlingSide) {
+                    resetCastling(lastPlayedMove)
+                }
+                if (lastPlayedMove.isEnpassant) {
+                    resetEnpassant(lastPlayedMove)
+                }
+                resetMove(lastPlayedMove)
+                if (secondLastPlayedMove) {
+                    if (secondLastPlayedMove.castlingSide) {
+                        resetCastling(secondLastPlayedMove)
+                    }
+                    if (secondLastPlayedMove.isEnpassant) {
+                        resetEnpassant(secondLastPlayedMove)
+                    }
+                    resetMove(secondLastPlayedMove)
+                } else {
+                    state.turn =
+                        state.turn === Colors.White
+                            ? Colors.Black
+                            : Colors.White
+                }
+                state.playedMoves = state.playedMoves.slice(0, -2)
+            } else {
+                if (lastPlayedMove.castlingSide) {
+                    resetCastling(lastPlayedMove)
+                }
+                if (lastPlayedMove.isEnpassant) {
+                    resetEnpassant(lastPlayedMove)
+                }
+                resetMove(lastPlayedMove)
+                lastPlayedMove.piece.lastMoves.pop()
+                state.playedMoves = state.playedMoves.slice(0, -1)
+                state.turn =
+                    state.turn === Colors.White ? Colors.Black : Colors.White
+            }
+
+            state.viewSquares = null
+
+            return { ...state, squares: newSquares }
+        case GameActionTypes.VIEW_SQUARES:
+            if (action.payload.moveIndex === state.playedMoves.length - 1) {
+                state.viewSquares = null
+            } else {
+                const move = state.playedMoves[action.payload.moveIndex]
+                if (move.isCapture || move.isEnpassant) {
+                    sounds.takePiece.play()
+                } else {
+                    sounds.placePiece.play()
+                }
+                state.viewSquares = move.squares
+            }
+            return { ...state }
         default:
             return state
     }

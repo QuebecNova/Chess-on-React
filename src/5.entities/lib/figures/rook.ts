@@ -147,4 +147,10 @@ export class Rook extends Piece {
         this.lastMoves.push(move)
         return this.lastMoves
     }
+
+    static find(squares: KeyableSquares, side: CastlingSide, color: Colors) {
+        return Object.entries(squares).find(
+            ([_, rook]) => rook?.side === side && rook?.color === color
+        )
+    }
 }

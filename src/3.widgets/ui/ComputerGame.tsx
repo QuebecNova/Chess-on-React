@@ -2,12 +2,16 @@
 
 import { Grid, GridItem } from '@chakra-ui/react'
 import { useCallback, useEffect, useMemo } from 'react'
-import { playPlacedPieceSound } from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
 import { useCurrentPlayer } from 'src/4.features/model/store'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { Board } from 'src/4.features/ui'
-import { notation, Stockfish } from 'src/5.entities/lib'
+import {
+    Fen,
+    notation,
+    Stockfish,
+    StockfishDifficultyLevels,
+} from 'src/5.entities/lib'
 import { SideMenu } from './SideMenu'
 
 export default function ComputerGame({ disabled }: { disabled: boolean }) {
@@ -22,11 +26,16 @@ export default function ComputerGame({ disabled }: { disabled: boolean }) {
     const stockfish = useMemo(() => new Stockfish(), [])
 
     const makeStockfishMove = useCallback(() => {
-        stockfish.evaluatePosition(fen, computerDifficulty)
+        stockfish.evaluatePosition(
+            fen,
+            StockfishDifficultyLevels[computerDifficulty]
+        )
         const unsubscribe = stockfish.onMessage((msg) => {
             const bestMove = msg.bestMove
             if (bestMove) {
+                unsubscribe()
                 if (bestMove === '(none)') return
+                if (fen !== new Fen(squares, playedMoves, turn).fen) return
                 const parsedMove = notation.parseLongAlgebraic(
                     squares,
                     playedMoves,
@@ -36,8 +45,6 @@ export default function ComputerGame({ disabled }: { disabled: boolean }) {
                     type: GameActionTypes.NEW_MOVE,
                     payload: parsedMove,
                 })
-                playPlacedPieceSound(parsedMove.isCapture)
-                unsubscribe()
             }
         })
     }, [stockfish, fen])

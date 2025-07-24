@@ -5,6 +5,7 @@ import {
     Chat,
     EndMessage,
     PlayedMoves,
+    Player,
     Timer,
 } from 'src/4.features/ui'
 import { Colors } from 'src/6.shared/model'
@@ -33,16 +34,28 @@ export function SideMenu() {
                             : players[Colors.White]
                     }
                 />
+                <Player
+                    borderTopLeftRadius={0}
+                    borderBottomRightRadius={0}
+                    borderBottomLeftRadius={0}
+                    player={
+                        variant === Colors.White
+                            ? players[Colors.Black]
+                            : players[Colors.White]
+                    }
+                />
                 <PlayedMoves />
+                <Player
+                    borderTopLeftRadius={0}
+                    borderTopRightRadius={0}
+                    borderBottomLeftRadius={0}
+                    player={players[variant]}
+                />
                 <Timer
                     borderTopLeftRadius={0}
                     borderTopRightRadius={0}
                     borderBottomLeftRadius={0}
-                    player={
-                        variant === Colors.White
-                            ? players[Colors.White]
-                            : players[Colors.Black]
-                    }
+                    player={players[variant]}
                 />
             </Flex>
             <Chat />

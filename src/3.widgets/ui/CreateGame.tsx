@@ -1,7 +1,7 @@
-import { Card, Container, Stack, Tabs } from '@chakra-ui/react'
+import { Badge, Card, Container, Stack, Tabs } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { BsFillPlusSquareFill } from 'react-icons/bs'
+import { BsFillPeopleFill, BsFillPlusSquareFill } from 'react-icons/bs'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { BotDifficulty, StartingSettings } from 'src/4.features/ui'
@@ -11,11 +11,12 @@ import {
 } from 'src/5.entities/lib'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
+import { sounds } from 'src/6.shared/model'
 import { Button } from 'src/6.shared/ui'
 import { Modal } from 'src/6.shared/ui/modal'
 import { v4 as uuidv4 } from 'uuid'
-const RoomID = uuidv4()
 
+const RoomID = uuidv4()
 export default function CreateGame() {
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState('')
@@ -25,10 +26,16 @@ export default function CreateGame() {
     const dispatch = useGameStore((state) => state.dispatch)
 
     function setOffline(bot?: boolean) {
+        sounds.newGame.play()
         if (bot) {
             dispatch({
                 type: GameActionTypes.WITH_COMPUTER,
                 payload: { withComputer: true },
+            })
+        } else {
+            dispatch({
+                type: GameActionTypes.OFFLINE,
+                payload: { isOfflineMode: true },
             })
         }
         router.push('/1213')
@@ -48,7 +55,7 @@ export default function CreateGame() {
         socket.emit('connect-to-game', inputValue)
     }
 
-    function changeDifficulty(difficulty: StockfishDifficultyLevels) {
+    function changeDifficulty(difficulty: keyof StockfishDifficultyLevels) {
         dispatch({
             type: GameActionTypes.COMPUTER_DIFFICULTY,
             payload: {
@@ -76,11 +83,11 @@ export default function CreateGame() {
                                 Create
                             </Tabs.Trigger>
                             <Tabs.Trigger value="lobby">
-                                <BsFillPlusSquareFill />
+                                <BsFillPeopleFill />
                                 Lobby
                             </Tabs.Trigger>
                             <Tabs.Trigger value="inplay">
-                                <BsFillPlusSquareFill />
+                                <Badge>0</Badge>
                                 In play
                             </Tabs.Trigger>
                         </Tabs.List>
@@ -88,7 +95,10 @@ export default function CreateGame() {
                             <Stack gap="4">
                                 <Modal
                                     trigger={
-                                        <Button onClick={displayID}>
+                                        <Button
+                                            onClick={displayID}
+                                            disabled={true}
+                                        >
                                             New Game
                                         </Button>
                                     }
@@ -102,7 +112,9 @@ export default function CreateGame() {
                                 />
                                 <Modal
                                     trigger={
-                                        <Button onClick={join}>Join</Button>
+                                        <Button onClick={join} disabled={true}>
+                                            Join
+                                        </Button>
                                     }
                                     title="Join a game"
                                     body={<>пиши сука код</>}

@@ -1,5 +1,5 @@
 import { IPiece } from 'src/5.entities/model'
-import { Moves, Pieces } from 'src/6.shared/model'
+import { CastlingSide, Moves, Pieces } from 'src/6.shared/model'
 
 export function setEnpassant(
     moves: Array<string>,
@@ -22,10 +22,10 @@ export function setCastle(
 ) {
     if (moves.length && piece.type === Pieces.King) {
         const castleOnThisSides: Array<string> = []
-        if (moves.includes(Moves.CastleRight))
-            castleOnThisSides.push(Moves.CastleRight)
-        if (moves.includes(Moves.CastleLeft))
-            castleOnThisSides.push(Moves.CastleLeft)
+        if (moves.includes(CastlingSide.KingSide))
+            castleOnThisSides.push(CastlingSide.KingSide)
+        if (moves.includes(CastlingSide.QueenSide))
+            castleOnThisSides.push(CastlingSide.QueenSide)
         setCastleAvailable(castleOnThisSides)
     }
 }

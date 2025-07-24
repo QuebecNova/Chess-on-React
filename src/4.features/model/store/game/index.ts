@@ -1,7 +1,7 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
 import { Fen, StockfishDifficultyLevels } from 'src/5.entities/lib'
 import { KeyableSquares, PlayedMove, Player } from 'src/5.entities/model'
-import { BoardState, Colors, Move } from 'src/6.shared/model'
+import { Colors, EndCondition, Move } from 'src/6.shared/model'
 import { Dispatch } from 'src/6.shared/model/types/Dispatch'
 import { createStore } from 'zustand'
 import { devtools, redux } from 'zustand/middleware'
@@ -16,15 +16,21 @@ export type GameState = {
     timeExpired: boolean
     isInGame: boolean
     promotionMove: Move | null
-    boardState: BoardState | null
+    endState: {
+        condition: EndCondition | null
+        color: Colors | null
+    }
     initTimer: number
+    increment: number
     players: {
         [key in Colors]: Player
     }
     playedMoves: PlayedMove[]
     fen: string
     withComputer: boolean
-    computerDifficulty: StockfishDifficultyLevels
+    computerDifficulty: keyof StockfishDifficultyLevels
+    isOfflineMode: boolean
+    viewSquares: KeyableSquares | null
 }
 
 export type GameStore = GameState & Dispatch<GameActions>
@@ -37,8 +43,12 @@ export const getInitialState = (): GameState => ({
     squares: setupBoard(),
     timeExpired: false,
     isInGame: false,
-    boardState: null,
-    initTimer: 60000,
+    endState: {
+        condition: null,
+        color: null,
+    },
+    initTimer: 300000,
+    increment: 1,
     players: {
         [Colors.Black]: new Player(Colors.Black, false, false),
         [Colors.White]: new Player(Colors.White, false, true),
@@ -46,7 +56,9 @@ export const getInitialState = (): GameState => ({
     playedMoves: [],
     fen: new Fen(setupBoard()).fen,
     withComputer: false,
-    computerDifficulty: StockfishDifficultyLevels[1],
+    computerDifficulty: 1,
+    isOfflineMode: false,
+    viewSquares: null,
 })
 
 export const createGameStore = () =>

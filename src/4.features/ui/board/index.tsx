@@ -20,6 +20,9 @@ export default function Board({ disabled }: { disabled: boolean }) {
     const { fieldWidth } = useChessBoardOffsets(chessBoardRef)
     const [dragStart, dragMove, dragDrop, onClick, activeFields] =
         useBoardControls(chessBoardRef, disabled)
+    const viewSquares = useGameStore((state) => state.viewSquares)
+    const squares = useGameStore((state) => state.squares)
+    const playedMoves = useGameStore((state) => state.playedMoves)
 
     useEffect(() => {
         return () => {
@@ -35,6 +38,7 @@ export default function Board({ disabled }: { disabled: boolean }) {
                 onMouseMove={(e) => dragMove(e)}
             >
                 <PieceFields
+                    squares={viewSquares ? viewSquares : squares}
                     fieldWidth={fieldWidth}
                     activeFields={activeFields}
                     onClick={onClick}

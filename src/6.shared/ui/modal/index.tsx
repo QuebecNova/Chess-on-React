@@ -1,4 +1,4 @@
-import { CloseButton, Dialog, Portal } from '@chakra-ui/react'
+import { CloseButton, Dialog, Portal, Show } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 
 export function Modal({
@@ -10,7 +10,7 @@ export function Modal({
     onClose = () => {},
     ...props
 }: {
-    trigger: ReactNode
+    trigger?: ReactNode
     title?: ReactNode
     body?: ReactNode
     bodyProps?: Dialog.BodyProps
@@ -18,8 +18,15 @@ export function Modal({
     onClose?: () => void
 } & Omit<Dialog.RootProps, 'children'>) {
     return (
-        <Dialog.Root placement="center" {...props}>
-            <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+        <Dialog.Root
+            placement="center"
+            onInteractOutside={onClose}
+            onEscapeKeyDown={onClose}
+            {...props}
+        >
+            <Show when={trigger}>
+                <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+            </Show>
             <Portal>
                 <Dialog.Backdrop />
                 <Dialog.Positioner>

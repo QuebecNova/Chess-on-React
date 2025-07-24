@@ -1,7 +1,6 @@
 'use client'
 
 import { ReactElement } from 'react'
-import { playPlacedPieceSound } from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { Bishop, Knight, Queen, Rook } from 'src/5.entities/lib'
@@ -30,8 +29,6 @@ export default function Promotion(props: Props): ReactElement {
             [promotionMove.to]: piece,
         }
 
-        playPlacedPieceSound(true)
-
         dispatch({
             type: GameActionTypes.NEW_MOVE,
             payload: {
@@ -40,6 +37,7 @@ export default function Promotion(props: Props): ReactElement {
                     ...pieceOnField,
                 },
                 piece: squares[promotionMove.from],
+                takenPiece: null,
                 move: promotionMove,
                 promotionTo: piece,
             },

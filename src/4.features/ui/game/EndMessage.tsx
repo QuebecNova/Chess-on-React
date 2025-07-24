@@ -1,27 +1,56 @@
 'use client'
 
-import { Box, Text } from '@chakra-ui/react'
-import { ReactElement, useState } from 'react'
+import { Show, Text } from '@chakra-ui/react'
+import { ReactElement, useEffect, useState } from 'react'
 import { playSoundOnEnd } from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
+import { useIsGameEnded } from 'src/4.features/model/store/game/selectors'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
-import { BoardState, Colors } from 'src/6.shared/model'
+import { EndCondition } from 'src/6.shared/model'
 import Button from 'src/6.shared/ui/button'
+import { Modal } from 'src/6.shared/ui/modal'
 import { capitalize } from './../../../6.shared/lib/helpers/misc/capitalize'
 import Waiting from './Waiting'
 
 export default function EndMessage(): ReactElement {
     const dispatch = useGameStore((state) => state.dispatch)
     const turn = useGameStore((state) => state.turn)
-    const variant = useGameStore((state) => state.variant)
     const players = useGameStore((state) => state.players)
-    const boardState = useGameStore((state) => state.boardState)
+    const endState = useGameStore((state) => state.endState)
+    const [open, setOpen] = useState(false)
+    const isGameEnded = useIsGameEnded()
+    const [isRestarting, setIsRestarting] = useState(false)
 
     const [waitingForAccept, setWaitingForAccept] = useState(false)
 
+    const isStaleMate = endState.condition === EndCondition.Stalemate
+    const isCheckmated = endState.condition === EndCondition.Checkmate
+    const isTimeExpired = endState.condition === EndCondition.TimeExpired
+    const isResign = endState.condition === EndCondition.Resign
+    const isDraw = endState.condition === EndCondition.Draw
+
+    const win = (isCheckmated || isTimeExpired) && endState.color !== turn
+    const draw = isStaleMate || isDraw
+    const lose =
+        (isCheckmated || isTimeExpired || isResign) && endState.color === turn
+
+    useEffect(() => {
+        if (win) {
+            playSoundOnEnd({ win })
+        }
+        if (draw) {
+            playSoundOnEnd({ draw })
+        }
+        if (lose) {
+            playSoundOnEnd({ lose })
+        }
+        setOpen(isGameEnded)
+    }, [isGameEnded])
+
     function restart() {
+        setOpen(false)
         if (settings.offlineMode) {
             dispatch({
                 type: GameActionTypes.RESTART_GAME,
@@ -31,28 +60,11 @@ export default function EndMessage(): ReactElement {
         socket.emit('restart-game')
         setWaitingForAccept(true)
     }
-    const isStaleMate = boardState === BoardState.Stalemate
-    const isCheckmated = boardState === BoardState.Checkmate
-    const isTimeExpired = boardState === BoardState.TimeExpired
-    const typeOfMessage = isStaleMate
-        ? 'Stalemate!'
-        : isTimeExpired
-          ? 'Time Ends!'
-          : 'Mate!'
-
-    const winnedColor = turn === Colors.White ? Colors.Black : Colors.White
-
-    const message = isStaleMate
-        ? 'Draw!'
-        : `${capitalize(winnedColor)} player wins`!
 
     const isOpponentWantsRestart = () =>
         Object.values(players).find(
             (player) => player.wantsRestart && !player.isCurrentUser
         )
-
-    if (isCheckmated || isTimeExpired || isStaleMate)
-        playSoundOnEnd(turn, variant)
 
     if (waitingForAccept)
         return (
@@ -64,18 +76,38 @@ export default function EndMessage(): ReactElement {
 
     if (!isOpponentWantsRestart())
         return (
-            <Box
-                className={`board__mated ${
-                    isCheckmated || isStaleMate || isTimeExpired
-                        ? 'active'
-                        : 'inactive'
-                }`}
-            >
-                <Text>{typeOfMessage}</Text>
-                <Text>{message}</Text>
-                <Button mt={2} onClick={restart}>
-                    {settings.offlineMode ? 'Restart' : 'Send rematch'}
-                </Button>
-            </Box>
+            <Modal
+                size="xs"
+                open={open}
+                onClose={() => setOpen(false)}
+                onExitComplete={restart}
+                title={<Text>Game ended</Text>}
+                body={
+                    <Show
+                        when={isStaleMate || isDraw}
+                        fallback={
+                            <Text textAlign="center">
+                                {capitalize(endState.condition || '')} for{' '}
+                                {endState.color}
+                            </Text>
+                        }
+                    >
+                        <Text textAlign="center">
+                            {capitalize(endState.condition || '')}
+                        </Text>
+                    </Show>
+                }
+                footer={
+                    <Button
+                        mt={2}
+                        onClick={() => {
+                            setIsRestarting(true)
+                            setOpen(false)
+                        }}
+                    >
+                        {settings.offlineMode ? 'Restart' : 'Send rematch'}
+                    </Button>
+                }
+            />
         )
 }

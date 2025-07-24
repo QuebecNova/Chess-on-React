@@ -10,7 +10,6 @@ import {
     getMovesThatLeadsToCheck,
     getSquares,
     isDragStartIllegal,
-    playPlacedPieceSound,
     removeActives,
     setCastle,
     setEnpassant,
@@ -70,7 +69,6 @@ export function useBoardControls(
     //         payload: { squares: { ...squares, ...pieceOnField } },
     //     })
     //     //BUG
-    //     playPlacedPieceSound(false)
     //     switchTurn()
     // })
 
@@ -215,21 +213,23 @@ export function useBoardControls(
                 [draggedField]: null,
                 [dropField]: piece,
             }
-
+            let takenPiece = squares[dropField]
             //enpassant and castle dataset
             let enpassanted = false
             let castledRookInitialField: string | null = null
 
             if (enpassantAvailable) {
-                const [isEnpassanted, enpassantedFields] = checkForEnpassant(
-                    squares,
-                    dropField,
-                    draggedField,
-                    enpassantAvailable
-                )
+                const [isEnpassanted, enpassantedFields, enpassantedPiece] =
+                    checkForEnpassant(
+                        squares,
+                        dropField,
+                        draggedField,
+                        enpassantAvailable
+                    )
                 if (isEnpassanted) {
                     pieceOnField = { ...pieceOnField, ...enpassantedFields }
                     enpassanted = true
+                    takenPiece = enpassantedPiece
                 }
             }
             let castledSide: CastlingSide | null = null
@@ -274,7 +274,7 @@ export function useBoardControls(
             if (pawnOnPromotionField && piece.color === turn) {
                 dispatch({
                     type: GameActionTypes.PROMOTION_MOVE,
-                    payload: { move },
+                    payload: { promotionMove: move },
                 })
 
                 resetAll(draggedPiece)
@@ -282,7 +282,6 @@ export function useBoardControls(
                 return
             }
 
-            playPlacedPieceSound(isCapture)
             //
 
             //sending moved piece data to server if not in offline mode
@@ -306,6 +305,7 @@ export function useBoardControls(
                     squares: { ...squares, ...pieceOnField },
                     move,
                     promotionTo: null,
+                    takenPiece,
                     piece,
                     isEnpassant: enpassanted,
                     castlingSide: castledSide,

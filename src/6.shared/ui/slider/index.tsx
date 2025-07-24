@@ -4,12 +4,15 @@ import { ReactNode, useState } from 'react'
 type Props = {
     marks?: ChakraSlider.MarksProps['marks']
     label?: ReactNode
+    initialvalue?: number
     onValueChange?: (value: number) => void
     onValueChangeEnd?: (value: number) => void
 } & ChakraSlider.RootProps
 
 export default function Slider(props: Props) {
-    const [value, setValue] = useState([1])
+    const [value, setValue] = useState([
+        typeof props.initialvalue === 'number' ? props.initialvalue : 1,
+    ])
 
     function onValueChange({ value }: { value: number[] }) {
         setValue(value)

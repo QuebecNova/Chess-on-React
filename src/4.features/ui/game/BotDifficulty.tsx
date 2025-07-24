@@ -18,12 +18,7 @@ export default function BotDifficulty({
                 >
                     <SegmentGroup.Indicator />
                     <SegmentGroup.Items
-                        items={Object.entries(StockfishDifficultyLevels).map(
-                            ([label, value]) => ({
-                                label,
-                                value: value.toString(),
-                            })
-                        )}
+                        items={Object.keys(StockfishDifficultyLevels)}
                     />
                 </SegmentGroup.Root>
             </Flex>

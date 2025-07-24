@@ -1,13 +1,23 @@
-import { Colors, sounds } from 'src/6.shared/model'
+import { sounds } from 'src/6.shared/model'
 
-export function playSoundOnEnd(turn: string, variant: string): void {
+export function playSoundOnEnd({
+    win,
+    draw,
+    lose,
+}: {
+    win?: true
+    draw?: true
+    lose?: true
+}): void {
     if (typeof Audio === 'undefined') return
-    if (variant === Colors.White) {
-        if (turn === Colors.Black) sounds.win.play()
-        if (turn === Colors.White) sounds.lose.play()
-    } else if (variant === Colors.Black) {
-        if (turn === Colors.White) sounds.win.play()
-        if (turn === Colors.Black) sounds.lose.play()
+    if (win) {
+        sounds.win.play()
+    }
+    if (lose) {
+        sounds.lose.play()
+    }
+    if (draw) {
+        sounds.draw.play()
     }
 }
 

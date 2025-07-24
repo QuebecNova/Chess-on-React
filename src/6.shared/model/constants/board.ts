@@ -19,8 +19,6 @@ export const FieldStates = {
 export type FieldStates = ValueOf<typeof FieldStates>
 
 export const Moves = {
-    CastleRight: 'castleRight',
-    CastleLeft: 'castleLeft',
     Enpassant: 'enpassant',
     EnpassantLeft: 'enpassantLeft',
     EnpassantRight: 'enpassantRight',
@@ -37,14 +35,15 @@ export const Pieces = {
 } as const
 export type Pieces = ValueOf<typeof Pieces>
 
-export const BoardState = {
+export const EndCondition = {
     Stalemate: 'stalemate',
     Checkmate: 'checkmate',
     Draw: 'draw',
     Check: 'check',
     TimeExpired: 'timeExpired',
+    Resign: 'resign',
 } as const
-export type BoardState = ValueOf<typeof BoardState>
+export type EndCondition = ValueOf<typeof EndCondition>
 
 export const Directions = {
     Right: 'right',

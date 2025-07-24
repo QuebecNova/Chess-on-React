@@ -1,8 +1,8 @@
 import { alphs, Bishop, Knight, Queen, Rook } from 'src/5.entities/lib'
 import {
-    BoardState,
     CastlingSide,
     Colors,
+    EndCondition,
     Operators,
     Pieces,
 } from 'src/6.shared/model'
@@ -10,6 +10,7 @@ import { KeyableSquares, NewMove, PlayedMove } from '../model'
 
 export const notation = {
     //e4
+    //https://en.wikipedia.org/wiki/Algebraic_notation_(chess)
     getShortAlgebraic(move: PlayedMove, moveNumber: number) {
         const pieceType = move.piece.type === Pieces.Pawn ? '' : move.piece.type
         const capture = move.isCapture
@@ -20,8 +21,8 @@ export const notation = {
         const promotion = move.promotionTo
             ? `=${move.piece.color === Colors.White ? move.promotionTo.type : move.promotionTo.type.toLowerCase()}`
             : ''
-        const check = move.boardState === BoardState.Check ? '+' : ''
-        if (move.boardState === BoardState.Checkmate) {
+        const check = move.endState.condition === EndCondition.Check ? '+' : ''
+        if (move.endState.condition === EndCondition.Checkmate) {
             return `${move.piece.color === Colors.White ? '1-0' : '0-1'}`
         }
         if (move.isEnpassant) {
@@ -51,6 +52,7 @@ export const notation = {
             [to]: piece,
         }
         let isCapture = !!squares[to]
+        let takenPiece = isCapture ? squares[to] : null
         let castlingSide: CastlingSide = null
         let isEnpassant = false
         let promotionTo = null
@@ -73,6 +75,11 @@ export const notation = {
                     Operators.Forward,
                     3
                 )
+                rook.addMove({
+                    from: rookOldField,
+                    to: rookNewField,
+                    isCapture: false,
+                })
                 piecesOnField[rookOldField] = null
                 piecesOnField[rookNewField] = rook
             }
@@ -89,6 +96,11 @@ export const notation = {
                     Operators.Backward,
                     2
                 )
+                rook.addMove({
+                    from: rookOldField,
+                    to: rookNewField,
+                    isCapture: false,
+                })
                 piecesOnField[rookOldField] = null
                 piecesOnField[rookNewField] = rook
             }
@@ -110,6 +122,7 @@ export const notation = {
                 ].includes(lastPlayedMove?.to)
 
             if (isEnpassant) {
+                takenPiece = piecesOnField[lastPlayedMove.to]
                 piecesOnField[lastPlayedMove.to] = null
                 isCapture = true
             }
@@ -133,6 +146,7 @@ export const notation = {
             },
             move: { from, to, isCapture },
             piece,
+            takenPiece,
             promotionTo,
             isEnpassant,
             castlingSide,

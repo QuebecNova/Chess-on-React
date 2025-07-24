@@ -10,7 +10,7 @@ export class Player {
     constructor(color: Colors, isPlaying: boolean, isCurrentUser: boolean) {
         this.color = color
         this.isPlaying = isPlaying
-        this.timer = 60000
+        this.timer = 300000
         this.isCurrentUser = isCurrentUser
         this.wantsRestart = false
     }
