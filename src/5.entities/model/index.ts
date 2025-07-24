@@ -1,0 +1,8 @@
+export { Player } from './player'
+export type { ActiveFields } from './types/ActiveFields'
+export type { Coords } from './types/Coords'
+export type { IAlphs } from './types/IAlphs'
+export type { IPiece } from './types/IPiece'
+export type { KeyablePieceOnField, KeyableSquares } from './types/Keyable'
+export type { NewMove, PlayedMove } from './types/Move'
+export type { Players } from './types/Players'
