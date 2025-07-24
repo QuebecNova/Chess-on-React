@@ -28,11 +28,10 @@ export function getEndCondition(
             if (squares[field].onCheck) checked = true
         }
     }
-
     if (
         allLegalMoves.length === 1 &&
         allLegalMoves[0].length === 1 &&
-        squares[allLegalMoves[0][0]].type === Pieces.King
+        squares[allLegalMoves[0][0]]?.type === Pieces.King
     ) {
         return EndCondition.Stalemate
     }
