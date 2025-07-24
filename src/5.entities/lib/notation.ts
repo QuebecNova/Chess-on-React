@@ -64,45 +64,47 @@ export const notation = {
             let rookNewField: string = null
             if (isQueenSideCastling) {
                 castlingSide = CastlingSide.QueenSide
-                const [rookOldField, rook] = Object.entries(squares).find(
-                    ([_, rook]) =>
-                        rook?.type === Pieces.Rook &&
-                        rook?.side === CastlingSide.QueenSide &&
-                        rook?.color === piece.color
+                const [rookOldField, rook] = Rook.find(
+                    squares,
+                    CastlingSide.QueenSide,
+                    piece.color
                 )
-                rookNewField = alphs.changeAlphPos(
-                    rookOldField,
-                    Operators.Forward,
-                    3
-                )
-                rook.addMove({
-                    from: rookOldField,
-                    to: rookNewField,
-                    isCapture: false,
-                })
-                piecesOnField[rookOldField] = null
-                piecesOnField[rookNewField] = rook
+                if (rook) {
+                    rookNewField = alphs.changeAlphPos(
+                        rookOldField,
+                        Operators.Forward,
+                        3
+                    )
+                    rook.addMove({
+                        from: rookOldField,
+                        to: rookNewField,
+                        isCapture: false,
+                    })
+                    piecesOnField[rookOldField] = null
+                    piecesOnField[rookNewField] = rook
+                }
             }
             if (isKingSideCastling) {
                 castlingSide = CastlingSide.KingSide
-                const [rookOldField, rook] = Object.entries(squares).find(
-                    ([_, rook]) =>
-                        rook?.type === Pieces.Rook &&
-                        rook?.side === CastlingSide.KingSide &&
-                        rook?.color === piece.color
+                const [rookOldField, rook] = Rook.find(
+                    squares,
+                    CastlingSide.KingSide,
+                    piece.color
                 )
-                rookNewField = alphs.changeAlphPos(
-                    rookOldField,
-                    Operators.Backward,
-                    2
-                )
-                rook.addMove({
-                    from: rookOldField,
-                    to: rookNewField,
-                    isCapture: false,
-                })
-                piecesOnField[rookOldField] = null
-                piecesOnField[rookNewField] = rook
+                if (rook) {
+                    rookNewField = alphs.changeAlphPos(
+                        rookOldField,
+                        Operators.Backward,
+                        2
+                    )
+                    rook.addMove({
+                        from: rookOldField,
+                        to: rookNewField,
+                        isCapture: false,
+                    })
+                    piecesOnField[rookOldField] = null
+                    piecesOnField[rookNewField] = rook
+                }
             }
         }
 

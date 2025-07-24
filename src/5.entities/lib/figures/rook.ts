@@ -150,7 +150,10 @@ export class Rook extends Piece {
 
     static find(squares: KeyableSquares, side: CastlingSide, color: Colors) {
         return Object.entries(squares).find(
-            ([_, rook]) => rook?.side === side && rook?.color === color
+            ([_, rook]) =>
+                rook.type === Pieces.Rook &&
+                rook?.side === side &&
+                rook?.color === color
         )
     }
 }
