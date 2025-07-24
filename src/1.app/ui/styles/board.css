@@ -1,7 +1,6 @@
 .board-wrapper {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    width: 100%;
+    border: 5px solid var(--blue-darker);
+    border-radius: 3px;
 }
 
 .board {
@@ -14,8 +13,6 @@
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     background-color: var(--blue-dark);
-    border: 5px solid var(--blue-darker);
-    border-radius: 3px;
 }
 
 .whiteField,
@@ -38,6 +35,30 @@
     background-color: var(--blue-dark);
     /* border: 1px solid rgb(250, 249, 236); */
     box-sizing: border-box;
+}
+
+.whiteField.selected:not(:has(svg)) {
+    background-color: var(--ocean-light);
+}
+
+.blackField.selected:not(:has(svg)) {
+    background-color: var(--ocean-dark);
+}
+
+.whiteField.selected:has(svg[data-color='white']) {
+    background-color: var(--lime-light);
+}
+
+.blackField.selected:has(svg[data-color='white']) {
+    background-color: var(--lime-dark);
+}
+
+.whiteField.selected:has(svg[data-color='black']) {
+    background-color: var(--yellow-light);
+}
+
+.blackField.selected:has(svg[data-color='black']) {
+    background-color: var(--yellow-dark);
 }
 
 .whiteField.pieceCanMoveHere:not(:has(svg)) {

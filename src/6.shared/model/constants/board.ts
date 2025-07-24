@@ -15,6 +15,7 @@ export type Fields = ValueOf<typeof Fields>
 export const FieldStates = {
     PieceCanMoveHere: 'pieceCanMoveHere',
     CurrentPiece: 'currentPiece',
+    Selected: 'selected',
 } as const
 export type FieldStates = ValueOf<typeof FieldStates>
 

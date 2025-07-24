@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
     addActives,
@@ -13,6 +13,7 @@ import {
     removeActives,
     setCastle,
     setEnpassant,
+    UniversalBoardDrawer,
 } from 'src/4.features/lib/helpers'
 
 import { setupBoard } from 'src/4.features/config/setupBoard'
@@ -54,6 +55,10 @@ export function useBoardControls(
     const [draggedField, setDraggedField] = useState<string>()
     const [castleAvailable, setCastleAvailable] = useState<Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState<string>(null)
+    const [boardDrawer, setBoardDrawer] = useState(null)
+    const [startDraw, setStartDraw] = useState(false)
+    const [arrow, setArrow] = useState({ from: null, to: null })
+    const [arrows, setArrows] = useState({})
     //
 
     //getting offsets for correct drag-n-drop functionality
@@ -72,8 +77,80 @@ export function useBoardControls(
     //     switchTurn()
     // })
 
+    useEffect(() => {
+        if (!chessBoardRef.current) return
+        const BoardDrawer = new UniversalBoardDrawer(chessBoardRef.current, {
+            window: window,
+            boardDimensions: [8, 8],
+            orientation: variant[0], // assuming you're playing as white
+            zIndex: 99999,
+        })
+        setBoardDrawer(BoardDrawer)
+    }, [chessBoardRef])
+
+    useEffect(() => {
+        if (!boardDrawer) return
+        boardDrawer.setOrientation(variant[0])
+    }, [variant])
+
+    useEffect(() => {
+        if (!arrow.from || !arrow.to || arrow.from === arrow.to) return
+        if (arrows[arrow.from]) {
+            arrows[arrow.from].remove()
+        }
+        const piece = squares[arrow.from]
+        const fillColor =
+            piece?.color === Colors.White
+                ? '--lime'
+                : piece?.color === Colors.Black
+                  ? '--yellow'
+                  : '--ocean'
+        const elem = boardDrawer.createShape('arrow', [arrow.from, arrow.to], {
+            style: `fill: var(${fillColor});opacity: 0.85;`,
+        })
+        setArrows({ ...arrows, [arrow.from]: elem })
+    }, [arrow])
+
+    function getField(e) {
+        const coords = {
+            x: e.clientX,
+            y: e.clientY,
+        }
+        const fieldCoords = getFieldCoordinates(
+            coords,
+            chessBoardOffsets,
+            fieldSizes,
+            variant
+        )
+        if (fieldCoords.row !== 0 && fieldCoords.col !== 0) {
+            return (
+                alphs.posOut[fieldCoords.row].toString() +
+                fieldCoords.col.toString()
+            )
+        }
+    }
+
     //onClick handler for possibility to place piece on click
     function onClick(e: any, field: string): void {
+        //handling arrow drawing
+        if (e.button === 2 && e.type === 'mousedown') {
+            setStartDraw(true)
+            const from = getField(e)
+            setArrow({ from, to: null })
+            return resetAll()
+        }
+        if (e.type === 'contextmenu') {
+            setArrow({ from: null, to: null })
+            return resetAll()
+        }
+        if (e.button === 0) {
+            Object.values(arrows).forEach((arrow: { remove: () => void }) =>
+                arrow.remove()
+            )
+            setArrows({})
+        }
+        //
+
         if (
             !e.target.classList.contains(FieldStates.PieceCanMoveHere) ||
             disabled
@@ -93,7 +170,6 @@ export function useBoardControls(
     //drag start function for taking pieces
     function dragStart(e: any): void {
         e.preventDefault()
-
         if (
             isDragStartIllegal(
                 e,
@@ -109,10 +185,6 @@ export function useBoardControls(
         if (e.target !== draggedPiece && e.target.dataset.color.includes(turn))
             setDraggedPiece(e.target)
         if (!e.target.dataset.color.includes(turn)) return
-
-        //mouse coordinates
-        const x: number = e.clientX
-        const y: number = e.clientY
 
         //getting all legal moves and display that on board
         const pieceField = e.target.parentElement.id
@@ -138,8 +210,13 @@ export function useBoardControls(
     }
     //
 
-    //drag move function for moving taked pieces
+    //drag move function for moving taken pieces
     function dragMove(e: any): void {
+        if (arrow.from) {
+            const to = getField(e)
+            setArrow({ ...arrow, to })
+        }
+
         if (!draggedPiece) return
         if (!(draggedPiece as HTMLElement).dataset.color.includes(turn)) return
 
@@ -164,6 +241,9 @@ export function useBoardControls(
 
     //drag start function for dropping pieces
     function dragDrop(e: any): void {
+        if (arrow) {
+            setArrow({ from: null, to: null })
+        }
         if (!draggedPiece && !clickedPiece) return
         if (
             draggedPiece &&
@@ -171,25 +251,9 @@ export function useBoardControls(
         )
             return
 
-        const coords = {
-            x: e.clientX,
-            y: e.clientY,
-        }
-        const dropCoords = getFieldCoordinates(
-            coords,
-            chessBoardOffsets,
-            fieldSizes,
-            variant
-        )
+        const dropField = getField(e)
 
-        //start this calculations only when dropfield is valid (not outside board)
-        //if dropfield is not valid => call resetAll()
-        if (dropCoords.row !== 0 && dropCoords.col !== 0) {
-            //getting piece data
-            const dropField =
-                alphs.posOut[dropCoords.row].toString() +
-                dropCoords.col.toString()
-
+        if (dropField) {
             const piece = squares[draggedField]
             //checking if move illegal (ex: trying to move same colors pieces on eachother)
             //if true => return
@@ -319,7 +383,7 @@ export function useBoardControls(
     }
 
     //reset board and piece states
-    function resetAll(draggedPiece: HTMLImageElement) {
+    function resetAll(draggedPiece?: HTMLImageElement) {
         if (draggedPiece) draggedPiece.setAttribute('style', '')
         setEnpassantAvailable(null)
         setDraggedPiece(null)

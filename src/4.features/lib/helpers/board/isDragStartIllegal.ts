@@ -11,6 +11,8 @@ export function isDragStartIllegal(
 ): boolean {
     if (!isSettingsReady) return true
 
+    if (e.button === 2) return true
+
     if (
         e.target.classList.contains(Fields.WhiteField) ||
         e.target.classList.contains(Fields.BlackField)

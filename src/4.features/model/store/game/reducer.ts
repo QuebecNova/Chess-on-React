@@ -156,7 +156,7 @@ export const reducer = (state: GameState, action: GameActions) => {
             state.timeExpired = action.payload.isTimeExpired
             state.endState.condition = EndCondition.TimeExpired
             state.endState.color = action.payload.color
-            return state
+            return { ...state }
         case GameActionTypes.SEND_RESTART_REQUEST:
             console.error('Not implemented')
             return state

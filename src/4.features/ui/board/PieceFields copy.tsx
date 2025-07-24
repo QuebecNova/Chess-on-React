@@ -1,5 +1,6 @@
 'use client'
 
+import { Box } from '@chakra-ui/react'
 import { ReactElement, useState } from 'react'
 import { defineColor } from 'src/4.features/lib/helpers'
 import { useGameStore } from 'src/4.features/model/providers'
@@ -29,37 +30,12 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
         touch2Mouse,
     } = props
 
+    const [selectedFields, setSelectedFields] = useState({})
+
     const variant = useGameStore((state) => state.variant)
 
-    const [selectedFields, setSelectedFields] = useState({})
-    const [lastSelectedField, setLastSelectedField] = useState(null)
-
-    function onFieldClick(e, field: string) {
-        //some magic to highlight squares on right click
-        if (e.type === 'mousedown') {
-            if (!selectedFields[field]) {
-                setSelectedFields((prev) => ({
-                    ...prev,
-                    [field]: null,
-                }))
-            }
-            setLastSelectedField(field)
-        }
-        if (e.type === 'mouseup') {
-            if (field !== lastSelectedField && !selectedFields[field]) return
-            if (field === lastSelectedField) {
-                if (selectedFields[field]) {
-                    setSelectedFields((prev) => ({
-                        ...prev,
-                        [field]: null,
-                    }))
-                } else {
-                    setSelectedFields((prev) => ({ ...prev, [field]: true }))
-                }
-            }
-            setLastSelectedField(null)
-        }
-        if (e.button !== 2) return setSelectedFields({})
+    function onFieldClick(field: string) {
+        setSelectedFields((prev) => ({ ...prev, [field]: true }))
     }
 
     const board = []
@@ -76,68 +52,66 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
             if (activeFields[field] === FieldStates.CurrentPiece)
                 isActive = FieldStates.CurrentPiece
         }
-
         if (selectedFields[field]) isActive = FieldStates.Selected
 
         if (squares[field]) {
             board.push(
-                <div
+                <Box
                     id={field}
                     className={`${defineColor(index, row)} ${isActive}`}
                     key={index}
                     style={{ height: fieldWidth }}
-                    onContextMenu={(e) => {
-                        e.preventDefault()
-                        onClick(e, field)
-                    }}
-                    onMouseMove={(e) => {
-                        dragMove(e)
-                    }}
                     onMouseDown={(e) => {
-                        onFieldClick(e, field)
+                        setSelectedFields({})
                         onClick(e, field)
                     }}
                     onMouseUp={(e) => {
-                        onFieldClick(e, field)
+                        onClick(e, field)
+                    }}
+                    onContextMenu={(e) => {
+                        e.preventDefault()
+                        onFieldClick(field)
                     }}
                 >
                     {Svg ? (
                         <Svg
                             onMouseDown={(e) => {
-                                onFieldClick(e, field)
-                                dragStart(e)
+                                if (e.nativeEvent.button === 2) {
+                                    onClick(e, null)
+                                    onFieldClick(field)
+                                } else {
+                                    setSelectedFields({})
+                                    dragStart(e)
+                                }
                             }}
-                            // onMouseMove={(e) => dragMove(e)}
+                            onMouseMove={(e) => dragMove(e)}
                             onMouseUp={(e) => drop(e)}
                             onTouchStart={(e) => touch2Mouse(e)}
                             onTouchMove={(e) => touch2Mouse(e)}
                             onTouchEnd={(e) => touch2Mouse(e)}
-                            onContextMenu={(e) => {
-                                e.preventDefault()
-                                onClick(e, field)
-                            }}
                             data-color={squares[field].color}
                         />
                     ) : (
                         <img
                             onMouseDown={(e) => {
-                                onFieldClick(e, field)
-                                dragStart(e)
+                                if (e.nativeEvent.button === 2) {
+                                    onClick(e, null)
+                                    onFieldClick(field)
+                                } else {
+                                    setSelectedFields({})
+                                    dragStart(e)
+                                }
                             }}
-                            // onMouseMove={(e) => dragMove(e)}
+                            onMouseMove={(e) => dragMove(e)}
                             onMouseUp={(e) => drop(e)}
                             onTouchStart={(e) => touch2Mouse(e)}
                             onTouchMove={(e) => touch2Mouse(e)}
                             onTouchEnd={(e) => touch2Mouse(e)}
                             alt={squares[field].type + squares[field].color}
-                            onContextMenu={(e) => {
-                                e.preventDefault()
-                                onClick(e, field)
-                            }}
                             data-color={squares[field].color}
                         />
                     )}
-                </div>
+                </Box>
             )
         } else {
             board.push(
@@ -145,21 +119,19 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
                     id={field}
                     className={`${defineColor(index, row)} ${isActive}`}
                     key={index}
-                    onContextMenu={(e) => {
-                        e.preventDefault()
-                        onClick(e, field)
-                    }}
-                    onMouseMove={(e) => {
-                        dragMove(e)
-                    }}
                     onMouseDown={(e) => {
-                        onFieldClick(e, field)
+                        setSelectedFields({})
                         onClick(e, field)
                     }}
                     onMouseUp={(e) => {
-                        onFieldClick(e, field)
+                        onClick(e, field)
                     }}
                     style={{ height: fieldWidth }}
+                    onContextMenu={(e) => {
+                        e.preventDefault()
+                        onClick(e, null)
+                        onFieldClick(field)
+                    }}
                 />
             )
         }

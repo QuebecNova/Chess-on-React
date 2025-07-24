@@ -31,7 +31,7 @@ export default function Board({ disabled }: { disabled: boolean }) {
     }, [])
 
     return (
-        <>
+        <div className="board-wrapper">
             <div
                 className="board"
                 ref={chessBoardRef}
@@ -49,6 +49,6 @@ export default function Board({ disabled }: { disabled: boolean }) {
                 />
             </div>
             <Promotion fieldWidth={fieldWidth} />
-        </>
+        </div>
     )
 }
