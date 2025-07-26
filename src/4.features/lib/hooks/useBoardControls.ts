@@ -56,7 +56,6 @@ export function useBoardControls(
     const [castleAvailable, setCastleAvailable] = useState<Array<string>>([])
     const [enpassantAvailable, setEnpassantAvailable] = useState<string>(null)
     const [boardDrawer, setBoardDrawer] = useState(null)
-    const [startDraw, setStartDraw] = useState(false)
     const [arrow, setArrow] = useState({ from: null, to: null })
     const [arrows, setArrows] = useState({})
     //
@@ -134,7 +133,6 @@ export function useBoardControls(
     function onClick(e: any, field: string): void {
         //handling arrow drawing
         if (e.button === 2 && e.type === 'mousedown') {
-            setStartDraw(true)
             const from = getField(e)
             setArrow({ from, to: null })
             return resetAll()
@@ -150,7 +148,8 @@ export function useBoardControls(
             setArrows({})
         }
         //
-
+        if (!activeFields[field] && clickedPiece && !squares[field])
+            return resetAll(e.target)
         if (
             !e.target.classList.contains(FieldStates.PieceCanMoveHere) ||
             disabled
