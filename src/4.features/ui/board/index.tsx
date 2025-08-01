@@ -22,7 +22,8 @@ export default function Board({ disabled }: { disabled: boolean }) {
         useBoardControls(chessBoardRef, disabled)
     const viewSquares = useGameStore((state) => state.viewSquares)
     const squares = useGameStore((state) => state.squares)
-    const playedMoves = useGameStore((state) => state.playedMoves)
+    const premovedSquares = useGameStore((state) => state.premovedSquares)
+    const premoves = useGameStore((state) => state.premoves)
 
     useEffect(() => {
         return () => {
@@ -38,7 +39,13 @@ export default function Board({ disabled }: { disabled: boolean }) {
                 onMouseMove={(e) => dragMove(e)}
             >
                 <PieceFields
-                    squares={viewSquares ? viewSquares : squares}
+                    squares={
+                        viewSquares
+                            ? viewSquares
+                            : premoves.length
+                              ? { ...squares, ...premovedSquares }
+                              : squares
+                    }
                     fieldWidth={fieldWidth}
                     activeFields={activeFields}
                     onClick={onClick}

@@ -149,7 +149,7 @@ export class Fen implements IFen {
 
     #getHalfmoves() {
         const halfMoveIndex = this.playedMoves.findLastIndex(
-            (move) => move.isCapture || move.piece.type === Pieces.Pawn
+            (move) => !!move.takenPiece || move.piece.type === Pieces.Pawn
         )
         if (halfMoveIndex !== -1) {
             return ' ' + (this.playedMoves.length - halfMoveIndex - 1)

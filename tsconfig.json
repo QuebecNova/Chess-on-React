@@ -25,6 +25,6 @@
         ],
         "strictNullChecks": false
     },
-    "include": ["1.app", "src", "typings.d.ts", "ui", ".next/types/**/*.ts"],
+    "include": ["src", "typings.d.ts", ".next/types/**/*.ts"],
     "exclude": ["node_modules"]
 }

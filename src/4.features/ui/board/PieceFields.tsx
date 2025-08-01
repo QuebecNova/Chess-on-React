@@ -30,6 +30,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
     } = props
 
     const variant = useGameStore((state) => state.variant)
+    const premoves = useGameStore((state) => state.premoves)
 
     const [selectedFields, setSelectedFields] = useState({})
     const [lastSelectedField, setLastSelectedField] = useState(null)
@@ -78,12 +79,18 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
         }
 
         if (selectedFields[field]) isActive = FieldStates.Selected
-
+        const isPremove =
+            premoves.length &&
+            !!premoves.find(
+                (premove) => premove.from === field || premove.to === field
+            )
+                ? 'premove'
+                : ''
         if (squares[field]) {
             board.push(
                 <div
                     id={field}
-                    className={`${defineColor(index, row)} ${isActive}`}
+                    className={`${defineColor(index, row)} ${isActive} ${isPremove}`}
                     key={index}
                     style={{ height: fieldWidth }}
                     onContextMenu={(e) => {
@@ -143,7 +150,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
             board.push(
                 <div
                     id={field}
-                    className={`${defineColor(index, row)} ${isActive}`}
+                    className={`${defineColor(index, row)} ${isActive} ${isPremove}`}
                     key={index}
                     onContextMenu={(e) => {
                         e.preventDefault()

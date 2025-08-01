@@ -111,6 +111,22 @@
     background: radial-gradient(var(--green-dark) 23%, var(--blue-dark) 24%);
 }
 
+.whiteField.premove {
+    background: radial-gradient(var(--red-pale-light) 100%);
+}
+
+.blackField.premove {
+    background: radial-gradient(var(--red-pale-dark) 100%);
+}
+
+.whiteField.pieceCanMoveHere:not(:has(svg)).premove {
+    background: radial-gradient(var(--green) 19%, var(--red-pale-light) 20%);
+}
+
+.blackField.pieceCanMoveHere:not(:has(svg)).premove {
+    background: radial-gradient(var(--green) 19%, var(--red-pale-dark) 20%);
+}
+
 .currentPiece {
     background-color: var(--green-light);
 }

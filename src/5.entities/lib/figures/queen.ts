@@ -1,11 +1,13 @@
 import { KeyableSquares } from 'src/5.entities/model'
 import { Colors, Pieces, piecesImages } from 'src/6.shared/model'
-import { alphs } from '../alphabetPositions'
 import { Bishop } from './bishop'
 import { Piece } from './piece'
 import { Rook } from './rook'
 
 export class Queen extends Piece {
+    bishop: Bishop
+    rook: Rook
+
     constructor(color: Colors) {
         super(
             color,
@@ -14,6 +16,12 @@ export class Queen extends Piece {
                 : piecesImages.WhiteQueen,
             Pieces.Queen
         )
+        this.bishop = new Bishop(this.color)
+        this.rook = new Rook(this.color)
+    }
+
+    getRawMoves(from: string): string[] {
+        return this.rook.getRawMoves(from).concat(this.bishop.getRawMoves(from))
     }
 
     canMove(
@@ -23,32 +31,26 @@ export class Queen extends Piece {
     ): string[] {
         const moves: string[] = []
 
-        const QueenExtendsBishop = new Bishop(this.color)
-        const QueenExtendsRook = new Rook(this.color)
-
-        const diagonalRawMoves = QueenExtendsBishop.canMove(
+        const diagonalRawMoves = this.bishop.canMove(
             from,
             squareState,
             movesLeadsToCheck
         )
-        const linearRawMoves = QueenExtendsRook.canMove(
+        const linearRawMoves = this.rook.canMove(
             from,
             squareState,
             movesLeadsToCheck
         )
 
         const rawMoves: string[] = [...diagonalRawMoves, ...linearRawMoves]
-
         rawMoves.forEach((move) => {
-            const num = alphs.getNum(move)
-            const movePassingValidation = move && !move[2] && num > 0 && num < 9
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
             const pieceOnMove = squareState[move]
             const sameColorPieceOnMove = pieceOnMove?.color === this.color
 
             if (sameColorPieceOnMove) return
             if (moveLeadsToCheck) return
-            if (movePassingValidation) moves.push(move)
+            if (this.isMoveValid(move)) moves.push(move)
         })
 
         return moves

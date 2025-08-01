@@ -1,14 +1,16 @@
-import { setupBoard } from 'src/4.features/config/setupBoard'
+import { playPlacedPieceSound } from 'src/4.features/lib/helpers'
 import {
-    getEndCondition,
-    playPlacedPieceSound,
-} from 'src/4.features/lib/helpers'
-import { Fen, Rook, StockfishDifficultyLevels } from 'src/5.entities/lib'
+    Chessboard,
+    Fen,
+    Rook,
+    StockfishDifficultyLevels,
+} from 'src/5.entities/lib'
 import {
+    IPiece,
     KeyableSquares,
-    NewMove,
     PlayedMove,
     Player,
+    Premove,
 } from 'src/5.entities/model'
 import { Colors, EndCondition, Move, sounds } from 'src/6.shared/model'
 import { GameState, getInitialState } from '.'
@@ -38,6 +40,8 @@ export const GameActionTypes = {
     TAKEBACK: 'TAKEBACK',
     VIEW_SQUARES: 'VIEW_SQUARES',
     INCREMENT: 'INCREMENT',
+    PREMOVE: 'PREMOVE',
+    RESET_PREMOVES: 'RESET_PREMOVES',
 } as const
 
 export type GameActions =
@@ -96,7 +100,7 @@ export type GameActions =
       }
     | {
           type: typeof GameActionTypes.PROMOTION_MOVE
-          payload: { promotionMove: Move }
+          payload: { promotionMove: Move & { premove?: boolean } }
       }
     | {
           type: typeof GameActionTypes.FEN
@@ -104,7 +108,7 @@ export type GameActions =
       }
     | {
           type: typeof GameActionTypes.NEW_MOVE
-          payload: NewMove
+          payload: Move & { promotionTo?: IPiece }
       }
     | {
           type: typeof GameActionTypes.WITH_COMPUTER
@@ -134,6 +138,13 @@ export type GameActions =
           type: typeof GameActionTypes.INCREMENT
           payload: { increment: number }
       }
+    | {
+          type: typeof GameActionTypes.PREMOVE
+          payload: Omit<Premove, 'piece'>
+      }
+    | {
+          type: typeof GameActionTypes.RESET_PREMOVES
+      }
 
 export const reducer = (state: GameState, action: GameActions) => {
     switch (action.type) {
@@ -142,10 +153,10 @@ export const reducer = (state: GameState, action: GameActions) => {
         case GameActionTypes.COMPUTER_DIFFICULTY:
         case GameActionTypes.SQUARES:
         case GameActionTypes.IN_GAME:
-        case GameActionTypes.VARIANT:
         case GameActionTypes.TURN:
         case GameActionTypes.PROMOTION_MOVE:
         case GameActionTypes.PLAYED_MOVES:
+        case GameActionTypes.VARIANT:
         case GameActionTypes.OFFLINE:
         case GameActionTypes.INCREMENT:
             return {
@@ -168,37 +179,35 @@ export const reducer = (state: GameState, action: GameActions) => {
                     ? Colors.White
                     : Colors.Black
             ].isCurrentUser = false
+            state.chessboard.setupBoard(action.payload.side)
             return state
         case GameActionTypes.RESTART_GAME:
             //changing players colors
+            const newState = getInitialState()
             if (state.players[Colors.Black].isCurrentUser) {
-                state.players[Colors.Black].isCurrentUser = false
-                state.players[Colors.White].isCurrentUser = true
+                newState.players[Colors.Black].isCurrentUser = false
+                newState.players[Colors.White].isCurrentUser = true
             } else if (state.players[Colors.White].isCurrentUser) {
-                state.players[Colors.White].isCurrentUser = false
-                state.players[Colors.Black].isCurrentUser = true
+                newState.players[Colors.White].isCurrentUser = false
+                newState.players[Colors.Black].isCurrentUser = true
             }
 
-            state.players[Colors.Black].timer = state.initTimer
-            state.players[Colors.White].timer = state.initTimer
-
+            newState.players[Colors.Black].timer = newState.initTimer
+            newState.players[Colors.White].timer = newState.initTimer
+            newState.variant =
+                state.variant === Colors.White ? Colors.Black : Colors.White
+            if (state.withComputer) {
+                newState.withComputer = true
+            }
+            if (state.isOfflineMode) {
+                newState.isOfflineMode = true
+            }
+            newState.isInGame = true
+            state.chessboard.setupBoard(newState.variant)
+            newState.chessboard = state.chessboard
             sounds.newGame.play()
-
             return {
-                ...state,
-                squares: setupBoard(),
-                playedMoves: [],
-                timeExpired: false,
-                isTimerSet: false,
-                turn: Colors.White,
-                variant:
-                    state.variant === Colors.White
-                        ? Colors.Black
-                        : Colors.White,
-                endState: { condition: null, color: null },
-                promotionMove: null,
-                fen: new Fen(setupBoard()).fen,
-                vieSquares: null,
+                ...newState,
             }
         case GameActionTypes.RESET_STORE:
             return getInitialState()
@@ -220,79 +229,103 @@ export const reducer = (state: GameState, action: GameActions) => {
                 playedMoves: [...state.playedMoves, action.payload.move],
             }
         case GameActionTypes.NEW_MOVE:
-            if (
-                (
-                    [
-                        EndCondition.Checkmate,
-                        EndCondition.Draw,
-                        EndCondition.Resign,
-                        EndCondition.Stalemate,
-                        EndCondition.TimeExpired,
-                    ] as EndCondition[]
-                ).includes(state.endState.condition)
-            )
-                return
+            let localState = state
 
-            playPlacedPieceSound(action.payload.move.isCapture)
+            function playNewMove(
+                newState: GameState,
+                action: { payload: Move & { promotionTo?: IPiece } },
+                premove?: true
+            ) {
+                if (!localState.premoves.length) {
+                    localState.premovedSquares = {}
+                }
 
-            if (action.payload.promotionTo) {
-                state.promotionMove = null
+                const result = state.chessboard.move(
+                    action.payload.from,
+                    action.payload.to,
+                    action.payload.promotionTo
+                )
+
+                if (result.invalid || !result.playedMove) {
+                    localState.premoves = []
+                    localState.premovedSquares = {}
+                    return
+                }
+
+                if (
+                    result.playedMove.takenPiece &&
+                    state.premovedSquares[result.playedMove.to]
+                ) {
+                    localState.premoves = []
+                    localState.premovedSquares = {}
+                }
+
+                const newSquares = {
+                    ...newState.squares,
+                    ...result.playedMove.squares,
+                }
+
+                playPlacedPieceSound(!!result.playedMove.takenPiece)
+
+                if (action.payload.promotionTo || state.promotionMove) {
+                    newState.promotionMove = null
+                }
+
+                const turn =
+                    newState.turn === Colors.White ? Colors.Black : Colors.White
+
+                const endCondition = state.chessboard.endState.condition
+
+                if (newState.isOfflineMode) {
+                    newState.players[newState.turn].isCurrentUser = false
+                    newState.players[turn].isCurrentUser = true
+                }
+
+                const endState = {
+                    condition: endCondition,
+                    color: turn,
+                }
+
+                if (
+                    endCondition === EndCondition.Check ||
+                    endCondition === EndCondition.Checkmate
+                )
+                    sounds.check.play()
+
+                const playedMoves = [...newState.playedMoves, result.playedMove]
+
+                if (newState.increment) {
+                    newState.players[newState.turn].timer =
+                        newState.players[newState.turn].timer +
+                        newState.increment * 1000
+                }
+
+                if (premove) {
+                    newState.premoves.shift()
+                }
+
+                localState = {
+                    ...newState,
+                    squares: newSquares,
+                    playedMoves,
+                    turn,
+                    fen: new Fen(newSquares, playedMoves, turn).fen,
+                    endState,
+                }
+            }
+            playNewMove(localState, action)
+            const premove = localState.premoves[0]
+            if (premove) {
+                playNewMove(
+                    localState,
+                    {
+                        payload: premove,
+                    },
+                    true
+                )
             }
 
-            const turn =
-                state.turn === Colors.White ? Colors.Black : Colors.White
-
-            const endCondition = getEndCondition(action.payload.squares, turn)
-
-            if (state.isOfflineMode) {
-                state.players[state.turn].isCurrentUser = false
-                state.players[turn].isCurrentUser = true
-            }
-
-            const endState = {
-                condition: endCondition,
-                color: turn,
-            }
-
-            if (
-                endCondition === EndCondition.Check ||
-                endCondition === EndCondition.Checkmate
-            )
-                sounds.check.play()
-
-            const playedMove: PlayedMove = {
-                ...action.payload.move,
-                piece: action.payload.piece,
-                takenPiece: action.payload.takenPiece
-                    ? action.payload.takenPiece
-                    : action.payload.move.isCapture
-                      ? state.squares[action.payload.move.to]
-                      : null,
-                endState,
-                castlingSide: action.payload.castlingSide
-                    ? action.payload.castlingSide
-                    : null,
-                promotionTo: action.payload.promotionTo
-                    ? action.payload.promotionTo
-                    : null,
-                isEnpassant: action.payload.isEnpassant ?? false,
-                squares: action.payload.squares,
-            }
-            const playedMoves = [...state.playedMoves, playedMove]
-
-            if (state.increment) {
-                state.players[state.turn].timer =
-                    state.players[state.turn].timer + state.increment * 1000
-            }
-
-            return {
-                ...state,
-                squares: action.payload.squares,
-                playedMoves,
-                turn,
-                fen: new Fen(action.payload.squares, playedMoves, turn).fen,
-                endState,
-            }
+            return localState
         case GameActionTypes.END_STATE:
             return { ...state, endState: action.payload }
         case GameActionTypes.TAKEBACK:
@@ -322,7 +355,7 @@ export const reducer = (state: GameState, action: GameActions) => {
             }
 
             function resetMove(move: PlayedMove) {
-                if (move.isCapture && !move.isEnpassant) {
+                if (!!move.takenPiece && !move.isEnpassant) {
                     newSquares[move.to] = move.takenPiece
                 } else {
                     newSquares[move.to] = null
@@ -380,7 +413,7 @@ export const reducer = (state: GameState, action: GameActions) => {
                 state.viewSquares = null
             } else {
                 const move = state.playedMoves[action.payload.moveIndex]
-                if (move.isCapture || move.isEnpassant) {
+                if (!!move.takenPiece || move.isEnpassant) {
                     sounds.takePiece.play()
                 } else {
                     sounds.placePiece.play()
@@ -388,6 +421,39 @@ export const reducer = (state: GameState, action: GameActions) => {
                 state.viewSquares = move.squares
             }
             return { ...state }
+        case GameActionTypes.PREMOVE:
+            let squares = { ...state.squares, ...state.premovedSquares }
+            const piece = squares[action.payload.from]
+            let piecesOnFields = {
+                [action.payload.from]: null,
+                [action.payload.to]: action.payload.promotionTo ?? piece,
+            }
+
+            if (action.payload.promotionTo) {
+                state.promotionMove = null
+            }
+
+            if (piece?.canCastleTo) {
+                const { modifiedPieceOnField } = Chessboard.getFieldsForCastle(
+                    squares,
+                    action.payload.from,
+                    action.payload.to,
+                    true
+                )
+                piecesOnFields = { ...piecesOnFields, ...modifiedPieceOnField }
+            }
+
+            state.premoves.push({ ...action.payload, piece })
+
+            state.premovedSquares = {
+                ...state.premovedSquares,
+                ...piecesOnFields,
+            }
+            return { ...state }
+        case GameActionTypes.RESET_PREMOVES:
+            state.premoves = []
+            state.premovedSquares = {}
+            return state
         default:
             return state
     }

@@ -55,12 +55,12 @@ export default function ComputerGame({ disabled }: { disabled: boolean }) {
 
         timeout = setTimeout(() => {
             makeStockfishMove()
-        }, 200)
+        }, 2000)
 
         return () => {
             clearTimeout(timeout)
         }
-    }, [turn, currentPlayer])
+    }, [squares])
 
     useEffect(() => {
         return () => {

@@ -14,14 +14,8 @@ export class Knight extends Piece {
         )
     }
 
-    canMove(
-        from: string,
-        squareState: KeyableSquares,
-        movesLeadsToCheck: KeyableSquares
-    ): string[] {
-        const moves: string[] = []
-
-        const rawMoves: string[] = [
+    getRawMoves(from: string) {
+        const moves = [
             alphs.changeAlphPos(
                 from,
                 Operators.Forward,
@@ -79,17 +73,24 @@ export class Knight extends Piece {
                 1
             ),
         ]
+        return moves
+    }
 
-        rawMoves.forEach((move) => {
-            const num = alphs.getNum(move)
+    canMove(
+        from: string,
+        squareState: KeyableSquares,
+        movesLeadsToCheck: KeyableSquares
+    ): string[] {
+        const moves: string[] = []
+
+        this.getRawMoves(from).forEach((move) => {
             const pieceOnMove = squareState[move]
             const samePieceOnMove = pieceOnMove?.color === this.color
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
-            const movePassingValidation = move && !move[2] && num > 0 && num < 9
 
             if (samePieceOnMove) return
             if (moveLeadsToCheck) return
-            if (movePassingValidation) moves.push(move)
+            if (this.isMoveValid(move)) moves.push(move)
         })
 
         return moves

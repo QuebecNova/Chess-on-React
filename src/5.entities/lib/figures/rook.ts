@@ -1,4 +1,4 @@
-import { KeyableSquares } from 'src/5.entities/model'
+import { IPiece, KeyableSquares } from 'src/5.entities/model'
 import {
     CastlingSide,
     Colors,
@@ -25,15 +25,8 @@ export class Rook extends Piece {
 
         this.side = side
     }
-
-    canMove(
-        from: string,
-        squareState: KeyableSquares,
-        movesLeadsToCheck: KeyableSquares
-    ): string[] {
-        const moves: string[] = []
-
-        const rawMoves: string[] = [
+    getRawMoves(from: string): string[] {
+        const moves = [
             // rows 0-13
             // 0-6 left
             alphs.changeAlphPos(from, Operators.Backward, 1),
@@ -72,6 +65,14 @@ export class Rook extends Piece {
             alphs.changeNumPos(from, Operators.Forward, 6),
             alphs.changeNumPos(from, Operators.Forward, 7),
         ]
+        return moves
+    }
+    canMove(
+        from: string,
+        squareState: KeyableSquares,
+        movesLeadsToCheck: KeyableSquares
+    ): string[] {
+        const moves: string[] = []
 
         let pieceInbackCol = false
         let pieceInfrontCol = false
@@ -79,9 +80,7 @@ export class Rook extends Piece {
         let pieceInbackRow = false
         let pieceInfrontRow = false
 
-        rawMoves.forEach((move, index) => {
-            const num = alphs.getNum(move)
-            const movePassingValidation = move && !move[2] && num > 0 && num < 9
+        this.getRawMoves(from).forEach((move, index) => {
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
             const pieceOnMove = squareState[move]
 
@@ -137,7 +136,7 @@ export class Rook extends Piece {
             }
 
             if (moveLeadsToCheck) return
-            if (movePassingValidation) moves.push(move)
+            if (this.isMoveValid(move)) moves.push(move)
         })
 
         return moves
@@ -148,12 +147,23 @@ export class Rook extends Piece {
         return this.lastMoves
     }
 
-    static find(squares: KeyableSquares, side: CastlingSide, color: Colors) {
-        return Object.entries(squares).find(
-            ([_, rook]) =>
-                rook.type === Pieces.Rook &&
-                rook?.side === side &&
-                rook?.color === color
+    static find(
+        squares: KeyableSquares,
+        side: CastlingSide,
+        color: Colors
+    ): [string, IPiece] | [] {
+        return (
+            Object.entries(squares).find(([_, piece]) =>
+                Rook.checkForRook(piece, side, color)
+            ) || []
+        )
+    }
+
+    static checkForRook(piece: IPiece, side: CastlingSide, color: Colors) {
+        return (
+            piece?.type === Pieces.Rook &&
+            piece?.side === side &&
+            piece?.color === color
         )
     }
 }

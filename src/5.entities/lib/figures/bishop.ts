@@ -13,15 +13,8 @@ export class Bishop extends Piece {
             Pieces.Bishop
         )
     }
-
-    canMove(
-        from: string,
-        squareState: KeyableSquares,
-        movesLeadsToCheck: KeyableSquares
-    ): string[] {
-        const moves: string[] = []
-
-        const rawMoves: string[] = [
+    getRawMoves(from: string): string[] {
+        const moves: string[] = [
             //NW diagonal 0-6
             alphs.changeAlphPos(
                 from,
@@ -226,17 +219,23 @@ export class Bishop extends Piece {
                 7
             ),
         ]
+        return moves
+    }
+    canMove(
+        from: string,
+        squareState: KeyableSquares,
+        movesLeadsToCheck: KeyableSquares
+    ): string[] {
+        const moves: string[] = []
 
         let NWDiagonalHavePiece = false
         let SEDiagonalHavePiece = false
         let NEDiagonalHavePiece = false
         let SWDiagonalHavePiece = false
 
-        rawMoves.forEach((move, index) => {
+        this.getRawMoves(from).forEach((move, index) => {
             const moveLeadsToCheck = movesLeadsToCheck?.[move]
-            const num = alphs.getNum(move)
 
-            const movePassingValidation = move && !move[2] && num > 0 && num < 9
             const pieceOnMove = squareState[move]
 
             const NWDiagonal = index < 7
@@ -291,7 +290,7 @@ export class Bishop extends Piece {
             }
 
             if (moveLeadsToCheck) return
-            if (movePassingValidation) moves.push(move)
+            if (this.isMoveValid(move)) moves.push(move)
         })
 
         return moves

@@ -4,30 +4,18 @@ import { useEffect, useState } from 'react'
 
 import {
     addActives,
-    checkForCastle,
-    checkForEnpassant,
     getFieldCoordinates,
-    getMovesThatLeadsToCheck,
     getSquares,
     isDragStartIllegal,
     removeActives,
-    setCastle,
-    setEnpassant,
     UniversalBoardDrawer,
 } from 'src/4.features/lib/helpers'
 
-import { setupBoard } from 'src/4.features/config/setupBoard'
 import { useChessBoardOffsets } from 'src/4.features/lib/hooks'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
-import { alphs } from 'src/5.entities/lib'
-import {
-    CastlingSide,
-    Colors,
-    FieldStates,
-    Move,
-    Pieces,
-} from 'src/6.shared/model'
+import { alphs, Chessboard } from 'src/5.entities/lib'
+import { Colors, FieldStates, Move } from 'src/6.shared/model'
 
 type ReturnType = [
     dragStart: (e: any) => void,
@@ -44,17 +32,23 @@ export function useBoardControls(
     const dispatch = useGameStore((state) => state.dispatch)
     const players = useGameStore((state) => state.players)
     const squares = useGameStore((state) => state.squares)
+    const premovedSquares = useGameStore((state) => state.premovedSquares)
     const turn = useGameStore((state) => state.turn)
     const variant = useGameStore((state) => state.variant)
     const playedMoves = useGameStore((state) => state.playedMoves)
     const withComputer = useGameStore((state) => state.withComputer)
+    const premoves = useGameStore((state) => state.premoves)
+    const isOfflineMode = useGameStore((state) => state.isOfflineMode)
+    const chessboard = useGameStore((state) => state.chessboard)
+
+    const squaresState = premoves.length
+        ? { ...squares, ...premovedSquares }
+        : squares
 
     const [activeFields, setActiveFields] = useState(getSquares(null))
     const [draggedPiece, setDraggedPiece] = useState<HTMLImageElement>(null)
     const [clickedPiece, setClickedPiece] = useState<HTMLImageElement>(null)
     const [draggedField, setDraggedField] = useState<string>()
-    const [castleAvailable, setCastleAvailable] = useState<Array<string>>([])
-    const [enpassantAvailable, setEnpassantAvailable] = useState<string>(null)
     const [boardDrawer, setBoardDrawer] = useState(null)
     const [arrow, setArrow] = useState({ from: null, to: null })
     const [arrows, setArrows] = useState({})
@@ -66,11 +60,11 @@ export function useBoardControls(
         useChessBoardOffsets(chessBoardRef)
     //
 
-    // useSocket('piece-on-field', (pieceOnFieldData: KeyablePieceOnField) => {
-    //     const pieceOnField = parsePieceOnField(pieceOnFieldData, squares)
+    // useSocket('piece-on-field', (piecesOnFieldData: KeyablePiecesOnFields) => {
+    //     const piecesOnFields = parsePiecesOnFields(piecesOnFieldData, squares)
     //     dispatch({
     //         type: GameActionTypes.SQUARES,
-    //         payload: { squares: { ...squares, ...pieceOnField } },
+    //         payload: { squares: { ...squares, ...piecesOnFields } },
     //     })
     //     //BUG
     //     switchTurn()
@@ -81,7 +75,7 @@ export function useBoardControls(
         const BoardDrawer = new UniversalBoardDrawer(chessBoardRef.current, {
             window: window,
             boardDimensions: [8, 8],
-            orientation: variant[0], // assuming you're playing as white
+            orientation: variant[0],
             zIndex: 99999,
         })
         setBoardDrawer(BoardDrawer)
@@ -91,6 +85,12 @@ export function useBoardControls(
         if (!boardDrawer) return
         boardDrawer.setOrientation(variant[0])
     }, [variant])
+
+    useEffect(() => {
+        if (squares[draggedField]?.color !== (isOfflineMode ? turn : variant)) {
+            resetAll()
+        }
+    }, [squares])
 
     useEffect(() => {
         if (!arrow.from || !arrow.to || arrow.from === arrow.to) return
@@ -139,6 +139,7 @@ export function useBoardControls(
         }
         if (e.type === 'contextmenu') {
             setArrow({ from: null, to: null })
+            dispatch({ type: GameActionTypes.RESET_PREMOVES })
             return resetAll()
         }
         if (e.button === 0) {
@@ -148,8 +149,8 @@ export function useBoardControls(
             setArrows({})
         }
         //
-        if (!activeFields[field] && clickedPiece && !squares[field])
-            return resetAll(e.target)
+        if (!activeFields[field] && clickedPiece && !squaresState[field])
+            return resetAll()
         if (
             !e.target.classList.contains(FieldStates.PieceCanMoveHere) ||
             disabled
@@ -180,25 +181,27 @@ export function useBoardControls(
         )
             return
 
-        if (e.target.dataset.color.includes(turn)) setClickedPiece(e.target)
-        if (e.target !== draggedPiece && e.target.dataset.color.includes(turn))
+        if (e.target.dataset.color.includes(isOfflineMode ? turn : variant))
+            setClickedPiece(e.target)
+        if (
+            e.target !== draggedPiece &&
+            e.target.dataset.color.includes(isOfflineMode ? turn : variant)
+        )
             setDraggedPiece(e.target)
-        if (!e.target.dataset.color.includes(turn)) return
+        if (!e.target.dataset.color.includes(isOfflineMode ? turn : variant))
+            return
 
         //getting all legal moves and display that on board
         const pieceField = e.target.parentElement.id
         setDraggedField(pieceField)
-        const piece = squares[pieceField]
-        const moves = piece.canMove(
-            pieceField,
-            squares,
-            getMovesThatLeadsToCheck(squares, piece, pieceField, turn),
-            setupBoard(),
-            playedMoves
-        )
-
-        setEnpassant(moves, piece, setEnpassantAvailable)
-        setCastle(moves, piece, setCastleAvailable)
+        const piece = squaresState[pieceField]
+        let moves = []
+        console.log(turn !== variant && !isOfflineMode)
+        if (turn !== variant && !isOfflineMode) {
+            moves = chessboard.getPremoves(pieceField, premoves, piece)
+        } else {
+            moves = chessboard.getMoves(pieceField)
+        }
         addActives(moves, pieceField, setActiveFields)
 
         //moving static piece image to cursor (field offsets needed to center piece on cursor)
@@ -217,7 +220,12 @@ export function useBoardControls(
         }
 
         if (!draggedPiece) return
-        if (!(draggedPiece as HTMLElement).dataset.color.includes(turn)) return
+        if (
+            !(draggedPiece as HTMLElement).dataset.color.includes(
+                isOfflineMode ? turn : variant
+            )
+        )
+            return
 
         //mouse coordinates (field offsets included)
         const x =
@@ -231,7 +239,7 @@ export function useBoardControls(
             fieldOffsets.y +
             (window ? window.scrollY : 0)
 
-        // //moving static piece image to cursor when move it
+        //moving static piece image to cursor when move it
         draggedPiece.style.position = 'absolute'
         draggedPiece.style.left = `${x}px`
         draggedPiece.style.top = `${y}px`
@@ -246,101 +254,60 @@ export function useBoardControls(
         if (!draggedPiece && !clickedPiece) return
         if (
             draggedPiece &&
-            !(draggedPiece as HTMLElement).dataset.color.includes(turn)
+            !(draggedPiece as HTMLElement).dataset.color.includes(
+                isOfflineMode ? turn : variant
+            )
         )
             return
 
         const dropField = getField(e)
 
         if (dropField) {
-            const piece = squares[draggedField]
-            //checking if move illegal (ex: trying to move same colors pieces on eachother)
-            //if true => return
-            const IllegalMove =
-                squares[dropField]?.color === piece.color ||
-                !activeFields[dropField]
-            const tryingToMoveOnInitialField = piece === squares[dropField]
-
-            if (IllegalMove) {
-                if (tryingToMoveOnInitialField) {
-                    if (draggedPiece) draggedPiece.setAttribute('style', '')
-                    setDraggedPiece(null)
-                    return
-                }
-                resetAll(draggedPiece)
+            if (draggedField === dropField) {
+                if (draggedPiece) draggedPiece.setAttribute('style', '')
+                setDraggedPiece(null)
                 return
             }
-            //
 
-            let pieceOnField = {
-                [draggedField]: null,
-                [dropField]: piece,
+            if (!activeFields[dropField]) {
+                resetAll()
+                return
             }
-            let takenPiece = squares[dropField]
-            //enpassant and castle dataset
-            let enpassanted = false
-            let castledRookInitialField: string | null = null
 
-            if (enpassantAvailable) {
-                const [isEnpassanted, enpassantedFields, enpassantedPiece] =
-                    checkForEnpassant(
-                        squares,
-                        dropField,
-                        draggedField,
-                        enpassantAvailable
-                    )
-                if (isEnpassanted) {
-                    pieceOnField = { ...pieceOnField, ...enpassantedFields }
-                    enpassanted = true
-                    takenPiece = enpassantedPiece
-                }
-            }
-            let castledSide: CastlingSide | null = null
-            if (castleAvailable.length) {
-                const {
-                    modifiedPieceOnField,
-                    rookInitialPieceField,
-                    castlingSide,
-                } = checkForCastle(
-                    squares,
-                    dropField,
-                    draggedField,
-                    castleAvailable
-                )
-                pieceOnField = {
-                    ...pieceOnField,
-                    ...modifiedPieceOnField,
-                }
-                castledRookInitialField = rookInitialPieceField
-                castledSide = castlingSide
-            }
-            //
-
-            const isCapture = !!squares[dropField] || enpassanted
             const move: Move = {
                 from: draggedField,
                 to: dropField,
-                isCapture,
             }
-            //handling promotions for pawns
-            const blackPawnOnPromotionField =
-                dropField[1] === '1' &&
-                piece.type === Pieces.Pawn &&
-                piece.color === Colors.Black
-            const whitePawnOnPromotionField =
-                dropField[1] === '8' &&
-                piece.type === Pieces.Pawn &&
-                piece.color === Colors.White
-            const pawnOnPromotionField =
-                blackPawnOnPromotionField || whitePawnOnPromotionField
 
-            if (pawnOnPromotionField && piece.color === turn) {
+            const isPromotion = Chessboard.isPromotion(
+                squaresState[move.from],
+                move.to
+            )
+            if (variant !== turn && !isOfflineMode) {
+                if (isPromotion) {
+                    dispatch({
+                        type: GameActionTypes.PROMOTION_MOVE,
+                        payload: {
+                            promotionMove: { ...move, premove: true },
+                        },
+                    })
+                } else {
+                    dispatch({
+                        type: GameActionTypes.PREMOVE,
+                        payload: move,
+                    })
+                }
+                resetAll()
+                return
+            }
+
+            if (isPromotion) {
                 dispatch({
                     type: GameActionTypes.PROMOTION_MOVE,
                     payload: { promotionMove: move },
                 })
 
-                resetAll(draggedPiece)
+                resetAll()
 
                 return
             }
@@ -349,42 +316,31 @@ export function useBoardControls(
 
             //sending moved piece data to server if not in offline mode
             // if (!settings.offlineMode) {
-            //     const pieceOnFieldForServer = getPieceOnFieldForServer(
-            //         pieceOnField,
+            //     const piecesOnFieldForServers = getPiecesOnFieldForServers(
+            //         piecesOnFields,
             //         castleAvailable,
             //         castledRookInitialField,
             //         draggedField
             //     )
 
-            //     socket.emit('move-played', pieceOnFieldForServer)
-            //     console.log(pieceOnFieldForServer)
+            //     socket.emit('move-played', piecesOnFieldForServers)
+            //     console.log(piecesOnFieldForServers)
             // }
-
-            if (piece.addMove) piece.addMove(move)
 
             dispatch({
                 type: GameActionTypes.NEW_MOVE,
-                payload: {
-                    squares: { ...squares, ...pieceOnField },
-                    move,
-                    promotionTo: null,
-                    takenPiece,
-                    piece,
-                    isEnpassant: enpassanted,
-                    castlingSide: castledSide,
-                },
+                payload: move,
             })
 
-            resetAll(draggedPiece)
+            resetAll()
         } else {
-            resetAll(draggedPiece)
+            resetAll()
         }
     }
 
     //reset board and piece states
-    function resetAll(draggedPiece?: HTMLImageElement) {
+    function resetAll() {
         if (draggedPiece) draggedPiece.setAttribute('style', '')
-        setEnpassantAvailable(null)
         setDraggedPiece(null)
         setClickedPiece(null)
         removeActives(activeFields, setActiveFields)

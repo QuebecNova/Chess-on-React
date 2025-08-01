@@ -1,6 +1,11 @@
 import { setupBoard } from 'src/4.features/config/setupBoard'
-import { Fen, StockfishDifficultyLevels } from 'src/5.entities/lib'
-import { KeyableSquares, PlayedMove, Player } from 'src/5.entities/model'
+import { Chessboard, Fen, StockfishDifficultyLevels } from 'src/5.entities/lib'
+import {
+    KeyableSquares,
+    PlayedMove,
+    Player,
+    Premove,
+} from 'src/5.entities/model'
 import { Colors, EndCondition, Move } from 'src/6.shared/model'
 import { Dispatch } from 'src/6.shared/model/types/Dispatch'
 import { createStore } from 'zustand'
@@ -15,7 +20,7 @@ export type GameState = {
     squares: KeyableSquares
     timeExpired: boolean
     isInGame: boolean
-    promotionMove: Move | null
+    promotionMove: (Move & { premove?: boolean }) | null
     endState: {
         condition: EndCondition | null
         color: Colors | null
@@ -31,6 +36,9 @@ export type GameState = {
     computerDifficulty: keyof StockfishDifficultyLevels
     isOfflineMode: boolean
     viewSquares: KeyableSquares | null
+    premoves: Premove[] //queue
+    premovedSquares: KeyableSquares
+    chessboard: Chessboard
 }
 
 export type GameStore = GameState & Dispatch<GameActions>
@@ -59,6 +67,9 @@ export const getInitialState = (): GameState => ({
     computerDifficulty: 1,
     isOfflineMode: false,
     viewSquares: null,
+    premoves: [],
+    premovedSquares: {},
+    chessboard: new Chessboard({ squares: setupBoard() }),
 })
 
 export const createGameStore = () =>

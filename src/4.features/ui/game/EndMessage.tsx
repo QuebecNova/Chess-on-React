@@ -8,10 +8,10 @@ import { GameActionTypes } from 'src/4.features/model/store/game'
 import { useIsGameEnded } from 'src/4.features/model/store/game/selectors'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
+import { capitalize } from 'src/6.shared/lib/helpers'
 import { EndCondition } from 'src/6.shared/model'
 import Button from 'src/6.shared/ui/button'
 import { Modal } from 'src/6.shared/ui/modal'
-import { capitalize } from './../../../6.shared/lib/helpers/misc/capitalize'
 import Waiting from './Waiting'
 
 export default function EndMessage(): ReactElement {
@@ -19,6 +19,8 @@ export default function EndMessage(): ReactElement {
     const turn = useGameStore((state) => state.turn)
     const players = useGameStore((state) => state.players)
     const endState = useGameStore((state) => state.endState)
+    const isOfflineMode = useGameStore((state) => state.isOfflineMode)
+    const withComputer = useGameStore((state) => state.withComputer)
     const [open, setOpen] = useState(false)
     const isGameEnded = useIsGameEnded()
     const [isRestarting, setIsRestarting] = useState(false)
@@ -51,7 +53,7 @@ export default function EndMessage(): ReactElement {
 
     function restart() {
         setOpen(false)
-        if (settings.offlineMode) {
+        if (isOfflineMode || withComputer) {
             dispatch({
                 type: GameActionTypes.RESTART_GAME,
             })

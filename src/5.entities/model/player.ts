@@ -1,4 +1,5 @@
 import { Colors } from 'src/6.shared/model'
+import { Premove } from './types/Move'
 
 export class Player {
     readonly color: Colors
@@ -6,6 +7,7 @@ export class Player {
     isPlaying: boolean
     isCurrentUser: boolean
     wantsRestart: boolean
+    premoves: Premove[]
 
     constructor(color: Colors, isPlaying: boolean, isCurrentUser: boolean) {
         this.color = color
@@ -13,5 +15,6 @@ export class Player {
         this.timer = 300000
         this.isCurrentUser = isCurrentUser
         this.wantsRestart = false
+        this.premoves = []
     }
 }

@@ -1,8 +1,4 @@
-export { getEndCondition } from './board/checkAndMate/getEndCondition'
-export { getMovesThatLeadsToCheck } from './board/checkAndMate/getMovesThatLeadsToCheck'
 export { defineColor } from './board/defineColor'
-export { setCastle, setEnpassant } from './board/dragStartHandlers'
-export { checkForCastle, checkForEnpassant } from './board/dropHandlers'
 export { getFieldCoordinates } from './board/getFieldCoordinates'
 export { getPieceOnFieldForServer } from './board/getPieceForServer'
 export { getSquares } from './board/getSquares'

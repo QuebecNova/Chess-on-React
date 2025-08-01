@@ -1,5 +1,6 @@
-import { IPiece, KeyableSquares } from 'src/5.entities/model'
+import { IPiece, KeyableSquares, Premove } from 'src/5.entities/model'
 import { Colors, Pieces } from 'src/6.shared/model'
+import { alphs } from '../alphabetPositions'
 
 export class Piece implements IPiece {
     readonly color: Colors
@@ -25,5 +26,34 @@ export class Piece implements IPiece {
             throw new Error('missing arguments')
         const moves = []
         return moves
+    }
+
+    getRawMoves(
+        from: string,
+        color?: Colors,
+        squareState?: KeyableSquares,
+        premoves?: Premove[]
+    ): string[] {
+        return []
+    }
+
+    isMoveValid(move: string, index?: number) {
+        const num = alphs.getNum(move)
+
+        return move && !move[2] && num > 0 && num < 9
+    }
+
+    static filterInvalidMoves(
+        moves: string[],
+        piece: IPiece,
+        premoves?: Premove[],
+        field?: string
+    ) {
+        if (piece.type === Pieces.Pawn) {
+            console.log(moves)
+        }
+        return moves.filter((move, index) =>
+            piece.isMoveValid(move, index, premoves, field)
+        )
     }
 }

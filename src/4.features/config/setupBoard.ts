@@ -1,11 +1,15 @@
-import { Bishop, King, Knight, Pawn, Queen, Rook } from 'src/5.entities/lib'
+import { getSquares } from 'src/4.features/lib/helpers/board/getSquares'
+import { Bishop } from 'src/5.entities/lib/figures/bishop'
+import { King } from 'src/5.entities/lib/figures/king'
+import { Knight } from 'src/5.entities/lib/figures/knight'
+import { Pawn } from 'src/5.entities/lib/figures/pawn'
+import { Queen } from 'src/5.entities/lib/figures/queen'
+import { Rook } from 'src/5.entities/lib/figures/rook'
 import { KeyableSquares } from 'src/5.entities/model'
 import { CastlingSide, Colors } from 'src/6.shared/model'
-import { getSquares } from './../lib/helpers/board/getSquares'
 
 export function setupBoard(): KeyableSquares {
     const squares = getSquares(null)
-
     squares.a8 = new Rook(Colors.Black, CastlingSide.QueenSide)
     squares.b8 = new Knight(Colors.Black)
     squares.c8 = new Bishop(Colors.Black)
