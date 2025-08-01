@@ -7,7 +7,7 @@ export function parsePieceOnField(
 ): KeyablePieceOnField {
     //parsing raw piece data to valid pieceOnField data for setSquares
 
-    const pieceOnField = {}
+    const pieceOnField: KeyableSquares = {}
 
     for (const [key, value] of Object.entries(pieceData)) {
         if (value && isKeyableString(value)) {

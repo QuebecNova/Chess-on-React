@@ -12,6 +12,7 @@ import {
 } from 'src/4.features/lib/helpers'
 
 import { useChessBoardOffsets } from 'src/4.features/lib/hooks'
+import { ActiveFields } from 'src/4.features/model'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { alphs, Chessboard } from 'src/5.entities/lib'
@@ -22,8 +23,12 @@ type ReturnType = [
     dragMove: (e: any) => void,
     dragDrop: (e: any) => void,
     onClick: (e: any, field: string) => void,
-    activeFields: object,
+    activeFields: ActiveFields,
 ]
+
+type Arrows = {
+    [key: string]: { remove: () => void }
+}
 
 export function useBoardControls(
     chessBoardRef: React.RefObject<HTMLDivElement>,
@@ -45,13 +50,15 @@ export function useBoardControls(
         ? { ...squares, ...premovedSquares }
         : squares
 
-    const [activeFields, setActiveFields] = useState(getSquares(null))
+    const [activeFields, setActiveFields] = useState<ActiveFields>(
+        getSquares(null)
+    )
     const [draggedPiece, setDraggedPiece] = useState<HTMLImageElement>(null)
     const [clickedPiece, setClickedPiece] = useState<HTMLImageElement>(null)
     const [draggedField, setDraggedField] = useState<string>()
     const [boardDrawer, setBoardDrawer] = useState(null)
-    const [arrow, setArrow] = useState({ from: null, to: null })
-    const [arrows, setArrows] = useState({})
+    const [arrow, setArrow] = useState<Move>({ from: null, to: null })
+    const [arrows, setArrows] = useState<Arrows>({})
     //
 
     //getting offsets for correct drag-n-drop functionality
@@ -110,7 +117,7 @@ export function useBoardControls(
         setArrows({ ...arrows, [arrow.from]: elem })
     }, [arrow])
 
-    function getField(e) {
+    function getField(e: any) {
         const coords = {
             x: e.clientX,
             y: e.clientY,

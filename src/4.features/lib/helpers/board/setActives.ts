@@ -1,13 +1,13 @@
-import { KeyableSquares } from 'src/5.entities/model'
+import { ActiveFields } from 'src/4.features/model'
 import { FieldStates } from 'src/6.shared/model'
 
 export function addActives(
     moves: Array<string>,
     currentPiece: string,
-    setActiveFields: React.Dispatch<React.SetStateAction<KeyableSquares>>
-): KeyableSquares {
+    setActiveFields: React.Dispatch<React.SetStateAction<ActiveFields>>
+): ActiveFields {
     //adding available moves on board
-    const movesActiveFields = {}
+    const movesActiveFields: ActiveFields = {}
     moves.forEach((move) => {
         movesActiveFields[move] = FieldStates.PieceCanMoveHere
     })
@@ -17,13 +17,13 @@ export function addActives(
 }
 
 export function removeActives(
-    activeFields: KeyableSquares,
-    setActiveFields: React.Dispatch<React.SetStateAction<KeyableSquares>>
+    activeFields: ActiveFields,
+    setActiveFields: React.Dispatch<React.SetStateAction<ActiveFields>>
 ): void {
     //clear available moves on board
-    const clearedActiveFields = {}
+    const clearedActiveFields: ActiveFields = {}
     for (const field in activeFields) {
-        clearedActiveFields[field] = false
+        clearedActiveFields[field] = null
     }
     setActiveFields({ ...clearedActiveFields })
 }

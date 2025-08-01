@@ -26,7 +26,6 @@ export default function Promotion(props: Props): ReactElement {
     const rook = new Rook(color)
 
     function transformPiece(piece: IPiece): void {
-        console.log(piece)
         if (!promotionMove) return
         if (promotionMove.premove) {
             dispatch({

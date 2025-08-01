@@ -1,6 +1,6 @@
 export { defineColor } from './board/defineColor'
 export { getFieldCoordinates } from './board/getFieldCoordinates'
-export { getPieceOnFieldForServer } from './board/getPieceForServer'
+// export { getPieceOnFieldForServer } from './board/getPieceForServer'
 export { getSquares } from './board/getSquares'
 export { isDragStartIllegal } from './board/isDragStartIllegal'
 export { parsePieceOnField } from './board/parsePieceOnField'

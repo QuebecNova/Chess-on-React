@@ -1,4 +1,4 @@
-import React, { JSX, useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
 import { scrollToBottom } from 'src/6.shared/lib/helpers'
@@ -31,8 +31,8 @@ export default function Chat() {
         setInputValue('')
     }
 
-    function displayMessages(): JSX.Element[] {
-        const messagesArr = []
+    function displayMessages(): ReactNode[] {
+        const messagesArr: ReactNode[] = []
         messages.forEach((msg) => {
             messagesArr.push(
                 <p key={uuidv4()} ref={msgRef}>

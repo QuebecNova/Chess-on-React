@@ -424,7 +424,7 @@ export const reducer = (state: GameState, action: GameActions) => {
         case GameActionTypes.PREMOVE:
             let squares = { ...state.squares, ...state.premovedSquares }
             const piece = squares[action.payload.from]
-            let piecesOnFields = {
+            let piecesOnFields: KeyableSquares = {
                 [action.payload.from]: null,
                 [action.payload.to]: action.payload.promotionTo ?? piece,
             }
@@ -433,7 +433,7 @@ export const reducer = (state: GameState, action: GameActions) => {
                 state.promotionMove = null
             }
 
-            if (piece?.canCastleTo) {
+            if (piece?.canCastleTo?.length) {
                 const { modifiedPieceOnField } = Chessboard.getFieldsForCastle(
                     squares,
                     action.payload.from,

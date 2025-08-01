@@ -15,7 +15,7 @@ export class Stockfish {
 
     onMessage(callback: (data: { bestMove: string }) => void) {
         if (this.stockfish) {
-            const eventListenerCallback = (e) => {
+            const eventListenerCallback = (e: { data: string }) => {
                 const bestMove = e.data?.match(/bestmove\s+(\S+)/)?.[1]
                 callback({ bestMove })
             }

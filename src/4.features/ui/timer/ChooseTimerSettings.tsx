@@ -1,6 +1,6 @@
 'use client'
 
-import { Flex, Show } from '@chakra-ui/react'
+import { Slider as ChakraSlider, Flex, Show } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
@@ -38,17 +38,29 @@ export default function ChooseTimerSettings() {
         if (!settings.offlineMode) socket.emit('choosen-time', choosenRange)
     }
 
-    function onMinutesValueChange(value: number) {
-        setTimer(value)
+    function onMinutesValueChange(
+        value: number | ChakraSlider.ValueChangeDetails
+    ) {
+        if (typeof value === 'number') {
+            setTimer(value)
+        } else {
+            console.error(value)
+        }
     }
 
-    function onIncrementValueChange(value: number) {
-        dispatch({
-            type: GameActionTypes.INCREMENT,
-            payload: {
-                increment: value,
-            },
-        })
+    function onIncrementValueChange(
+        value: number | ChakraSlider.ValueChangeDetails
+    ) {
+        if (typeof value === 'number') {
+            dispatch({
+                type: GameActionTypes.INCREMENT,
+                payload: {
+                    increment: value,
+                },
+            })
+        } else {
+            console.error(value)
+        }
     }
 
     function onTimeControlChange({ value }: { value: string[] }) {

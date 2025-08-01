@@ -7,3 +7,7 @@ export interface KeyableSquares {
 export interface KeyablePieceOnField {
     [key: string]: IPiece | null
 }
+
+export interface Keyable<T> {
+    [key: string]: T
+}

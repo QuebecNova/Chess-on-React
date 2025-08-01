@@ -355,7 +355,9 @@ export class Chessboard {
     }
 
     getMovesThatLeadsToCheck(piece: IPiece, field: string): KeyableSquares {
-        const kingOnCheckAfterThisMoves = { ...this.nullSquares }
+        const kingOnCheckAfterThisMoves: KeyableSquares = {
+            ...this.nullSquares,
+        }
         //simulating next move for check
         const moves = piece.canMove(
             field,
@@ -373,7 +375,9 @@ export class Chessboard {
                 ...pieceOnField,
             }
 
-            const simulateNextOppositeMoves = { ...this.nullSquares }
+            const simulateNextOppositeMoves: KeyableSquares = {
+                ...this.nullSquares,
+            }
             for (const field in simulateNextMoveSquares) {
                 if (
                     simulateNextOppositeMoves &&

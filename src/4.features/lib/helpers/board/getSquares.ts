@@ -1,9 +1,9 @@
-import { KeyableSquares } from 'src/5.entities/model'
+import { Keyable } from 'src/5.entities/model'
 
-export function getSquares(value: null): KeyableSquares {
+export function getSquares(value: null): Keyable<null> {
     //creating square state
 
-    const squares: KeyableSquares = {}
+    const squares: Keyable<null> = {}
 
     const rows = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     const columns = [1, 2, 3, 4, 5, 6, 7, 8]

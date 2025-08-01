@@ -134,7 +134,7 @@ export class King extends Piece {
         const isKingOnCheck = movesLeadsToCheck?.[from]
         this.onCheck = !!isKingOnCheck
 
-        let moves = []
+        let moves: string[] = []
 
         //rooks here
         const [_, rookRight] = Rook.find(

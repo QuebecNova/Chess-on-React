@@ -1,14 +1,15 @@
 'use client'
 
-import { ReactElement, useState } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { defineColor } from 'src/4.features/lib/helpers'
+import { ActiveFields } from 'src/4.features/model'
 import { useGameStore } from 'src/4.features/model/providers'
 import { KeyableSquares } from 'src/5.entities/model'
 import { Colors, FieldStates } from 'src/6.shared/model'
 
 type PieceFieldsProps = {
     squares: KeyableSquares
-    activeFields: object
+    activeFields: ActiveFields
     fieldWidth: number
     onClick: (e: any, field: string) => void
     dragStart: (e: any) => void
@@ -32,10 +33,17 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
     const variant = useGameStore((state) => state.variant)
     const premoves = useGameStore((state) => state.premoves)
 
-    const [selectedFields, setSelectedFields] = useState({})
+    const [selectedFields, setSelectedFields] = useState<{
+        [key: string]: boolean | null
+    }>({})
     const [lastSelectedField, setLastSelectedField] = useState(null)
 
-    function onFieldClick(e, field: string) {
+    function onFieldClick(
+        e:
+            | MouseEvent<HTMLDivElement, globalThis.MouseEvent>
+            | MouseEvent<SVGElement, globalThis.MouseEvent>,
+        field: string
+    ) {
         //some magic to highlight squares on right click
         if (e.type === 'mousedown') {
             if (!selectedFields[field]) {

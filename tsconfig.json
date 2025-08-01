@@ -14,7 +14,7 @@
         "isolatedModules": true,
         "noEmit": true,
         "lib": ["dom", "dom.iterable", "esnext"],
-        "strict": false,
+        "strict": true,
         "incremental": true,
         "target": "ES2017",
         "baseUrl": ".",

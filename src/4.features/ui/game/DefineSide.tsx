@@ -63,13 +63,14 @@ export default function DefineSide() {
         sounds.newGame.play()
     }
 
-    function onChange(e: { value: Colors | 'random' }) {
-        setVariant(e.value)
+    function onChange(e: SegmentGroup.ValueChangeDetails) {
+        const value: 'random' | Colors = e.value as 'random' | Colors
+        setVariant(value)
         let finalVariant: Colors
-        if (e.value === 'random') {
+        if (value === 'random') {
             finalVariant = Math.random() > 0.5 ? Colors.White : Colors.Black
         } else {
-            finalVariant = e.value
+            finalVariant = value
         }
 
         dispatch({

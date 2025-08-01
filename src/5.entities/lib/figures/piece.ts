@@ -21,10 +21,10 @@ export class Piece implements IPiece {
         from: string,
         squareState: KeyableSquares,
         movesLeadsToCheck: KeyableSquares
-    ): Array<string> {
+    ): string[] {
         if (from || squareState || movesLeadsToCheck)
             throw new Error('missing arguments')
-        const moves = []
+        const moves: string[] = []
         return moves
     }
 

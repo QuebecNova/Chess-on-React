@@ -9,7 +9,7 @@ import { KeyableSquares } from 'src/5.entities/model'
 import { CastlingSide, Colors } from 'src/6.shared/model'
 
 export function setupBoard(): KeyableSquares {
-    const squares = getSquares(null)
+    const squares: KeyableSquares = getSquares(null)
     squares.a8 = new Rook(Colors.Black, CastlingSide.QueenSide)
     squares.b8 = new Knight(Colors.Black)
     squares.c8 = new Bishop(Colors.Black)
