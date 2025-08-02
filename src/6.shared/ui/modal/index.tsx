@@ -8,6 +8,7 @@ export function Modal({
     bodyProps,
     footer,
     onClose = () => {},
+    onSubmit = () => {},
     ...props
 }: {
     trigger?: ReactNode
@@ -16,6 +17,7 @@ export function Modal({
     bodyProps?: Dialog.BodyProps
     footer?: ReactNode
     onClose?: () => void
+    onSubmit?: () => void
 } & Omit<Dialog.RootProps, 'children'>) {
     return (
         <Dialog.Root
@@ -28,19 +30,26 @@ export function Modal({
                 <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
             </Show>
             <Portal>
-                <Dialog.Backdrop />
-                <Dialog.Positioner>
-                    <Dialog.Content>
-                        <Dialog.Header>
-                            <Dialog.Title>{title}</Dialog.Title>
-                        </Dialog.Header>
-                        <Dialog.Body {...bodyProps}>{body}</Dialog.Body>
-                        <Dialog.Footer>{footer}</Dialog.Footer>
-                        <Dialog.CloseTrigger asChild>
-                            <CloseButton size="sm" onClick={onClose} />
-                        </Dialog.CloseTrigger>
-                    </Dialog.Content>
-                </Dialog.Positioner>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        onSubmit()
+                    }}
+                >
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                        <Dialog.Content>
+                            <Dialog.Header>
+                                <Dialog.Title>{title}</Dialog.Title>
+                            </Dialog.Header>
+                            <Dialog.Body {...bodyProps}>{body}</Dialog.Body>
+                            <Dialog.Footer>{footer}</Dialog.Footer>
+                            <Dialog.CloseTrigger asChild>
+                                <CloseButton size="sm" onClick={onClose} />
+                            </Dialog.CloseTrigger>
+                        </Dialog.Content>
+                    </Dialog.Positioner>
+                </form>
             </Portal>
         </Dialog.Root>
     )

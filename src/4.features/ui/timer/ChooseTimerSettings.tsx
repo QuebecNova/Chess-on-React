@@ -2,8 +2,8 @@
 
 import { Slider as ChakraSlider, Flex, Show } from '@chakra-ui/react'
 import { useState } from 'react'
+import { OnSettingsChange } from 'src/4.features/model'
 import { useGameStore } from 'src/4.features/model/providers'
-import { GameActionTypes } from 'src/4.features/model/store/game'
 import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
 import { ValueOf } from 'src/6.shared/model'
@@ -16,26 +16,23 @@ const TimeControl = {
 } as const
 type TimeControl = ValueOf<typeof TimeControl>
 
-export default function ChooseTimerSettings() {
-    const [timeControl, setTimeControl] = useState<string[]>([
-        TimeControl.STANDARD,
-    ])
+export default function ChooseTimerSettings({
+    onSettingsChange,
+}: {
+    onSettingsChange: OnSettingsChange
+}) {
     const increment = useGameStore((state) => state.increment)
     const initTimer = useGameStore((state) => state.initTimer)
-    const dispatch = useGameStore((state) => state.dispatch)
-
-    function setTimer(value?: number) {
-        const choosenRange =
-            timeControl[0] === TimeControl.UNLIMITED
+    const [timeControl, setTimeControl] = useState<string[]>([
+        initTimer === Infinity ? TimeControl.UNLIMITED : TimeControl.STANDARD,
+    ])
+    function setTimer(value: number, timeControlValue: string[] = timeControl) {
+        const chosenRange =
+            timeControlValue[0] === TimeControl.UNLIMITED
                 ? Infinity
                 : value * 60 * 1000
-        dispatch({
-            type: GameActionTypes.TIMERS,
-            payload: {
-                timer: choosenRange,
-            },
-        })
-        if (!settings.offlineMode) socket.emit('choosen-time', choosenRange)
+        onSettingsChange({ timer: chosenRange })
+        if (!settings.offlineMode) socket.emit('chosen-time', chosenRange)
     }
 
     function onMinutesValueChange(
@@ -52,12 +49,7 @@ export default function ChooseTimerSettings() {
         value: number | ChakraSlider.ValueChangeDetails
     ) {
         if (typeof value === 'number') {
-            dispatch({
-                type: GameActionTypes.INCREMENT,
-                payload: {
-                    increment: value,
-                },
-            })
+            onSettingsChange({ increment: value })
         } else {
             console.error(value)
         }
@@ -65,7 +57,7 @@ export default function ChooseTimerSettings() {
 
     function onTimeControlChange({ value }: { value: string[] }) {
         setTimeControl(value)
-        setTimer()
+        setTimer(initTimer / 60 / 1000, value)
     }
 
     return (
@@ -91,7 +83,7 @@ export default function ChooseTimerSettings() {
                     min={0.5}
                     max={180}
                     step={0.5}
-                    initialvalue={initTimer / 1000 / 60}
+                    initialvalue={initTimer / 60 / 1000}
                     onValueChangeEnd={(value) => onMinutesValueChange(value)}
                 />
                 <Slider

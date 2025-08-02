@@ -2,6 +2,7 @@
 
 import { Field, SegmentGroup } from '@chakra-ui/react'
 import { useState } from 'react'
+import { OnSettingsChange } from 'src/4.features/model'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { Player } from 'src/5.entities/model'
@@ -9,7 +10,11 @@ import { socket } from 'src/6.shared/api'
 import { settings } from 'src/6.shared/config'
 import { Colors, sounds } from 'src/6.shared/model'
 
-export default function DefineSide() {
+export default function DefineSide({
+    onSettingsChange,
+}: {
+    onSettingsChange: OnSettingsChange
+}) {
     const players = useGameStore((state) => state.players)
     const dispatch = useGameStore((state) => state.dispatch)
     const [variant, setVariant] = useState<Colors | 'random'>(Colors.White)
@@ -44,25 +49,6 @@ export default function DefineSide() {
         })
     }
 
-    function setSide(color: Colors = Colors.White): void {
-        if (color === Colors.Black) {
-            changePlayer(Colors.Black)
-        } else {
-            changePlayer(Colors.White)
-        }
-
-        if (!settings.offlineMode) socket.emit('choosen-side', color)
-
-        dispatch({
-            type: GameActionTypes.VARIANT,
-            payload: {
-                variant: color,
-            },
-        })
-
-        sounds.newGame.play()
-    }
-
     function onChange(e: SegmentGroup.ValueChangeDetails) {
         const value: 'random' | Colors = e.value as 'random' | Colors
         setVariant(value)
@@ -73,10 +59,7 @@ export default function DefineSide() {
             finalVariant = value
         }
 
-        dispatch({
-            type: GameActionTypes.PLAYING_SIDE,
-            payload: { side: finalVariant },
-        })
+        onSettingsChange({ variant: finalVariant })
     }
 
     return (

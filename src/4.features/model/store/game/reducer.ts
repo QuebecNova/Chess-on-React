@@ -9,6 +9,7 @@ import {
 } from 'src/5.entities/model'
 import { Colors, EndCondition, Move, sounds } from 'src/6.shared/model'
 import { GameState, getInitialState } from '.'
+import { OnSettingsChange } from '../../types/OnSettingsChange'
 
 export const GameActionTypes = {
     SQUARES: 'SQUARES',
@@ -37,6 +38,7 @@ export const GameActionTypes = {
     INCREMENT: 'INCREMENT',
     PREMOVE: 'PREMOVE',
     RESET_PREMOVES: 'RESET_PREMOVES',
+    STARTING_SETTINGS: 'STARTING_SETTINGS',
 } as const
 
 export type GameActions =
@@ -140,6 +142,10 @@ export type GameActions =
     | {
           type: typeof GameActionTypes.RESET_PREMOVES
       }
+    | {
+          type: typeof GameActionTypes.STARTING_SETTINGS
+          payload: { settings: Parameters<OnSettingsChange>[0] }
+      }
 
 export const reducer = (state: GameState, action: GameActions) => {
     switch (action.type) {
@@ -158,6 +164,21 @@ export const reducer = (state: GameState, action: GameActions) => {
                 ...state,
                 ...action.payload,
             }
+        case GameActionTypes.STARTING_SETTINGS:
+            const { variant, timer, ...rest } = action.payload.settings
+            if (variant) {
+                state.variant = variant
+                state.players[variant].isCurrentUser = true
+                state.players[
+                    variant === Colors.Black ? Colors.White : Colors.Black
+                ].isCurrentUser = false
+                state.chessboard.setupBoard(variant)
+            }
+            if (timer) {
+                state.players[Colors.White].timer = timer
+                state.players[Colors.Black].timer = timer
+            }
+            return { ...state, ...rest }
         case GameActionTypes.TIME_EXPIRED:
             state.timeExpired = action.payload.isTimeExpired
             state.endState.condition = EndCondition.TimeExpired

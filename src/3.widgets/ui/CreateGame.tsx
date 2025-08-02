@@ -2,44 +2,48 @@ import { Badge, Card, Container, Stack, Tabs } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { BsFillPeopleFill, BsFillPlusSquareFill } from 'react-icons/bs'
+import { OnSettingsChange } from 'src/4.features/model'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
 import { BotDifficulty, StartingSettings } from 'src/4.features/ui'
-import {
-    isStockfishDifficultyLevels,
-    StockfishDifficultyLevels,
-} from 'src/5.entities/lib'
+import { isStockfishDifficultyLevels } from 'src/5.entities/lib'
 import { socket } from 'src/6.shared/api'
-import { settings } from 'src/6.shared/config'
 import { sounds } from 'src/6.shared/model'
 import { Button } from 'src/6.shared/ui'
 import { Modal } from 'src/6.shared/ui/modal'
 import { v4 as uuidv4 } from 'uuid'
 
 const RoomID = uuidv4()
+
 export default function CreateGame() {
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState('')
     const [newRoomCreated, setNewRoomCreated] = useState(false)
     const computerDifficulty = useGameStore((state) => state.computerDifficulty)
+    const variant = useGameStore((state) => state.variant)
+    const initTimer = useGameStore((state) => state.initTimer)
+    const increment = useGameStore((state) => state.increment)
+    const withComputer = useGameStore((state) => state.withComputer)
+    const isOfflineMode = useGameStore((state) => state.isOfflineMode)
     const router = useRouter()
     const dispatch = useGameStore((state) => state.dispatch)
 
-    function setOffline(bot?: boolean) {
-        sounds.newGame.play()
-        if (bot) {
-            dispatch({
-                type: GameActionTypes.WITH_COMPUTER,
-                payload: { withComputer: true },
-            })
-        } else {
-            dispatch({
-                type: GameActionTypes.OFFLINE,
-                payload: { isOfflineMode: true },
-            })
-        }
+    const [settings, setSettings] = useState<Parameters<OnSettingsChange>[0]>({
+        timer: initTimer,
+        increment,
+        computerDifficulty,
+        variant,
+        withComputer,
+        isOfflineMode,
+    })
+
+    function onPlay() {
+        dispatch({
+            type: GameActionTypes.STARTING_SETTINGS,
+            payload: { settings },
+        })
         router.push('/1213')
-        settings.offlineMode = true
+        sounds.newGame.play()
     }
 
     function displayID() {
@@ -55,13 +59,8 @@ export default function CreateGame() {
         socket.emit('connect-to-game', inputValue)
     }
 
-    function changeDifficulty(difficulty: keyof StockfishDifficultyLevels) {
-        dispatch({
-            type: GameActionTypes.COMPUTER_DIFFICULTY,
-            payload: {
-                computerDifficulty: difficulty,
-            },
-        })
+    function onSettingsChange(newSettings: Parameters<OnSettingsChange>[0]) {
+        setSettings((prev) => ({ ...prev, ...newSettings }))
     }
 
     socket.on('room-valid', () => {
@@ -94,6 +93,7 @@ export default function CreateGame() {
                         <Tabs.Content value="create">
                             <Stack gap="4">
                                 <Modal
+                                    onSubmit={onPlay}
                                     trigger={
                                         <Button
                                             onClick={displayID}
@@ -102,15 +102,23 @@ export default function CreateGame() {
                                             New Game
                                         </Button>
                                     }
-                                    body={<StartingSettings />}
+                                    body={
+                                        <StartingSettings
+                                            onSettingsChange={onSettingsChange}
+                                        />
+                                    }
                                     title="Create a game"
                                     footer={
-                                        <Button colorPalette="teal">
+                                        <Button
+                                            colorPalette="teal"
+                                            type="submit"
+                                        >
                                             Create
                                         </Button>
                                     }
                                 />
                                 <Modal
+                                    onSubmit={onPlay}
                                     trigger={
                                         <Button onClick={join} disabled={true}>
                                             Join
@@ -120,8 +128,15 @@ export default function CreateGame() {
                                     body={<>пиши сука код</>}
                                 />
                                 <Modal
+                                    onSubmit={onPlay}
                                     trigger={
-                                        <Button onClick={join}>
+                                        <Button
+                                            onClick={() =>
+                                                onSettingsChange({
+                                                    withComputer: true,
+                                                })
+                                            }
+                                        >
                                             Play with the computer
                                         </Button>
                                     }
@@ -131,7 +146,7 @@ export default function CreateGame() {
                                             <BotDifficulty
                                                 mb="6"
                                                 justifyContent="center"
-                                                value={computerDifficulty.toString()}
+                                                value={settings.computerDifficulty.toString()}
                                                 onValueChange={({ value }) => {
                                                     const num = parseInt(value)
                                                     if (
@@ -139,30 +154,52 @@ export default function CreateGame() {
                                                             num
                                                         )
                                                     ) {
-                                                        changeDifficulty(num)
+                                                        onSettingsChange({
+                                                            computerDifficulty:
+                                                                num,
+                                                        })
                                                     }
                                                 }}
                                             />
-                                            <StartingSettings />
+                                            <StartingSettings
+                                                onSettingsChange={
+                                                    onSettingsChange
+                                                }
+                                            />
                                         </>
                                     }
                                     footer={
                                         <Button
                                             colorPalette="teal"
-                                            onClick={() => setOffline(true)}
+                                            type="submit"
                                         >
                                             Play
                                         </Button>
                                     }
                                 />
                                 <Modal
-                                    trigger={<Button>Offline mode</Button>}
+                                    onSubmit={onPlay}
+                                    trigger={
+                                        <Button
+                                            onClick={() =>
+                                                onSettingsChange({
+                                                    isOfflineMode: true,
+                                                })
+                                            }
+                                        >
+                                            Offline mode
+                                        </Button>
+                                    }
                                     title="Play in offline mode"
-                                    body={<StartingSettings />}
+                                    body={
+                                        <StartingSettings
+                                            onSettingsChange={onSettingsChange}
+                                        />
+                                    }
                                     footer={
                                         <Button
                                             colorPalette="teal"
-                                            onClick={() => setOffline()}
+                                            type="submit"
                                         >
                                             Play
                                         </Button>

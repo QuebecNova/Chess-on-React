@@ -1,6 +1,6 @@
 'use client'
 
-import { Card } from '@chakra-ui/react'
+import { Card, Show } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useGameStore } from 'src/4.features/model/providers'
 import { GameActionTypes } from 'src/4.features/model/store/game'
@@ -20,6 +20,7 @@ export default function Timer({ player, ...props }: TimerProps) {
     const isGameEnded = useIsGameEnded()
 
     useEffect(() => {
+        if (player.timer === Infinity) return
         if (player.timer) setCountDown(player.timer)
         if (player.timer <= 0) {
             dispatch({
@@ -47,10 +48,12 @@ export default function Timer({ player, ...props }: TimerProps) {
     }, [countDown, player, player.timer, turn])
 
     return (
-        <Card.Root backgroundColor="gray.800" {...props}>
-            <Card.Body py={2}>
-                <ShowCounter timer={player.timer} />
-            </Card.Body>
-        </Card.Root>
+        <Show when={player.timer !== Infinity}>
+            <Card.Root backgroundColor="gray.800" {...props}>
+                <Card.Body py={2}>
+                    <ShowCounter timer={player.timer} />
+                </Card.Body>
+            </Card.Root>
+        </Show>
     )
 }
