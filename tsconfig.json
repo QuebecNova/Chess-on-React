@@ -9,14 +9,22 @@
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "lib": ["dom", "dom.iterable", "esnext"],
-        "strict": false,
-        "incremental": true
+        "strict": true,
+        "incremental": true,
+        "target": "ES2017",
+        "baseUrl": ".",
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "strictNullChecks": false
     },
-    "include": ["src", "typings.d.ts"],
+    "include": ["src", "typings.d.ts", ".next/types/**/*.ts"],
     "exclude": ["node_modules"]
 }
