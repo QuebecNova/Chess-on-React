@@ -1,7 +1,7 @@
 'use client'
 
 import { Grid, GridItem } from '@chakra-ui/react'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useGameStore } from 'src/4.features/model/providers'
 import { useCurrentPlayer } from 'src/4.features/model/store'
 import { GameActionTypes } from 'src/4.features/model/store/game'
@@ -21,9 +21,19 @@ export default function ComputerGame({ disabled }: { disabled: boolean }) {
     const playedMoves = useGameStore((state) => state.playedMoves)
     const computerDifficulty = useGameStore((state) => state.computerDifficulty)
     const currentPlayer = useCurrentPlayer()
+    const [isReady, setIsReady] = useState(false)
     const dispatch = useGameStore((state) => state.dispatch)
 
     const stockfish = useMemo(() => new Stockfish(), [])
+
+    useEffect(() => {
+        if (isReady) return
+        const unsubscribe = stockfish.onReady((msg) => {
+            setIsReady(true)
+            unsubscribe()
+        })
+        return unsubscribe
+    }, [stockfish])
 
     const makeStockfishMove = useCallback(() => {
         stockfish.evaluatePosition(
@@ -73,7 +83,7 @@ export default function ComputerGame({ disabled }: { disabled: boolean }) {
         <Grid templateColumns="repeat(3, 1fr)">
             <GridItem />
             <GridItem>
-                <Board disabled={disabled} />
+                <Board disabled={disabled} loading={!isReady} />
             </GridItem>
             <GridItem>
                 <SideMenu />

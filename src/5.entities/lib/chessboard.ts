@@ -516,7 +516,6 @@ export class Chessboard {
             this.turn = this.turn === Colors.White ? Colors.Black : Colors.White
         }
         this.squares = newSquares
-        console.log(this.playedMoves)
 
         return {
             turn: this.turn,

@@ -19,13 +19,9 @@ export class Stockfish {
                 const bestMove = e.data?.match(/bestmove\s+(\S+)/)?.[1]
                 callback({ bestMove })
             }
-            this.stockfish.addEventListener('message', eventListenerCallback)
+            const unsubscribe = this.#createEventListener(eventListenerCallback)
 
-            return () =>
-                this.stockfish.removeEventListener(
-                    'message',
-                    eventListenerCallback
-                )
+            return unsubscribe
         }
         return () => {}
     }
@@ -43,6 +39,26 @@ export class Stockfish {
                 `go depth ${difficulty <= 1 ? '1' : difficulty < 3 ? '3' : difficulty < 14 ? '7' : '12'}`
             )
         }
+    }
+
+    onReady(callback: (isReady: boolean) => void) {
+        if (this.stockfish) {
+            const eventListenerCallback = (e: { data: string }) => {
+                if (e.data === 'readyok') {
+                    callback(true)
+                }
+            }
+            const unsubscribe = this.#createEventListener(eventListenerCallback)
+
+            this.#sendMessage('isready')
+            return unsubscribe
+        }
+        return () => {}
+    }
+
+    #createEventListener(callback: (e: { data: string }) => void) {
+        this.stockfish.addEventListener('message', callback)
+        return () => this.stockfish.removeEventListener('message', callback)
     }
 
     stop() {
