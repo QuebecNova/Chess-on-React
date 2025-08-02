@@ -28,7 +28,7 @@ export default function CreateGame() {
     const router = useRouter()
     const dispatch = useGameStore((state) => state.dispatch)
 
-    const [settings, setSettings] = useState<Parameters<OnSettingsChange>[0]>({
+    const getInitialState = () => ({
         timer: initTimer,
         increment,
         computerDifficulty,
@@ -36,6 +36,9 @@ export default function CreateGame() {
         withComputer,
         isOfflineMode,
     })
+
+    const [settings, setSettings] =
+        useState<Parameters<OnSettingsChange>[0]>(getInitialState)
 
     function onPlay() {
         dispatch({
@@ -134,6 +137,7 @@ export default function CreateGame() {
                                             onClick={() =>
                                                 onSettingsChange({
                                                     withComputer: true,
+                                                    isOfflineMode: false,
                                                 })
                                             }
                                         >
@@ -183,6 +187,7 @@ export default function CreateGame() {
                                         <Button
                                             onClick={() =>
                                                 onSettingsChange({
+                                                    withComputer: false,
                                                     isOfflineMode: true,
                                                 })
                                             }
