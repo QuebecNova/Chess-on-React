@@ -136,8 +136,8 @@ export default function CreateGame() {
                                         <Button
                                             onClick={() =>
                                                 onSettingsChange({
+                                                    ...getInitialState(),
                                                     withComputer: true,
-                                                    isOfflineMode: false,
                                                 })
                                             }
                                         >
@@ -187,7 +187,7 @@ export default function CreateGame() {
                                         <Button
                                             onClick={() =>
                                                 onSettingsChange({
-                                                    withComputer: false,
+                                                    ...getInitialState(),
                                                     isOfflineMode: true,
                                                 })
                                             }
