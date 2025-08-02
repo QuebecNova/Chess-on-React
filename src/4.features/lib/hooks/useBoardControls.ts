@@ -203,7 +203,6 @@ export function useBoardControls(
         setDraggedField(pieceField)
         const piece = squaresState[pieceField]
         let moves = []
-        console.log(turn !== variant && !isOfflineMode)
         if (turn !== variant && !isOfflineMode) {
             moves = chessboard.getPremoves(pieceField, premoves, piece)
         } else {

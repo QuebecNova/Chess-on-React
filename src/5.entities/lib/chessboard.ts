@@ -13,6 +13,7 @@ import { IPiece, KeyableSquares, PlayedMove, Premove } from '../model'
 import { alphs } from './alphabetPositions'
 import { Fen } from './fen'
 import { Piece } from './figures/piece'
+import { Rook } from './figures/rook'
 
 type EndState = {
     condition: EndCondition | null
@@ -443,5 +444,84 @@ export class Chessboard {
             return EndCondition.Checkmate
         if (checked) return EndCondition.Check
         return null
+    }
+
+    takeback(color: Colors, isOfflineMode: boolean) {
+        const newSquares = { ...this.squares }
+        const lastPlayedMove = this.playedMoves.at(-1)
+        if (!lastPlayedMove) return
+
+        function resetCastling(move: PlayedMove) {
+            const [rookField, rook] = Rook.find(
+                newSquares,
+                move.castlingSide,
+                move.piece.color
+            )
+            if (!rook.lastMoves.at(-1)) return
+            newSquares[rookField] = null
+            newSquares[rook.lastMoves.at(-1).from] = rook
+            rook.lastMoves.pop()
+        }
+
+        function resetEnpassant(move: PlayedMove) {
+            const lastEnpassantedPawnPlayedMove =
+                move.takenPiece.lastMoves.at(-1)
+            if (lastEnpassantedPawnPlayedMove) {
+                newSquares[lastEnpassantedPawnPlayedMove.to] = move.takenPiece
+            }
+        }
+
+        function resetMove(move: PlayedMove) {
+            if (!!move.takenPiece && !move.isEnpassant) {
+                newSquares[move.to] = move.takenPiece
+            } else {
+                newSquares[move.to] = null
+            }
+            newSquares[move.from] = move.piece
+            move.piece.lastMoves?.pop()
+        }
+
+        if (lastPlayedMove.piece.color !== color && !isOfflineMode) {
+            const secondLastPlayedMove = this.playedMoves.at(-2)
+            if (lastPlayedMove.castlingSide) {
+                resetCastling(lastPlayedMove)
+            }
+            if (lastPlayedMove.isEnpassant) {
+                resetEnpassant(lastPlayedMove)
+            }
+            resetMove(lastPlayedMove)
+            if (secondLastPlayedMove) {
+                if (secondLastPlayedMove.castlingSide) {
+                    resetCastling(secondLastPlayedMove)
+                }
+                if (secondLastPlayedMove.isEnpassant) {
+                    resetEnpassant(secondLastPlayedMove)
+                }
+                resetMove(secondLastPlayedMove)
+            } else {
+                this.turn =
+                    this.turn === Colors.White ? Colors.Black : Colors.White
+            }
+            this.playedMoves = this.playedMoves.slice(0, -2)
+        } else {
+            if (lastPlayedMove.castlingSide) {
+                resetCastling(lastPlayedMove)
+            }
+            if (lastPlayedMove.isEnpassant) {
+                resetEnpassant(lastPlayedMove)
+            }
+            resetMove(lastPlayedMove)
+            lastPlayedMove.piece.lastMoves.pop()
+            this.playedMoves = this.playedMoves.slice(0, -1)
+            this.turn = this.turn === Colors.White ? Colors.Black : Colors.White
+        }
+        this.squares = newSquares
+        console.log(this.playedMoves)
+
+        return {
+            turn: this.turn,
+            squares: this.squares,
+            playedMoves: this.playedMoves,
+        }
     }
 }

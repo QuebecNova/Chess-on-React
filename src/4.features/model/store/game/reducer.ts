@@ -1,10 +1,5 @@
 import { playPlacedPieceSound } from 'src/4.features/lib/helpers'
-import {
-    Chessboard,
-    Fen,
-    Rook,
-    StockfishDifficultyLevels,
-} from 'src/5.entities/lib'
+import { Chessboard, Fen, StockfishDifficultyLevels } from 'src/5.entities/lib'
 import {
     IPiece,
     KeyableSquares,
@@ -260,10 +255,7 @@ export const reducer = (state: GameState, action: GameActions) => {
                     localState.premovedSquares = {}
                 }
 
-                const newSquares = {
-                    ...newState.squares,
-                    ...result.playedMove.squares,
-                }
+                const newSquares = state.chessboard.squares
 
                 playPlacedPieceSound(!!result.playedMove.takenPiece)
 
@@ -292,7 +284,7 @@ export const reducer = (state: GameState, action: GameActions) => {
                 )
                     sounds.check.play()
 
-                const playedMoves = [...newState.playedMoves, result.playedMove]
+                const playedMoves = state.chessboard.playedMoves
 
                 if (newState.increment) {
                     newState.players[newState.turn].timer =
@@ -329,85 +321,21 @@ export const reducer = (state: GameState, action: GameActions) => {
         case GameActionTypes.END_STATE:
             return { ...state, endState: action.payload }
         case GameActionTypes.TAKEBACK:
-            const newSquares = { ...state.squares }
-            const lastPlayedMove = state.playedMoves.at(-1)
-            if (!lastPlayedMove) return state
-
-            function resetCastling(move: PlayedMove) {
-                const [rookField, rook] = Rook.find(
-                    newSquares,
-                    move.castlingSide,
-                    move.piece.color
-                )
-                if (!rook.lastMoves.at(-1)) return
-                newSquares[rookField] = null
-                newSquares[rook.lastMoves.at(-1).from] = rook
-                rook.lastMoves.pop()
-            }
-
-            function resetEnpassant(move: PlayedMove) {
-                const lastEnpassantedPawnPlayedMove =
-                    move.takenPiece.lastMoves.at(-1)
-                if (lastEnpassantedPawnPlayedMove) {
-                    newSquares[lastEnpassantedPawnPlayedMove.to] =
-                        move.takenPiece
-                }
-            }
-
-            function resetMove(move: PlayedMove) {
-                if (!!move.takenPiece && !move.isEnpassant) {
-                    newSquares[move.to] = move.takenPiece
-                } else {
-                    newSquares[move.to] = null
-                }
-                newSquares[move.from] = move.piece
-                move.piece.lastMoves?.pop()
-            }
-
-            if (
-                lastPlayedMove.piece.color !== action.payload.color &&
-                !state.isOfflineMode
-            ) {
-                const secondLastPlayedMove = state.playedMoves.at(-2)
-                if (lastPlayedMove.castlingSide) {
-                    resetCastling(lastPlayedMove)
-                }
-                if (lastPlayedMove.isEnpassant) {
-                    resetEnpassant(lastPlayedMove)
-                }
-                resetMove(lastPlayedMove)
-                if (secondLastPlayedMove) {
-                    if (secondLastPlayedMove.castlingSide) {
-                        resetCastling(secondLastPlayedMove)
-                    }
-                    if (secondLastPlayedMove.isEnpassant) {
-                        resetEnpassant(secondLastPlayedMove)
-                    }
-                    resetMove(secondLastPlayedMove)
-                } else {
-                    state.turn =
-                        state.turn === Colors.White
-                            ? Colors.Black
-                            : Colors.White
-                }
-                state.playedMoves = state.playedMoves.slice(0, -2)
-            } else {
-                if (lastPlayedMove.castlingSide) {
-                    resetCastling(lastPlayedMove)
-                }
-                if (lastPlayedMove.isEnpassant) {
-                    resetEnpassant(lastPlayedMove)
-                }
-                resetMove(lastPlayedMove)
-                lastPlayedMove.piece.lastMoves.pop()
-                state.playedMoves = state.playedMoves.slice(0, -1)
-                state.turn =
-                    state.turn === Colors.White ? Colors.Black : Colors.White
-            }
+            const {
+                squares: newSquares,
+                turn,
+                playedMoves,
+            } = state.chessboard.takeback(
+                action.payload.color,
+                state.isOfflineMode
+            )
 
             state.viewSquares = null
+            state.premovedSquares = {}
+            state.premoves = []
+            state.squares = newSquares
 
-            return { ...state, squares: newSquares }
+            return { ...state, turn, playedMoves }
         case GameActionTypes.VIEW_SQUARES:
             if (action.payload.moveIndex === state.playedMoves.length - 1) {
                 state.viewSquares = null

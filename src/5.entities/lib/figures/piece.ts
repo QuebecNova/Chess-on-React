@@ -49,9 +49,6 @@ export class Piece implements IPiece {
         premoves?: Premove[],
         field?: string
     ) {
-        if (piece.type === Pieces.Pawn) {
-            console.log(moves)
-        }
         return moves.filter((move, index) =>
             piece.isMoveValid(move, index, premoves, field)
         )

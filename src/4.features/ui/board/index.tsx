@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { touch2Mouse } from 'src/6.shared/lib/helpers'
 
@@ -25,6 +25,16 @@ export default function Board({ disabled }: { disabled: boolean }) {
     const premovedSquares = useGameStore((state) => state.premovedSquares)
     const premoves = useGameStore((state) => state.premoves)
 
+    const squaresToRender = useMemo(
+        () =>
+            viewSquares
+                ? viewSquares
+                : premoves.length
+                  ? { ...squares, ...premovedSquares }
+                  : squares,
+        [viewSquares, squares, premovedSquares, premoves]
+    )
+
     useEffect(() => {
         return () => {
             dispatch({ type: GameActionTypes.RESET_STORE })
@@ -39,13 +49,7 @@ export default function Board({ disabled }: { disabled: boolean }) {
                 onMouseMove={(e) => dragMove(e)}
             >
                 <PieceFields
-                    squares={
-                        viewSquares
-                            ? viewSquares
-                            : premoves.length
-                              ? { ...squares, ...premovedSquares }
-                              : squares
-                    }
+                    squares={squaresToRender}
                     fieldWidth={fieldWidth}
                     activeFields={activeFields}
                     onClick={onClick}
