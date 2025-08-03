@@ -131,8 +131,8 @@ export class King extends Piece {
         squareState: KeyableSquares,
         movesLeadsToCheck: KeyableSquares
     ): string[] {
-        const isKingOnCheck = movesLeadsToCheck?.[from]
-        this.onCheck = !!isKingOnCheck
+        const isKingOnCheck = !!movesLeadsToCheck?.[from]
+        this.onCheck = isKingOnCheck
 
         let moves: string[] = []
 
@@ -225,7 +225,8 @@ export class King extends Piece {
                 }
             }
 
-            if (this.isMoveValid(move) && index < 8) moves.push(move)
+            if (this.isMoveValid(move) && (index < 8 || index === 10))
+                moves.push(move)
         })
 
         return moves

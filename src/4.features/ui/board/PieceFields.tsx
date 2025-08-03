@@ -31,6 +31,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
     } = props
 
     const variant = useGameStore((state) => state.variant)
+    const playedMoves = useGameStore((state) => state.playedMoves)
     const premoves = useGameStore((state) => state.premoves)
 
     const [selectedFields, setSelectedFields] = useState<{
@@ -79,6 +80,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
         const Svg = squares[field]?.img
 
         let isActive = ''
+
         if (activeFields[field]) {
             if (activeFields[field] === FieldStates.PieceCanMoveHere)
                 isActive = FieldStates.PieceCanMoveHere
@@ -86,19 +88,34 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
                 isActive = FieldStates.CurrentPiece
         }
 
+        const lastPlayedMove = playedMoves.at(-1)
+        let isLastPlayedMove = ''
+
+        if (lastPlayedMove) {
+            if (lastPlayedMove.from === field) {
+                isLastPlayedMove = FieldStates.lastPlayedMoveFrom
+            }
+            if (lastPlayedMove.to === field) {
+                isLastPlayedMove = FieldStates.lastPlayedMoveTo
+            }
+        }
+
+        const isChecked = squares[field]?.onCheck ? FieldStates.check : ''
+
         if (selectedFields[field]) isActive = FieldStates.Selected
         const isPremove =
             premoves.length &&
             !!premoves.find(
                 (premove) => premove.from === field || premove.to === field
             )
-                ? 'premove'
+                ? FieldStates.premove
                 : ''
+
         if (squares[field]) {
             board.push(
                 <div
                     id={field}
-                    className={`${defineColor(index, row)} ${isActive} ${isPremove}`}
+                    className={`${defineColor(index, row)} ${isActive} ${isPremove} ${isLastPlayedMove} ${isChecked}`}
                     key={index}
                     style={{ height: fieldWidth }}
                     onContextMenu={(e) => {
@@ -158,7 +175,7 @@ export default function PieceFields(props: PieceFieldsProps): ReactElement {
             board.push(
                 <div
                     id={field}
-                    className={`${defineColor(index, row)} ${isActive} ${isPremove}`}
+                    className={`${defineColor(index, row)} ${isActive} ${isPremove} ${isLastPlayedMove}`}
                     key={index}
                     onContextMenu={(e) => {
                         e.preventDefault()

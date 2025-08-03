@@ -16,6 +16,10 @@ export const FieldStates = {
     PieceCanMoveHere: 'pieceCanMoveHere',
     CurrentPiece: 'currentPiece',
     Selected: 'selected',
+    lastPlayedMoveFrom: 'lastPlayedMoveFrom',
+    lastPlayedMoveTo: 'lastPlayedMoveTo',
+    check: 'check',
+    premove: 'premove',
 } as const
 export type FieldStates = ValueOf<typeof FieldStates>
 

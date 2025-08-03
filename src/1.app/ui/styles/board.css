@@ -37,6 +37,22 @@
     box-sizing: border-box;
 }
 
+.whiteField.lastPlayedMoveFrom {
+    background-color: var(--ocean-pale-transparent-light);
+}
+
+.blackField.lastPlayedMoveFrom {
+    background-color: var(--ocean-pale-transparent-dark);
+}
+
+.whiteField.lastPlayedMoveTo {
+    background-color: var(--ocean-pale-lighter);
+}
+
+.blackField.lastPlayedMoveTo {
+    background-color: var(--ocean-pale-darker);
+}
+
 .whiteField.selected:not(:has(svg)) {
     background-color: var(--ocean-light);
 }
@@ -129,6 +145,16 @@
 
 .currentPiece {
     background-color: var(--green-light);
+}
+
+.check svg {
+    background: radial-gradient(
+        ellipse at center,
+        rgb(255, 0, 0) 0%,
+        rgb(231, 0, 0) 25%,
+        rgba(169, 0, 0, 0) 82%,
+        rgba(158, 0, 0, 0) 100%
+    );
 }
 
 .board__mated,
