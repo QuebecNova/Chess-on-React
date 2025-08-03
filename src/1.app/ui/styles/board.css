@@ -77,6 +77,22 @@
     background-color: var(--yellow-dark);
 }
 
+.whiteField.pieceCanMoveHere.lastPlayedMoveFrom {
+    background: radial-gradient(
+        var(--green) 19%,
+        var(--ocean-pale-transparent-light) 20%
+    );
+    cursor: pointer;
+}
+
+.blackField.pieceCanMoveHere.lastPlayedMoveFrom {
+    background: radial-gradient(
+        var(--green-dark) 19%,
+        var(--ocean-pale-transparent-dark) 20%
+    );
+    cursor: pointer;
+}
+
 .whiteField.pieceCanMoveHere:not(:has(svg)) {
     background: radial-gradient(var(--green) 19%, var(--blue-light) 20%);
     cursor: pointer;
