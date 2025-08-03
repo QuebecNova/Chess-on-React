@@ -1,0 +1,6 @@
+export { getParsedTime } from './getParsedTime'
+export { arrayRemove } from './math/arrayRemove'
+export { isEven } from './math/even'
+export { capitalize } from './misc/capitalize'
+export { scrollToBottom } from './misc/scrollToBottom'
+export { touch2Mouse } from './misc/touch2mouse'

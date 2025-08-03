@@ -1,0 +1,21 @@
+svg {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    outline: none;
+}
+
+svg:hover {
+    cursor: pointer;
+}
+
+g,
+path,
+circle {
+    pointer-events: none;
+}
