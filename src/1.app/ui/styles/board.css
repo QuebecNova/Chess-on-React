@@ -135,6 +135,20 @@
     );
 }
 
+.whiteField.pieceCanMoveHere.lastPlayedMoveFrom:hover {
+    background: radial-gradient(
+        var(--green) 23%,
+        var(--ocean-pale-transparent-light) 24%
+    );
+}
+
+.blackField.pieceCanMoveHere.lastPlayedMoveFrom:hover {
+    background: radial-gradient(
+        var(--green-dark) 23%,
+        var(--ocean-pale-transparent-dark) 24%
+    );
+}
+
 .whiteField.pieceCanMoveHere:not(:has(svg)):hover {
     background: radial-gradient(var(--green) 23%, var(--blue-light) 24%);
 }
