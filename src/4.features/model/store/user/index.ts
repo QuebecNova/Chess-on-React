@@ -1,6 +1,6 @@
 import { Dispatch } from 'src/6.shared/model/types/Dispatch'
 import { createStore } from 'zustand'
-import { devtools, persist, redux } from 'zustand/middleware'
+import { devtools, redux } from 'zustand/middleware'
 import { reducer, UserActions } from './reducer'
 export { UserActionTypes } from './reducer'
 
@@ -30,9 +30,7 @@ export const InitialState: UserState = {
 
 export const createUserStore = () =>
     createStore<UserStore>()(
-        devtools(
-            persist(redux(reducer, InitialState), {
-                name: 'user-store',
-            })
-        )
+        devtools(redux(reducer, InitialState), {
+            name: 'user-store',
+        })
     )

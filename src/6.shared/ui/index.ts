@@ -1,6 +1,7 @@
 export { default as Button } from './button'
 export { Provider } from './chakra/provider'
 export { default as Input } from './input'
+export { PasswordInput, PasswordStrengthMeter } from './input/passwordInput'
 export { default as Loading } from './loading'
 export { default as Slider } from './slider'
 export { default as DateTimeDisplay } from './timer/DateTimeDisplay'

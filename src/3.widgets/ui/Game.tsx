@@ -1,6 +1,6 @@
 import { Grid, GridItem } from '@chakra-ui/react'
 import { Board } from 'src/4.features/ui'
-import { SideMenu } from './SideMenu'
+import SideMenu from './SideMenu'
 
 export default function Game({ disabled }: { disabled: boolean }) {
     return (

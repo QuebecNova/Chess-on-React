@@ -1,30 +1,15 @@
-import { Input as ChakraInput, Field } from '@chakra-ui/react'
-import { ChangeEvent, KeyboardEvent } from 'react'
+import { Input as ChakraInput, Field, InputProps } from '@chakra-ui/react'
 
 type Props = {
-    type: string
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void
-    value: string
-    onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void
-    placeholder?: string
     className?: string
-    id?: string
     labelText?: string
-}
+} & InputProps
 
-export default function Input(props: Props) {
+export default function Input({ labelText, ...props }: Props) {
     return (
         <Field.Root>
-            {props.labelText && <Field.Label>{props.labelText}</Field.Label>}
-            <ChakraInput
-                type={props.type}
-                id={props.id || ''}
-                variant="subtle"
-                onChange={props.onChange}
-                onKeyDown={props.onKeyDown}
-                placeholder={props.placeholder || ''}
-                value={props.value}
-            />
+            {labelText && <Field.Label>{labelText}</Field.Label>}
+            <ChakraInput variant="subtle" {...props} />
         </Field.Root>
     )
 }

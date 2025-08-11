@@ -1,3 +1,6 @@
+export { default as Profile } from './auth/Profile'
+export { default as SignIn } from './auth/SignIn'
+export { default as SignUp } from './auth/SignUp'
 export { default as Board } from './board'
 export { default as PieceFields } from './board/PieceFields'
 export { default as Promotion } from './board/Promotion'

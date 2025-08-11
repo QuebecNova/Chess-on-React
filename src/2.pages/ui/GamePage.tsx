@@ -1,8 +1,7 @@
 'use client'
 
 import { Show } from '@chakra-ui/react'
-import { Game } from 'src/3.widgets/ui'
-import ComputerGame from 'src/3.widgets/ui/ComputerGame'
+import { ComputerGame, Game } from 'src/3.widgets/ui'
 import { useGameStore } from 'src/4.features/model/providers'
 import { useIsGameEnded } from 'src/4.features/model/store/game/selectors'
 

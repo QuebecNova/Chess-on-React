@@ -10,7 +10,7 @@ import {
 } from 'src/4.features/ui'
 import { Colors } from 'src/6.shared/model'
 
-export function SideMenu() {
+export default function SideMenu() {
     const players = useGameStore((state) => state.players)
     const variant = useGameStore((state) => state.variant)
     const isOfflineMode = useGameStore((state) => state.isOfflineMode)

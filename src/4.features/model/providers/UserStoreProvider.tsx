@@ -1,7 +1,9 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { createContext, useContext, useRef, type ReactNode } from 'react'
 import { createUserStore, UserStore } from 'src/4.features/model/store'
+import { queryClient } from 'src/6.shared/api'
 import { useStore } from 'zustand'
 
 export type UserStoreApi = ReturnType<typeof createUserStore>
@@ -19,7 +21,7 @@ export const UserStoreProvider = ({ children }: UserStoreProviderProps) => {
     if (storeRef.current === null) {
         storeRef.current = createUserStore()
     }
-
+    const request = useQuery({ queryKey: ['/users/me'] }, queryClient)
     return (
         <UserStoreContext.Provider value={storeRef.current}>
             {children}

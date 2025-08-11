@@ -1,7 +1,8 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { io, Socket } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
+import { socket as socketInstance } from 'src/6.shared/api'
 
 interface SocketContextType {
     socket: Socket | null
@@ -11,15 +12,11 @@ const SocketContext = createContext<SocketContextType | undefined>(undefined)
 
 export const SocketProvider: React.FC<{
     children: React.ReactNode
-    BACKEND_SOCKET_URL: string
-}> = ({ children, BACKEND_SOCKET_URL }) => {
+}> = ({ children }) => {
     const [socket, setSocket] = useState<Socket | null>(null)
 
     useEffect(() => {
-        const socketInstance = io(BACKEND_SOCKET_URL)
-
         setSocket(socketInstance)
-
         return () => {
             socketInstance.disconnect()
         }

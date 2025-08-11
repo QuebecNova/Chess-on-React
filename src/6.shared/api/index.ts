@@ -1,2 +1,2 @@
-// export { buildClient } from './buildClient'
+export { axiosClient, queryClient } from './clients'
 export { socket } from './socket'

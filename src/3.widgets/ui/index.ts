@@ -1,4 +1,6 @@
+export { default as ComputerGame } from './ComputerGame'
 export { default as CreateGame } from './CreateGame'
+export { default as Footer } from './Footer'
 export { default as Game } from './Game'
 export { default as Header } from './Header'
 export { default as Timers } from './Timers'

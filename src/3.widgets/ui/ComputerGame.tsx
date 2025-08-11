@@ -12,7 +12,7 @@ import {
     Stockfish,
     StockfishDifficultyLevels,
 } from 'src/5.entities/lib'
-import { SideMenu } from './SideMenu'
+import SideMenu from './SideMenu'
 
 export default function ComputerGame({ disabled }: { disabled: boolean }) {
     const fen = useGameStore((state) => state.fen)
