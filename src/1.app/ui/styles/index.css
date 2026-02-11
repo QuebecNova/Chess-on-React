@@ -1,0 +1,20 @@
+@import 'colors.css';
+@import 'outer.css';
+@import 'board.css';
+@import 'pieces.css';
+@import 'fonts.css';
+
+html,
+body {
+    font-family: 'notosans-light';
+}
+
+body {
+    background: linear-gradient(
+        180deg,
+        rgb(53 53 53) 0%,
+        rgba(48, 48, 48, 1) 35%,
+        rgba(41, 41, 41, 1) 65%,
+        rgba(20, 20, 20, 1) 100%
+    );
+}

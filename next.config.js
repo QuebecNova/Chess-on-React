@@ -1,4 +1,27 @@
 module.exports = {
+    async headers() {
+        return [
+            {
+                // matching all API routes
+                source: '/api/:path*',
+                headers: [
+                    { key: 'Access-Control-Allow-Credentials', value: 'true' },
+                    {
+                        key: 'Access-Control-Allow-Origin',
+                        value: 'http://hamchess.localhost',
+                    },
+                    {
+                        key: 'Access-Control-Allow-Methods',
+                        value: 'GET,DELETE,PATCH,POST,PUT',
+                    },
+                    {
+                        key: 'Access-Control-Allow-Headers',
+                        value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+                    },
+                ],
+            },
+        ]
+    },
     webpack(config, options) {
         const { isServer } = options
         config.module.rules.push(
@@ -7,16 +30,11 @@ module.exports = {
                 exclude: config.exclude,
                 use: [
                     {
-                        loader: require.resolve('url-loader'),
+                        loader: 'file-loader',
                         options: {
-                            limit: config.inlineImageLimit,
-                            fallback: require.resolve('file-loader'),
-                            publicPath: `${config.assetPrefix}/_next/static/images/`,
-                            outputPath: `${
-                                isServer ? '../' : ''
-                            }static/images/`,
-                            name: '[name]-[hash].[ext]',
-                            esModule: config.esModule || false,
+                            name: '[name].[ext]',
+                            publicPath: `/_next/static/sounds/`,
+                            outputPath: `${isServer ? '../' : ''}static/sounds/`,
                         },
                     },
                 ],
